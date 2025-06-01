@@ -3,12 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model
 {
-    protected $fillable = [
-        'title',
-        'color',
-        'meta_data',
-    ];
+    use HasFactory;
+
+    protected $fillable = ['name', 'description'];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }
