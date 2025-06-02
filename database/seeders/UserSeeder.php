@@ -8,18 +8,16 @@ use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Create 1 admin
+        // Create 1 admin with fixed credentials
         User::factory()->admin()->create([
             'name' => 'Admin User',
             'email' => 'admin@tastydelight.test',
+            'password' => bcrypt('admin123'), // Easy to remember for testing
         ]);
 
-        // Create 20 customers
+        // Create 20 customers with realistic passwords
         User::factory()->count(20)->customer()->create();
     }
 }
