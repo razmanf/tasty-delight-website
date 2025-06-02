@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Route;
 use App\Models\{Cart, CartItem, Category, Order, Product, Review, User};
 
@@ -79,3 +81,41 @@ Route::get('/test', function () {
     ];
 });
 
+Route::get('/test-email', function() {
+    $user = User::first();
+    
+    if (!$user) {
+        return 'No users found in database! Create a user first.';
+    }
+
+    // Reset verification status for testing
+    $user->email_verified_at = null;
+    $user->save();
+
+    Notification::send($user, new VerifyEmail());
+    return 'Test verification email sent to: ' . $user->email;
+});
+
+Route::get('/test-verification', function() {
+    // Get or create a test user
+    $user = User::firstOrCreate(
+        ['email' => 'test@tastydelight.test'],
+        [
+            'name' => 'Test User',
+            'password' => bcrypt('password'),
+            'email_verified_at' => null // Ensure not verified
+        ]
+    );
+
+    // Send verification notification
+    $user->notify(new VerifyEmail());
+    
+    return "Verification email sent to: " . $user->email;
+});
+
+Route::get('/test-email', function() {
+    Mail::raw('Hello World', function($message) {
+        $message->to('test@example.com')->subject('Test');
+    });
+    return 'Email sent (check laravel.log)';
+});
