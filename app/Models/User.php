@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+
 class User extends Authenticatable
 {
     use HasFactory;
@@ -23,7 +24,7 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class);
     }
 
-    public function reviews()
+        public function reviews()
     {
         return $this->hasMany(Review::class);
     }
