@@ -17,7 +17,7 @@ Route::get('/appointments', function () {
     return view('appointments');
 });
 
-Route::get('/test', function () {
+Route::get('/test-relationships', function () {
     // Test User relationships
     $user = User::first();
     $userResults = [
@@ -111,11 +111,4 @@ Route::get('/test-verification', function() {
     $user->notify(new VerifyEmail());
     
     return "Verification email sent to: " . $user->email;
-});
-
-Route::get('/test-email', function() {
-    Mail::raw('Hello World', function($message) {
-        $message->to('test@example.com')->subject('Test');
-    });
-    return 'Email sent (check laravel.log)';
 });

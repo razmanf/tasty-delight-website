@@ -1,8 +1,12 @@
+<?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Review;
 use App\Http\Resources\ReviewResource;
 use Illuminate\Http\Request;
+use App\Models\Product;
+
 
 class ReviewController extends Controller
 {

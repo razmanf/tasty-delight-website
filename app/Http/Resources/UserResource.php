@@ -1,6 +1,11 @@
+<?php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\CartResource;
+use App\Http\Resources\OrderResource;
+use App\Http\Resources\ReviewResource;
 
 class UserResource extends JsonResource
 {

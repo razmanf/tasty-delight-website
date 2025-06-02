@@ -1,13 +1,19 @@
+<?php
+
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class UserController extends Controller
-{
+{   
+    use AuthorizesRequests;
     // Get authenticated user's profile
     public function profile(Request $request)
     {
@@ -36,7 +42,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
 
         $user = User::create($validated);
-        return new UserResource($user, 201);
+        return (new UserResource($user))->response()->setStatusCode(201);
     }
 
     // Public: User registration
@@ -54,7 +60,8 @@ class UserController extends Controller
             'role' => 'customer'
         ]);
 
-        return new UserResource($user, 201);
+        return (new UserResource($user))->response()->setStatusCode(201);
+
     }
 
     // Update profile (authenticated users can update their own)
