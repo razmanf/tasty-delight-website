@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -12,11 +13,15 @@ return new class extends Migration {
     {
         Schema::create('product', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->unsignedInteger('quantity');
+            $table->foreignId('category_id')->constrained('category')->cascadeOnDelete();
+            $table->string('name');
+            $table->text('description');
             $table->decimal('price', 8, 2);
+            $table->string('image');
             $table->timestamps();
+
+            // Explicitly set engine
+            $table->engine = 'InnoDB';
         });
     }
 

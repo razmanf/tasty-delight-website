@@ -9,15 +9,22 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CategoryFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected static $categories = [
+        'Burgers', 'Pizzas', 'Desserts',
+        'Beverages', 'Salads', 'Breakfast'
+    ];
+
+    protected static $currentIndex = 0;
+
     public function definition(): array
     {
+        // Get next category in sequence
+        $category = self::$categories[self::$currentIndex % count(self::$categories)];
+        self::$currentIndex++;
+
         return [
-            //
+            'name' => $category,
+            'description' => $this->faker->sentence(),
         ];
     }
 }

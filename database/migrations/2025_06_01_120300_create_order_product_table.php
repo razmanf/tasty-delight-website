@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('review', function (Blueprint $table) { 
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        Schema::create('order_product', function (Blueprint $table) {
+            $table->foreignId('order_id')->constrained('order')->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('product')->cascadeOnDelete();
-            $table->unsignedTinyInteger('rating'); // 1-5 stars
-            $table->text('comment')->nullable();
+            $table->unsignedInteger('quantity');
+            $table->decimal('price', 8, 2);
             $table->timestamps();
             
-            // Explicitly set engine
+            // Composite primary key
+            $table->primary(['order_id', 'product_id']);
+            
+            // Explicit engine for MySQL
             $table->engine = 'InnoDB';
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('review');
+        Schema::dropIfExists('order_product');
     }
 };
