@@ -13,24 +13,25 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {   
-    use AuthorizesRequests;
+    // Remove this: use AuthorizesRequests;
+
     // Get authenticated user's profile
     public function profile(Request $request)
     {
         return new UserResource($request->user()->load('orders', 'reviews'));
     }
 
-    // Admin-only: List all users
+    // List all users - remove authorization
     public function index()
     {
-        $this->authorize('viewAny', User::class);
+        // $this->authorize('viewAny', User::class);  <-- Remove this line
         return UserResource::collection(User::with('orders')->paginate(10));
     }
 
-    // Admin-only: Create user
+    // Create user - remove authorization
     public function store(Request $request)
     {
-        $this->authorize('create', User::class);
+        // $this->authorize('create', User::class);  <-- Remove this line
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -45,7 +46,7 @@ class UserController extends Controller
         return (new UserResource($user))->response()->setStatusCode(201);
     }
 
-    // Public: User registration
+    // User registration stays same (no authorization needed here)
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -64,10 +65,10 @@ class UserController extends Controller
 
     }
 
-    // Update profile (authenticated users can update their own)
+    // Update profile - remove authorization
     public function update(Request $request, User $user)
     {
-        $this->authorize('update', $user);
+        // $this->authorize('update', $user);  <-- Remove this line
         
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -84,10 +85,11 @@ class UserController extends Controller
         return new UserResource($user->fresh());
     }
 
-    // Admin-only: Delete user
+    // Delete user - remove authorization
     public function destroy(User $user)
     {
-        $this->authorize('delete', $user);
+        // $this->authorize('delete', $user);  <-- Remove this line
+        
         $user->delete();
         return response()->noContent();
     }
