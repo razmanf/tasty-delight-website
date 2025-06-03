@@ -15,32 +15,19 @@
         <form wire:submit.prevent="login" autocomplete="off">
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 font-semibold mb-2">Email Address</label>
-                <input
-                    type="email"
-                    id="email"
-                    wire:model.defer="email"
+                <input type="email" id="email" wire:model.defer="email"
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter your email"
-                    required
-                />
+                    placeholder="Enter your email" required />
             </div>
 
             <div class="mb-6">
                 <label for="password" class="block text-gray-700 font-semibold mb-2">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    wire:model.defer="password"
+                <input type="password" id="password" wire:model.defer="password"
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter your password"
-                    required
-                />
+                    placeholder="Enter your password" required />
             </div>
 
-            <button
-                type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
-            >
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded">
                 Login
             </button>
         </form>
