@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TestController;
+use Illuminate\Http\Request;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);

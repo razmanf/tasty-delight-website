@@ -15,7 +15,7 @@ class ReviewResource extends JsonResource
             'user' => new UserResource($this->whenLoaded('user')),
             'product_id' => $this->product_id,
             'created_at' => $this->created_at->format('M d, Y'),
-            'is_verified' => $this->created_at->diffInDays() > 30
+            'is_verified' => $this->created_at ? $this->created_at->diffInDays(now()) > 30 : false,
         ];
     }
 }

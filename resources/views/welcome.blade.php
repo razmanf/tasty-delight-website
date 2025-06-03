@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Home</title>
+    <title>Dashboard</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,7 +19,7 @@
     @include('partials.navbar')
     <div class="flex justify-center h-screen">
         <div class="text-center">
-            <h1 class="text-5xl font-extrabold text-indigo700">Home Page</h1>
+            <h1 class="text-5xl font-extrabold text-indigo700">Dashboard Page</h1>
         </div>
     </div>
 </body>

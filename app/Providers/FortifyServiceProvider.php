@@ -2,45 +2,57 @@
 
 namespace App\Providers;
 
-use App\Actions\Fortify\CreateNewUser;
-use App\Actions\Fortify\ResetUserPassword;
-use App\Actions\Fortify\UpdateUserPassword;
-use App\Actions\Fortify\UpdateUserProfileInformation;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Responses\LoginResponse;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 class FortifyServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
-    public function register(): void
+    public function register()
     {
-        //
+        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
     }
 
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot()
     {
-        Fortify::createUsersUsing(CreateNewUser::class);
-        Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
-        Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
-        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        Fortify::authenticateUsing(function (Request $request) {
+            // Call Sanctum API login endpoint
+            $response = Http::post(config('app.url') . '/api/login', [
+                'email' => $request->email,
+                'password' => $request->password,
+            ]);
 
-        RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            if ($response->successful()) {
+                $data = $response->json();
 
-            return Limit::perMinute(5)->by($throttleKey);
+                // Check if response has user data
+                if (isset($data['user']['id'])) {
+                    // Retrieve user by ID
+                    $user = User::find($data['user']['id']);
+
+                    // Optionally double-check password here if needed
+                    if ($user && Hash::check($request->password, $user->password)) {
+                        return $user;
+                    }
+                }
+            }
+
+            // Return null if authentication fails
+            return null;
         });
 
-        RateLimiter::for('two-factor', function (Request $request) {
-            return Limit::perMinute(5)->by($request->session()->get('login.id'));
-        });
+        // You can add other Fortify features here, e.g., registration, password reset...
     }
+    
 }

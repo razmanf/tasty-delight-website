@@ -16,10 +16,10 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
             'cart' => new CartResource($this->whenLoaded('cart')),
             'orders' => OrderResource::collection($this->whenLoaded('orders')),
-            'reviews' => ReviewResource::collection($this->whenLoaded('reviews'))
+            'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
         ];
     }
 }

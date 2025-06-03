@@ -2,50 +2,42 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
 {
-    protected $commonPasswords = [
-        'letmein', 'password1', 'qwerty', '123456', 'tasty123',
-        'delight', 'foodie', 'yummy', 'burger', 'pizza123',
-        'chicken', 'sweet', 'treat', 'yumyum', 'nomnom'
-    ];
+    protected $model = User::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'password' => bcrypt($this->generateRealisticPassword()),
-            'role' => $this->faker->randomElement(['admin', 'customer']),
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'), // default password for seeded users
+            'remember_token' => Str::random(10),
+            'role' => 'customer', // default role
         ];
     }
 
-    protected function generateRealisticPassword(): string
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
     {
-        // 70% chance for a simple password, 30% for slightly more complex
-        if ($this->faker->boolean(70)) {
-            return $this->faker->randomElement($this->commonPasswords);
-        }
-
-        // Generate slightly more complex password (still readable)
-        return Str::lower(Str::random(6)) . $this->faker->randomDigit();
-    }
-
-    public function admin()
-    {
-        return $this->state([
+        return $this->state(fn (array $attributes) => [
             'role' => 'admin',
-            'password' => bcrypt('admin123'), // Fixed admin password for testing
         ]);
     }
 
-    public function customer()
+    /**
+     * Indicate that the user is a customer.
+     */
+    public function customer(): static
     {
-        return $this->state([
+        return $this->state(fn (array $attributes) => [
             'role' => 'customer',
         ]);
     }
