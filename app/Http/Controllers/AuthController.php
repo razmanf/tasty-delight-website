@@ -4,35 +4,36 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\UserResource;
+use App\Models\User;
 
 class AuthController extends Controller
 {
+    // Login and issue token
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $user = $request->user();
-        $token = $user->createToken('authToken')->plainTextToken;
+        $user = User::where('email', $request->email)->first();
 
         return response()->json([
-            'user' => new UserResource($user),
-            'token' => $token
+            'message' => 'Login successful',
+            'token' => $user->createToken('api-token')->plainTextToken,
+            'user' => $user
         ]);
     }
 
+    // Logout and revoke token
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return response()->noContent();
+
+        return response()->json(['message' => 'Logged out']);
     }
 }
