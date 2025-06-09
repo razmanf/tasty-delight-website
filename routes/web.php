@@ -4,22 +4,27 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Route;
 use App\Models\{Cart, CartItem, Category, Order, Product, Review, User};
-use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\LogoutController;
-use App\Livewire\AdminDashboard;
 use App\Livewire\UserDashboard;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminDashboardController;
+use Illuminate\Support\Facades\File;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\UserController;
+
+
 
 // Welcome page
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.register');
 });
 
 // Custom Login Routes
-Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [AdminLoginController::class, 'login']);
-
 Route::get('/user/login', [UserLoginController::class, 'showLoginForm'])->name('user.login');
 Route::post('/user/login', [UserLoginController::class, 'login']);
 
@@ -93,7 +98,7 @@ Route::get('/test-relationships', function () {
 // Email testing routes
 Route::get('/test-email', function () {
     $user = User::first();
-    
+
     if (!$user) {
         return 'No users found in database! Create a user first.';
     }
@@ -116,7 +121,7 @@ Route::get('/test-verification', function () {
     );
 
     $user->notify(new VerifyEmail());
-    
+
     return "Verification email sent to: " . $user->email;
 });
 
@@ -134,30 +139,42 @@ Route::middleware([
 // Logout route
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-// Dashboards (middleware included earlier)
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
+// Admin routes group with middleware and prefix
+Route::middleware(['auth:sanctum', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Admin dashboard route
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Admin resource routes examples (create controllers as needed)
+    // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::resource('products', ProductController::class)->except(['show']);
+    Route::resource('orders', OrderController::class);
+    Route::resource('users', UserController::class);
+
+    // Additional admin routes
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::resource('reviews', ReviewController::class);
 });
 
-Route::middleware(['auth', 'user'])->group(function () {
+// User dashboard route: only logged-in users with 'user' role can access
+Route::middleware(['auth:sanctum', 'verified', 'user'])->group(function () {
     Route::get('/user/dashboard', UserDashboard::class)->name('user.dashboard');
 });
 
-Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
+Route::get('/privacy', function () {
+    $policy = File::exists(storage_path('app/policy.html'))
+        ? File::get(storage_path('app/policy.html'))
+        : 'Privacy Policy not found.';
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'userDashboard'])->name('dashboard');
-    Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
-});
+    return view('policy', compact('policy'));
+})->name('privacy');
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    // User dashboard route
-    Route::get('/dashboard', function () {
-        return view('dashboard.user-dashboard');  // points to resources/views/dashboard/user-dashboard.blade.php
-    })->name('dashboard')->middleware('user');
+Route::get('/terms', function () {
+    $terms = File::exists(storage_path('app/terms.html'))
+        ? File::get(storage_path('app/terms.html'))
+        : 'Terms of Service not found.';
 
-    // Admin dashboard route
-    Route::get('/admin/dashboard', function () {
-        return view('dashboard.admin-dashboard'); // points to resources/views/dashboard/admin-dashboard.blade.php
-    })->name('admin.dashboard')->middleware('admin');
-});
+    return view('terms', compact('terms'));
+})->name('terms');

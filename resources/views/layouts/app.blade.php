@@ -41,5 +41,7 @@
         @stack('modals')
 
         @livewireScripts
+        @include('layouts.partials.footer')
+
     </body>
 </html>

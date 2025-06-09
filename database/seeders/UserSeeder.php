@@ -5,19 +5,28 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create 1 admin with fixed credentials
-        User::factory()->admin()->create([
+        // Admin User
+        User::create([
             'name' => 'Admin User',
-            'email' => 'admin@tastydelight.test',
-            'password' => bcrypt('admin123'), // Easy to remember for testing
+            'email' => 'admin@tastydelight.com',
+            'password' => Hash::make('password'), // Change to secure password in prod
+            'role' => 'admin',
+            'email_verified_at' => now(),
         ]);
 
-        // Create 20 customers with realistic passwords
-        User::factory()->count(20)->customer()->create();
+        // Regular User
+        User::create([
+            'name' => 'Test User',
+            'email' => 'user@tastydelight.com',
+            'password' => Hash::make('password'),
+            'role' => 'user',
+            'email_verified_at' => now(),
+        ]);
     }
 }

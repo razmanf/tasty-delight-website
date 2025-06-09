@@ -23,6 +23,6 @@ class LogoutController extends Controller
             return redirect('/admin/login')->with('status', 'Logged out as Admin.');
         }
 
-        return redirect('/user/login')->with('status', 'Logged out as User.');
+        return redirect('login')->with('status', 'You have been successfully logged out.');
     }
 }

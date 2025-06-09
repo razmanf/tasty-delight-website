@@ -10,7 +10,7 @@ class AdminLoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.admin-login'); // Your admin login view
+        return view('livewire.admin-login'); // Your admin login view
     }
 
     public function login(Request $request)

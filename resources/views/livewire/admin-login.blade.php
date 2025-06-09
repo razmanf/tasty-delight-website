@@ -1,3 +1,4 @@
+<x-guest-layout>
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="w-full max-w-md bg-white p-8 rounded shadow">
         <h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2>
@@ -41,3 +42,4 @@
         </form>
     </div>
 </div>
+</x-guest-layout>

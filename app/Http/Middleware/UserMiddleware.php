@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Auth;
 
 class UserMiddleware
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
+        // Optional: Redirect if not logged in
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
 
-        if (!$user || $user->role !== 'customer') {
-            // Redirect or abort with 403 Forbidden
-            abort(403, 'Access denied - Users only.');
+        // Check if role is 'user'
+        if (Auth::user()->role !== 'user') {
+            abort(403, 'Unauthorized - Users only.');
         }
 
         return $next($request);

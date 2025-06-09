@@ -17,8 +17,8 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body>
-        <div class="font-sans text-gray-900 antialiased">
+    <body style="background-image: url('{{ asset('images/background.svg') }}'); background-size: 80%; background-repeat: no-repeat; background-position: 20% center;">
+        <div class="font-sans text-gray-900 antialiased bg-transparent">
             {{ $slot }}
         </div>
 

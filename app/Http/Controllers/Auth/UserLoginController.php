@@ -10,7 +10,7 @@ class UserLoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.user-login'); // Your user login view
+        return view('livewire.user-login'); // Your user login view
     }
 
     public function login(Request $request)
