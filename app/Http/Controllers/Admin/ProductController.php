@@ -21,6 +21,12 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
+    public function show($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('admin.products.show', compact('product'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

@@ -5,7 +5,7 @@
                 <x-authentication-card-logo />
             </x-slot>
 
-            <div class="text-center text-black mb-4">
+            <div class="text-center text-gray-600 mb-4">
                 <h1 class="text-2xl font-bold">Reset Password</h1>
             </div>
 

@@ -11,7 +11,7 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
-    theme: {
+    theme: {    
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],

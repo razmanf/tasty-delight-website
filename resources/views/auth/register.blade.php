@@ -7,7 +7,7 @@
 
             <x-validation-errors class="mb-4" />
 
-            <div class="text-center text-black mb-4">
+            <div class="text-center text-gray-600 mb-4">
                 <h1 class="text-2xl font-bold">Register</h1>
             </div>
 
@@ -34,15 +34,35 @@
                     <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
                 </div>
 
+                <div class="block mt-4">
+                    <x-label for="show_password">
+                        <div class="flex items-center">
+                            <x-checkbox name="show_password" id="show_password" />
+                            
+                            <div class="ms-2">
+                                {{ __('Show Password') }}
+                            </div>
+                        </div>
+                    </x-label>
+                </div>                
+
                 <div class="mt-4">
                     <x-label for="role" value="{{ __('Registering as') }}" />
                     <select
                         id="role"
                         name="role"
+                        required
                         class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
                     >
-                        <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>User</option>
-                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                        {{-- truly blank option --}}
+                        <option value="" {{ old('role') === '' ? 'selected' : '' }}></option>
+
+                        <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>
+                            {{ __('User') }}
+                        </option>
+                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
+                            {{ __('Admin') }}
+                        </option>
                     </select>
 
                     @error('role')
@@ -50,12 +70,7 @@
                     @enderror
                 </div>
 
-                <div class="block mt-4">
-                    <label for="remember_me" class="flex items-center">
-                        <x-checkbox id="remember_me" name="remember" />
-                        <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                    </label>
-                </div>
+
 
                 @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
                     <div class="mt-4">
@@ -71,6 +86,9 @@
                                 </div>
                             </div>
                         </x-label>
+                        @error('terms')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 @endif
 
@@ -84,5 +102,17 @@
                     </x-button>
                 </div>
             </form>
+
+            <script>
+                document.getElementById('show_password').addEventListener('change', function () {
+                    const password = document.getElementById('password');
+                    const passwordConfirm = document.getElementById('password_confirmation');
+                    const type = this.checked ? 'text' : 'password';
+            
+                    password.type = type;
+                    passwordConfirm.type = type;
+                });
+            </script>
+            
         </x-authentication-card>
 </x-guest-layout>

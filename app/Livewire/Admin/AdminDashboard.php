@@ -48,12 +48,24 @@ class AdminDashboard extends Component
             $this->searchResults = [];
             return;
         }
+    
+        $query = '%' . $this->searchQuery . '%';
+    
+        $productResults = Product::where('name', 'like', $query)->limit(5)->get(['id', 'name', 'price']);
+        $userResults    = User::where('name', 'like', $query)->limit(5)->get(['id', 'name', 'email']);
+        $orderResults   = Order::where('order_number', 'like', $query)->limit(5)->get(['id', 'order_number']);
+    
+        $this->searchResults = [
+            'products' => $productResults->toArray(),
+            'users'    => $userResults->toArray(),
+            'orders'   => $orderResults->toArray(),
+        ];
+    }
 
-        $this->searchResults = Product::query()
-            ->where('name','like','%'.$this->searchQuery.'%')
-            ->limit(5)
-            ->get(['id','name','price'])
-            ->toArray();
+    public function goToProduct($id)
+    {
+        // Redirect to a product detail page by ID
+        return redirect()->route('admin.products.show', ['id' => $id]);
     }
 
     public function render()

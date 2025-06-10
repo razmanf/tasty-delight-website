@@ -128,61 +128,10 @@ Route::get('/test-verification', function () {
     return "Verification email sent to: " . $user->email;
 });
 
-// Jetstream-protected routes
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-
-    
-});
-
 // Logout route
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-Route::get('/dashboard', function () {
-    // Let Jetstream redirect correctly after login/registration
-    if (auth()->user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    } elseif (auth()->user()->role === 'user') {
-        return redirect()->route('user.dashboard');
-    }
-
-    abort(403); // or redirect somewhere safe
-})->middleware(['auth:sanctum', 'verified'])->name('dashboard');
-
-
-// Admin routes group with middleware and prefix
-Route::middleware(['auth:sanctum', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    // Admin dashboard route
-    
-    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-   // AJAX search endpoint
-   Route::post('dashboard/search', [AdminDashboardController::class, 'search'])->name('dashboard.search');
-
-});
-
-Route::middleware(['web', 'auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
-    Route::resource('orders', OrderController::class);
-    Route::resource('users', UserController::class);
-
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
-    Route::resource('reviews', ReviewController::class);
-
-
-});
-
-// User dashboard route: only logged-in users with 'user' role can access
-Route::middleware(['auth:sanctum', 'verified', 'user'])->group(function () {
-    Route::get('/user/dashboard', UserDashboard::class)->name('user.dashboard');
-});
-
+// Privacy policy
 Route::get('/privacy', function () {
     $policy = File::exists(storage_path('app/policy.html'))
         ? File::get(storage_path('app/policy.html'))
@@ -190,6 +139,8 @@ Route::get('/privacy', function () {
 
     return view('policy', compact('policy'));
 })->name('privacy');
+
+//Terms and conditions
 
 Route::get('/terms', function () {
     $terms = File::exists(storage_path('app/terms.html'))
@@ -207,3 +158,43 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])
 // Default Jetstream login POST route
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware(['guest']);
+
+    
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'), // in practice this is `web`
+    'verified',
+    'admin', // or 'user'
+])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+    Route::resource('orders', OrderController::class);
+    Route::resource('users', UserController::class);
+
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings');
+    Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::resource('reviews', ReviewController::class);
+});
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'user'
+])->group(function () {
+    Route::get('/user/dashboard', UserDashboard::class)->name('user.dashboard');
+});
+
+Route::get('/dashboard', function () {
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('user.dashboard');
+})->middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->name('dashboard');
+    

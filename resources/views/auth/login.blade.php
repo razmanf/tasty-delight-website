@@ -14,7 +14,7 @@
                     </div>
                 @endsession
 
-                <div class="text-center text-black mb-4">
+                <div class="text-center text-gray-600 mb-4">
                     <h1 class="text-2xl font-bold">Login</h1>
                 </div>
 
