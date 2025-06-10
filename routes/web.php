@@ -16,6 +16,8 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use App\Livewire\Admin\AdminDashboard;
 
 
 
@@ -26,7 +28,8 @@ Route::get('/', function () {
 
 // Custom Login Routes
 Route::get('/user/login', [UserLoginController::class, 'showLoginForm'])->name('user.login');
-Route::post('/user/login', [UserLoginController::class, 'login']);
+Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
+
 
 // Demo views
 Route::get('/employees', function () {
@@ -131,31 +134,48 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+
+    
 });
 
 // Logout route
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
+Route::get('/dashboard', function () {
+    // Let Jetstream redirect correctly after login/registration
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    } elseif (auth()->user()->role === 'user') {
+        return redirect()->route('user.dashboard');
+    }
+
+    abort(403); // or redirect somewhere safe
+})->middleware(['auth:sanctum', 'verified'])->name('dashboard');
+
+
 // Admin routes group with middleware and prefix
 Route::middleware(['auth:sanctum', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     // Admin dashboard route
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    // Admin resource routes examples (create controllers as needed)
-    // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::resource('products', ProductController::class)->except(['show']);
+   // AJAX search endpoint
+   Route::post('dashboard/search', [AdminDashboardController::class, 'search'])->name('dashboard.search');
+
+});
+
+Route::middleware(['web', 'auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
     Route::resource('orders', OrderController::class);
     Route::resource('users', UserController::class);
 
-    // Additional admin routes
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::resource('reviews', ReviewController::class);
+
+
 });
 
 // User dashboard route: only logged-in users with 'user' role can access
@@ -178,3 +198,12 @@ Route::get('/terms', function () {
 
     return view('terms', compact('terms'));
 })->name('terms');
+
+// Default Jetstream login GET route
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+    ->middleware(['guest'])
+    ->name('login');
+
+// Default Jetstream login POST route
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+    ->middleware(['guest']);

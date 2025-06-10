@@ -4,10 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Panel - @yield('title', 'Dashboard')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}"> <!-- Your CSS -->
+
+    <!-- Include Vite assets -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Include Livewire styles -->
+    @livewireStyles
 </head>
 <body>
-    <header style="background:#222; color:#fff; padding:1rem;">
+    <!-- <header style="background:#222; color:#fff; padding:1rem;">
         <nav>
             <a href="{{ route('admin.dashboard') }}" style="color:#fff; margin-right:1rem;">Dashboard</a>
             <a href="{{ route('admin.reports.index') }}" style="color:#fff; margin-right:1rem;">Reports</a>
@@ -17,7 +22,7 @@
                 <button type="submit" style="background:none; border:none; color:#fff; cursor:pointer; margin-left:1rem;">Logout</button>
             </form>
         </nav>
-    </header>
+    </header> -->
 
     <main style="padding: 2rem;">
         @yield('content')
@@ -26,5 +31,8 @@
     <footer style="text-align:center; padding:1rem; border-top:1px solid #ddd; color:#888;">
         &copy; {{ date('Y') }} Tasty Delight Admin
     </footer>
+
+    <!-- Include Livewire scripts -->
+    @livewireScripts
 </body>
 </html>

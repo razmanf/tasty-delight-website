@@ -1,16 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
+        {{-- Page header, if you want --}}
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Admin Dashboard') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <p>Welcome, Admin! Manage your site here.</p>
-                {{-- Add admin-specific widgets/components --}}
-            </div>
+            {{-- Mount your Livewire AdminDashboard component here --}}
+            <livewire:admin.admin-dashboard />
         </div>
     </div>
 </x-app-layout>

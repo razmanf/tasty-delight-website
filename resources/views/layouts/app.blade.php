@@ -10,6 +10,11 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <!-- Font Awesome CDN -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+        integrity="sha512-kuNqXqjNl+JhR0bpyhbSXKkdWMHHQoGERnN84+1RQ3EIpZ1L49OojMbxHKqC+jACbJz/7x9W3tx5aIY3Pz+VOw==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])

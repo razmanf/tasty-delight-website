@@ -34,6 +34,29 @@
                     <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
                 </div>
 
+                <div class="mt-4">
+                    <x-label for="role" value="{{ __('Registering as') }}" />
+                    <select
+                        id="role"
+                        name="role"
+                        class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                    >
+                        <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>User</option>
+                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    </select>
+
+                    @error('role')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="block mt-4">
+                    <label for="remember_me" class="flex items-center">
+                        <x-checkbox id="remember_me" name="remember" />
+                        <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                    </label>
+                </div>
+
                 @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
                     <div class="mt-4">
                         <x-label for="terms">

@@ -3,18 +3,23 @@
 namespace App\Http\Responses;
 
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
-use Illuminate\Http\Request;
+use App\Providers\RouteServiceProvider;
 
 class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request)
-{
-    $user = $request->user();
+    {
+        if ($request->wantsJson()) {
+            return response()->json(['two_factor' => false]);
+        }
 
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    } else {
-        return redirect()->route('dashboard');
+        $user = auth()->user();
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
-}
+
 }
