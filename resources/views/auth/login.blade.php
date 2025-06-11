@@ -1,10 +1,8 @@
 <x-guest-layout>
 
-        <div style="margin-left: 720px;width: 50%;justify-self: flex-end;">
+        <div class="max-w-md ml-auto mr-28">
             <x-authentication-card>
-                <x-slot name="logo">
-                    <x-authentication-card-logo />
-                </x-slot>
+                <x-slot name="logo"></x-slot>
     
                 <x-validation-errors class="mb-4" />
 

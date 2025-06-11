@@ -1,9 +1,7 @@
 <x-guest-layout>
-    <div style="margin-left: 720px;width: 50%;justify-self: flex-end;">
+    <div class="max-w-md ml-auto mr-28">
         <x-authentication-card>
-            <x-slot name="logo">
-                <x-authentication-card-logo />
-            </x-slot>
+            <x-slot name="logo"></x-slot>
 
             <x-validation-errors class="mb-4" />
 
@@ -101,7 +99,23 @@
                         {{ __('Register') }}
                     </x-button>
                 </div>
+
+                {{-- OR Divider --}}
+                <div class="flex items-center my-4">
+                    <div class="flex-grow border-t border-gray-300"></div>
+                    <span class="mx-3 text-gray-500 text-base">or</span>
+                    <div class="flex-grow border-t border-gray-300"></div>
+                </div>
             </form>
+
+            {{-- Visit Site Button --}}
+            <div class="text-center mt-4">
+                <a href="{{ url('/') }}">
+                    <button class="bg-[#dd6625] hover:bg-orange-700 text-white px-4 py-2 rounded text-sm font-semibold transition duration-200">
+                        VISIT SITE
+                    </button>
+                </a>
+            </div>
 
             <script>
                 document.getElementById('show_password').addEventListener('change', function () {

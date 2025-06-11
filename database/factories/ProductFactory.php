@@ -54,10 +54,9 @@ class ProductFactory extends Factory
         $categoryImages = [
             'Burgers' => ['products/burger.jpg'],
             'Pizzas' => ['products/pizza.jpg'],
-            'Desserts' => ['products/default.png'],  // Add more if you have dessert images
-            'Beverages' => ['products/coffee.jpg'],
-            'Salads' => ['products/default.png'],
-            'Breakfast' => ['products/default.png'],
+            'Desserts' => ['products/dessert.jpg'],  
+            'Salads' => ['products/salad.jpg'],
+            'Breakfast' => ['products/breakfast.jpg'],
         ];
 
         $images = $categoryImages[$category->name] ?? ['products/default.png'];

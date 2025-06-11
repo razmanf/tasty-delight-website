@@ -22,30 +22,29 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link 
                         href="{{ $dashRoute }}" 
-                        :active="request()->routeIs('dashboard') || request()->routeIs('admin.dashboard')"
+                        :active="request()->routeIs('dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('user.dashboard')"
                     >
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-
                     @auth
                     @if(Auth::user()->role === 'admin')
-                            <x-nav-link href="{{ route('admin.products.index') }}" :active="request()->routeIs('admin.products.*')">
-                                {{ __('Products') }}
-                            </x-nav-link>
-                            <x-nav-link href="{{ route('admin.orders.index') }}" :active="request()->routeIs('admin.orders.*')">
-                                {{ __('Orders') }}
-                            </x-nav-link>
-                            <x-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
-                                {{ __('Users') }}
-                            </x-nav-link>
-                            <x-nav-link href="{{ route('admin.reports.index') }}" :active="request()->routeIs('admin.reports.*')">
-                                {{ __('Reports') }}
-                            </x-nav-link>
-                            <x-nav-link href="{{ route('admin.settings') }}" :active="request()->routeIs('admin.settings')">
-                                {{ __('Settings') }}
-                            </x-nav-link>
-                        @endif
+                        <x-nav-link href="{{ route('admin.products.index') }}" :active="request()->routeIs('admin.products.*')">
+                            {{ __('Products') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.orders.index') }}" :active="request()->routeIs('admin.orders.*')">
+                            {{ __('Orders') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Users') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.reports.index') }}" :active="request()->routeIs('admin.reports.*')">
+                            {{ __('Reports') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.settings') }}" :active="request()->routeIs('admin.settings')">
+                            {{ __('Settings') }}
+                        </x-nav-link>
+                    @endif
                     @endauth
                 </div>
             </div>

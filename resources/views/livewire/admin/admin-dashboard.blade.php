@@ -48,10 +48,10 @@
                 'value'     => number_format($traffic),
                 'delta'     => '3.48%',
                 'trend'     => 'up',
-                'icon'      => '<i class="far fa-chart-bar"></i>',
+                'icon'      => '<i class="fa-solid fa-chart-column"></i>',
                 'deltaColor'=> 'text-green-500',
                 'bgIcon'    => 'text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-red-500'
-            ],
+            ], 
             [
                 'label'     => 'NEW USERS',
                 'value'     => number_format($newUsers),

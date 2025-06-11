@@ -33,8 +33,8 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'category_id' => 'nullable|exists:categories,id',
-            'image' => 'nullable|image|max:2048'
+            'category_id' => 'nullable|exists:category,id',
+            'image' => ['nullable', 'file', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
 
         if ($request->hasFile('image')) {
@@ -58,8 +58,8 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'category_id' => 'nullable|exists:categories,id',
-            'image' => 'nullable|image|max:2048'
+            'category_id' => 'nullable|exists:category,id',
+            'image' => ['nullable', 'file', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
 
         if ($request->hasFile('image')) {

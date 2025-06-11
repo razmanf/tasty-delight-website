@@ -3,31 +3,56 @@
 namespace App\Livewire\Admin;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\Product;
 use App\Models\Category;
-use Livewire\WithPagination;
 
 class ProductTable extends Component
 {
     use WithPagination;
 
-    // Add this property to disable pagination cache issues
-    protected $paginationTheme = 'tailwind'; // or bootstrap if you use that
-
     public $search = '';
-    public $category = '';
-    public $perPage = 10;
+    public $categoryFilter = '';
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
+    public $selected = [];
+    public $selectPage = false;
+    public $selectAll = false;
 
-    protected $queryString = ['search', 'category'];
+    protected $paginationTheme = 'tailwind';
 
-    public function updatingSearch()
+    protected $listeners = ['refreshProducts' => '$refresh', 'deleteSingleConfirmed'];
+
+    public function updatedSelectPage($value)
     {
+        if ($value) {
+            $this->selected = $this->products->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        } else {
+            $this->selected = [];
+            $this->selectAll = false;
+        }
+    }
+
+    public function updatedSelected()
+    {
+        $this->selectPage = false;
+        $this->selectAll = false;
+    }
+
+    public function deleteSingleConfirmed($productId)
+    {
+        Product::find($productId)?->delete();
+        session()->flash('success', 'Product deleted.');
         $this->resetPage();
     }
 
-    public function updatingCategory()
+    public function selectAll()
     {
-        $this->resetPage();
+        $this->selectAll = true;
+        $this->selected = Product::query()
+            ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
+            ->when($this->categoryFilter, fn($q) => $q->where('category_id', $this->categoryFilter))
+            ->pluck('id')->map(fn($id) => (string) $id)->toArray();
     }
 
     public function updatedSearch()
@@ -35,34 +60,49 @@ class ProductTable extends Component
         $this->resetPage();
     }
 
-    public function updatedCategory()
+    public function updatedCategoryFilter()
     {
         $this->resetPage();
     }
 
-    public function deleteProduct($id)
+    public function sortBy($field)
     {
-        Product::findOrFail($id)->delete();
-        session()->flash('success', 'Product deleted successfully.');
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
+    }
+
+    public function deleteSelected()
+    {
+        Product::whereIn('id', $this->selected)->delete();
+        $this->selected = [];
+        $this->selectPage = false;
+        $this->selectAll = false;
+        session()->flash('success', count($this->selected) . ' products deleted.');
+        $this->resetPage();
+    }
+
+    public function getProductsProperty()
+    {
+        return Product::with('category')
+            ->when($this->search, fn($q) =>
+                $q->where('name', 'like', "%{$this->search}%")
+                  ->orWhere('description', 'like', "%{$this->search}%")
+            )
+            ->when($this->categoryFilter, fn($q) => $q->where('category_id', $this->categoryFilter))
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate(10);
     }
 
     public function render()
     {
-        $categories = Category::all();
-
-        $products = Product::with('category')
-            ->when($this->search, fn($q) =>
-                $q->where('name', 'like', '%' . $this->search . '%')
-            )
-            ->when($this->category, fn($q) =>
-                $q->where('category_id', $this->category)
-            )
-            ->latest()->paginate($this->perPage);
-
         return view('livewire.admin.product-table', [
-            'products' => $products,
-            'categories' => $categories
+            'products' => $this->products,
+            'categories' => Category::all(),
         ]);
     }
 }
-
