@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 
+@section('header')
+    <h1 class="text-3xl font-bold text-gray-900">Reports</h1>
+@endsection
+
 @section('content')
-    <h1>Admin Reports</h1>
-    <p>Reports content goes here.</p>
+    @livewire('admin.reports')
 @endsection

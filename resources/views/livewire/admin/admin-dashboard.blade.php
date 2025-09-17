@@ -2,7 +2,7 @@
 
     {{-- Header & Search --}}
 <div class="flex justify-between items-center bg-blue-500 p-6 rounded-lg">
-    <h1 class="text-white text-2xl font-bold">Overview</h1>
+    <h1 class="text-white text-2xl font-medium">Overview</h1>
     
     <div id="search-bar" class="w-[20rem] bg-white rounded-md shadow-lg z-10 relative">
         <div class="flex items-center justify-center p-2">
@@ -59,7 +59,7 @@
                 'trend'     => 'down',
                 'icon'      => '<i class="fas fa-users"></i>',
                 'deltaColor'=> 'text-red-500',
-                'bgIcon'    => 'text-orange-500'
+                'bgIcon'    => 'text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-orange-500'
             ],
             [
                 'label'     => 'SALES',
@@ -68,7 +68,7 @@
                 'trend'     => 'down',
                 'icon'      => '<i class="fas fa-dollar-sign"></i>',
                 'deltaColor'=> 'text-orange-500',
-                'bgIcon'    => 'text-pink-500'
+                'bgIcon'    => 'text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-pink-500'
             ],
             [
                 'label'     => 'PERFORMANCE',
@@ -77,12 +77,12 @@
                 'trend'     => 'up',
                 'icon'      => '<i class="fas fa-chart-line"></i>',
                 'deltaColor'=> 'text-green-500',
-                'bgIcon'    => 'text-blue-500'
+                'bgIcon'    => 'text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-blue-500'
             ],
         ] as $card)
         <div class="bg-white p-6 rounded-lg shadow flex justify-between items-center">
             <div>
-                <div class="font-extrabold text-sm text-gray-500">{{ $card['label'] }}</div>
+                <div class="font-semibold text-sm text-gray-500">{{ $card['label'] }}</div>
                 <div class="text-2xl font-bold">{{ $card['value'] }}</div>
                 <div class="text-sm {{ $card['deltaColor'] }} mt-1">
                     {{ $card['trend']=='up' ? '↑' : '↓' }} {{ $card['delta'] }} 
@@ -105,7 +105,7 @@
                     <div class="rounded-t mb-0 px-4 py-3 bg-transparent">
                         <div class="flex flex-wrap items-center">
                             <div class="relative w-full max-w-full flex-grow flex-1">
-                                <h6 class="uppercase mb-1 text-xs font-semibold text-gray-400">Overview</h6>
+                                <h6 class="uppercase mb-1 text-sm font-semibold text-gray-500">Overview</h6>
                                 <h2 class="text-xl font-semibold text-white">Sales value</h2>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                     <div class="rounded-t mb-0 px-4 py-3 bg-transparent">
                         <div class="flex flex-wrap items-center">
                             <div class="relative w-full max-w-full flex-grow flex-1">
-                                <h6 class="uppercase mb-1 text-xs font-semibold text-gray-500">Performance</h6>
+                                <h6 class="uppercase mb-1 text-sm font-semibold text-gray-500">Performance</h6>
                                 <h2 class="text-xl font-semibold text-gray-800">Total orders</h2>
                             </div>
                         </div>
@@ -178,7 +178,14 @@
             },
             plugins: {
                 legend: {
-                    labels: { color: 'white' }
+                    position: 'bottom',
+                    align: 'end',
+                    labels: {
+                        color: 'white',
+                        boxWidth: 20,
+                        boxHeight: 10,
+                        usePointStyle: false
+                    }
                 }
             }
         }
@@ -215,7 +222,14 @@
             },
             plugins: {
                 legend: {
-                    labels: { color: '#4b5563' }
+                    position: 'bottom',
+                    align: 'end',
+                    labels: {
+                        color: '#4b5563',
+                        boxWidth: 20,
+                        boxHeight: 10,
+                        usePointStyle: false
+                    }
                 }
             }
         }

@@ -6,103 +6,176 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\On;
+use Livewire\WithFileUploads;
 
 class ProductTable extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
-    public $search = '';
-    public $categoryFilter = '';
-    public $sortField = 'name';
-    public $sortDirection = 'asc';
-    public $selected = [];
-    public $selectPage = false;
-    public $selectAll = false;
+    public $productId;
+    public $name;
+    public $price;
+    public $description;
+    public $category_id;
+    public $image;
 
+    public $category = null;
+    public string $search = '';
+    public $searchInput = '';
+    public $showCreateForm = false;  // control create form visibility
+
+    protected $updatesQueryString = ['search', 'category'];
     protected $paginationTheme = 'tailwind';
 
-    protected $listeners = ['refreshProducts' => '$refresh', 'deleteSingleConfirmed'];
+    protected $rules = [
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric',
+        'description' => 'nullable|string',
+        'category_id' => 'required|exists:category,id',
+    ];
 
-    public function updatedSelectPage($value)
+    public function updatedSearch() 
+    { 
+        $this->resetPage(); 
+    }
+
+    public function updatedCategory()
     {
-        if ($value) {
-            $this->selected = $this->products->pluck('id')->map(fn($id) => (string) $id)->toArray();
-        } else {
-            $this->selected = [];
-            $this->selectAll = false;
+        $this->resetPage();
+    }
+
+    public function applySearch()
+    {
+        $this->search = $this->searchInput;
+        $this->resetPage();
+    }
+
+    public function resetFilters()
+    {
+        $this->search = '';
+        $this->searchInput = '';
+        $this->category = '';
+        $this->resetPage();
+    }
+
+    public function openCreateForm()
+    {
+        $this->resetForm();
+        $this->showCreateForm = true;
+    }
+
+    public function cancelCreateForm()
+    {
+        $this->resetForm();
+        $this->showCreateForm = false;
+    }
+
+    public function createProduct()
+    {
+        $this->validate();
+
+        $product = new Product();
+        $product->name = $this->name;
+        $product->price = $this->price;
+        $product->description = $this->description;
+        $product->category_id = $this->category_id;
+
+        if ($this->image instanceof \Illuminate\Http\UploadedFile) {
+            $path = $this->image->store('product-images', 'public');
+            $product->image = $path;
         }
+
+        $product->save();
+
+        session()->flash('success', 'Product created successfully!');
+
+        $this->resetForm();
+        $this->showCreateForm = false;
     }
 
-    public function updatedSelected()
+    public function editProduct($id)
     {
-        $this->selectPage = false;
-        $this->selectAll = false;
+        $product = Product::findOrFail((int) $id);
+
+        $this->productId = $product->id;
+        $this->name = $product->name;
+        $this->price = $product->price;
+        $this->description = $product->description;
+        $this->category_id = $product->category_id;
+        $this->image = $product->image;
+
+        $this->dispatch('scroll-to-edit');
     }
 
-    public function deleteSingleConfirmed($productId)
-    {
-        Product::find($productId)?->delete();
-        session()->flash('success', 'Product deleted.');
-        $this->resetPage();
-    }
+    #[On('scroll-to-edit-form')]
+    public function handleScroll() {}
 
-    public function selectAll()
+    public function updateProduct()
     {
-        $this->selectAll = true;
-        $this->selected = Product::query()
-            ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
-            ->when($this->categoryFilter, fn($q) => $q->where('category_id', $this->categoryFilter))
-            ->pluck('id')->map(fn($id) => (string) $id)->toArray();
-    }
+        $this->validate();
 
-    public function updatedSearch()
-    {
-        $this->resetPage();
-    }
+        $product = Product::findOrFail($this->productId);
+        $product->name = $this->name;
+        $product->price = $this->price;
+        $product->description = $this->description;
+        $product->category_id = $this->category_id;
 
-    public function updatedCategoryFilter()
-    {
-        $this->resetPage();
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
+        if ($this->image instanceof \Illuminate\Http\UploadedFile) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $path = $this->image->store('product-images', 'public');
+            $product->image = $path;
         }
-        $this->resetPage();
+
+        $product->save();
+
+        session()->flash('success', 'Product updated successfully!');
+
+        $this->resetForm();
     }
 
-    public function deleteSelected()
+    public function deleteProduct($id)
     {
-        Product::whereIn('id', $this->selected)->delete();
-        $this->selected = [];
-        $this->selectPage = false;
-        $this->selectAll = false;
-        session()->flash('success', count($this->selected) . ' products deleted.');
-        $this->resetPage();
+        $p = Product::findOrFail($id);
+
+        if ($p->image) {
+            Storage::disk('public')->delete($p->image);
+        }
+
+        $p->delete();
+
+        session()->flash('success', 'Product deleted successfully.');
     }
 
-    public function getProductsProperty()
+    public function resetForm()
     {
-        return Product::with('category')
-            ->when($this->search, fn($q) =>
-                $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('description', 'like', "%{$this->search}%")
-            )
-            ->when($this->categoryFilter, fn($q) => $q->where('category_id', $this->categoryFilter))
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+        $this->reset(['productId', 'name', 'price', 'description', 'category_id', 'image']);
     }
 
     public function render()
     {
-        return view('livewire.admin.product-table', [
-            'products' => $this->products,
-            'categories' => Category::all(),
-        ]);
+        $query = Product::with('category');
+
+        if ($this->category !== null && $this->category !== '') {
+            $query->where('category_id', $this->category);
+        }
+
+        if ($this->search) {
+            $term = '%' . $this->search . '%';
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', $term)
+                  ->orWhere('description', 'like', $term)
+                  ->orWhere('price', 'like', $term)
+                  ->orWhere('stock', 'like', $term);
+            });
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate(10);
+        $categories = Category::orderBy('name')->get();
+
+        return view('livewire.admin.product-table', compact('products', 'categories'))->layout('layouts.app');
     }
 }

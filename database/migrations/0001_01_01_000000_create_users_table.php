@@ -21,11 +21,14 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
 
-            $table->timestamps();
+            // Profile photo for Jetstream
+            $table->string('profile_photo_path', 2048)->nullable();
 
+            // Two Factor Authentication fields
             $table->text('two_factor_secret')->nullable();
             $table->text('two_factor_recovery_codes')->nullable();
-            $table->string('profile_photo_path', 2048)->nullable();
+
+            $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

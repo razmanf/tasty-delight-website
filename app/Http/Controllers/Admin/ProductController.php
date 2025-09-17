@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')->paginate(15);
+        $products = Product::with('category')->get();
         return view('admin.products.index', compact('products'));
     }
 
@@ -21,29 +23,26 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
-    public function show($id)
+    public function show(Product $product)
     {
-        $product = Product::findOrFail($id);
         return view('admin.products.show', compact('product'));
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'category_id' => 'nullable|exists:category,id',
-            'image' => ['nullable', 'file', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
-        ]);
+        $data = $request->validated();
 
+        // Handle image upload
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            // Store in storage/app/public/products, returns path like 'products/xyz.jpg'
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
-        Product::create($validated);
+        Product::create($data);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product added successfully.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product created successfully.');
     }
 
     public function edit(Product $product)
@@ -52,38 +51,37 @@ class ProductController extends Controller
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'category_id' => 'nullable|exists:category,id',
-            'image' => ['nullable', 'file', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
-        ]);
+        $data = $request->validated();
 
+        // If a new image was uploaded, delete old and store new
         if ($request->hasFile('image')) {
-            // Optional: Delete the old image
-            if ($product->image && \Storage::disk('public')->exists($product->image)) {
-                \Storage::disk('public')->delete($product->image);
+            // delete existing image file
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
             }
-    
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
-        $product->update($validated);
+        $product->update($data);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
-        // Delete image file if exists
+        // delete image file
         if ($product->image) {
-            \Storage::disk('public')->delete($product->image);
+            Storage::disk('public')->delete($product->image);
         }
+
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product deleted successfully.');
     }
 }

@@ -49,18 +49,18 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $category = Category::inRandomOrder()->first();
-
-        // Map categories to sample images you downloaded
+    
         $categoryImages = [
             'Burgers' => ['products/burger.jpg'],
             'Pizzas' => ['products/pizza.jpg'],
             'Desserts' => ['products/dessert.jpg'],  
             'Salads' => ['products/salad.jpg'],
             'Breakfast' => ['products/breakfast.jpg'],
+            'Beverages' => ['products/coffee.jpg'],
         ];
-
-        $images = $categoryImages[$category->name] ?? ['products/default.png'];
-        
+    
+        $images = $categoryImages[$category->name];
+    
         return [
             'category_id' => $category->id,
             'name' => $this->generateProductName($category->name),
@@ -69,6 +69,7 @@ class ProductFactory extends Factory
             'image' => $this->faker->randomElement($images),
         ];
     }
+    
 
     protected function generateProductName(string $categoryName): string
     {

@@ -9,9 +9,20 @@ class Order extends Model
 {
     use HasFactory;
 
+    // Explicit table name (since "order" is reserved in some DBs)
     protected $table = 'order';
+
     protected $fillable = [
-        'user_id', 'total_amount', 'status', 'payment_method'
+        'user_id',
+        'total_amount',
+        'status',
+        'payment_method',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'total_amount' => 'decimal:2',
     ];
 
     public function user()
@@ -21,7 +32,7 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)
+        return $this->belongsToMany(Product::class, 'order_product')
             ->withPivot('quantity', 'price')
             ->withTimestamps();
     }

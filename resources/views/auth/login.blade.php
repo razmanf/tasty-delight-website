@@ -36,6 +36,13 @@
                         </label>
                     </div>
 
+                    <div class="block mt-4">
+                        <label for="show_password" class="flex items-center">
+                            <x-checkbox id="show_password" name="show_password" />
+                            <span class="ms-2 text-sm text-gray-600">{{ __('Show password') }}</span>
+                        </label>
+                    </div>    
+
                     <div class="flex items-center justify-end mt-4">
 
                         @if (Route::has('password.request'))
@@ -78,6 +85,18 @@
                         </button>
                     </a>
                 </div>
+
+                <script>
+                    document.getElementById('show_password').addEventListener('change', function () {
+                        const password = document.getElementById('password');
+                        const passwordConfirm = document.getElementById('password_confirmation');
+                        const type = this.checked ? 'text' : 'password';
+                
+                        password.type = type;
+                        passwordConfirm.type = type;
+                    });
+                </script>
+
             </x-authentication-card>
         </div>
 

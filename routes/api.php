@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\Api\FavouritesController;
 use Illuminate\Http\Request;
 
 // Public routes
@@ -37,4 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Review (singular)
     Route::apiResource('review', ReviewController::class);
+
+    Route::get('/favourites', [FavouritesController::class, 'index']);
+    Route::post('/favourites/{productId}', [FavouritesController::class, 'store']);
+    Route::delete('/favourites/{productId}', [FavouritesController::class, 'destroy']);
 });

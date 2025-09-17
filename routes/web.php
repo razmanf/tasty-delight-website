@@ -18,8 +18,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Livewire\Admin\AdminDashboard;
-
-
+use Laravel\Jetstream\Jetstream;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Livewire\Admin\ProductTable;
+use App\Livewire\Admin\OrderTable;
+use App\Livewire\Admin\UserTable;
 
 // Welcome page
 Route::get('/', function () {
@@ -168,9 +171,17 @@ Route::middleware([
 ])->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
-    Route::resource('orders', OrderController::class);
-    Route::resource('users', UserController::class);
+    Route::get('products', function () {
+        return view('admin.products.index');
+    })->name('products.index');
+
+    Route::get('orders', function () {
+        return view('admin.orders.index');
+    })->name('orders.index');
+    
+    Route::get('users', function () {
+        return view('admin.users.index');
+    })->name('users.index');    
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('settings', [SettingsController::class, 'index'])->name('settings');

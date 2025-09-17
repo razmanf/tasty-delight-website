@@ -1,141 +1,160 @@
-<div>
-    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-3 sm:space-y-0">
-        <div class="flex space-x-2 items-center">
-            <input
-                type="text"
-                wire:model.debounce.300ms="search"
-                placeholder="Search products..."
-                class="border rounded px-3 py-2 w-60"
-            >
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    x-data
+    @scroll-to-edit-form.window="document.getElementById('edit-product-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })">
 
-            <select wire:model="categoryFilter" class="border rounded px-15 py-2">
-                <option value="">{{ __('All Categories') }}</option>
-                @foreach ($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+    {{-- Create Product Form --}}
+    @if($showCreateForm)
+    <div class="bg-green-100 p-4 rounded shadow mb-4 mt-4">
+        <h2 class="text-lg font-semibold mb-2">Create New Product</h2>
+
+        <div class="mb-2">
+            <label class="block mb-1">Name</label>
+            <input type="text" wire:model="name" class="w-full border rounded p-2">
+        </div>
+
+        <div class="mb-2">
+            <label class="block mb-1">Price</label>
+            <input type="number" wire:model="price" class="w-full border rounded p-2">
+        </div>
+
+        <div class="mb-2">
+            <label class="block mb-1">Description</label>
+            <textarea wire:model="description" class="w-full border rounded p-2"></textarea>
+        </div>
+
+        <div class="mb-2">
+            <label class="block mb-1">Category</label>
+            <select wire:model="category_id" class="w-full border rounded p-2">
+                <option value="">Select Category</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                 @endforeach
             </select>
-
-            @if($selected)
-                <button
-                    wire:click="deleteSelected"
-                    onclick="confirm('Are you sure? This will delete selected products.') || event.stopImmediatePropagation()"
-                    class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded"
-                >
-                    Delete Selected ({{ count($selected) }})
-                </button>
-            @endif
         </div>
 
-        <div class="flex items-center space-x-2">
-            <button wire:click="sortBy('name')" class="text-sm font-semibold hover:underline">
-                Name
-                @if($sortField === 'name')
-                    @if($sortDirection === 'asc')
-                        &uarr;
-                    @else
-                        &darr;
-                    @endif
-                @endif
-            </button>
-            <button wire:click="sortBy('price')" class="text-sm font-semibold hover:underline">
-                Price
-                @if($sortField === 'price')
-                    @if($sortDirection === 'asc')
-                        &uarr;
-                    @else
-                        &darr;
-                    @endif
-                @endif
-            </button>
-            <button wire:click="sortBy('stock')" class="text-sm font-semibold hover:underline">
-                Stock
-                @if($sortField === 'stock')
-                    @if($sortDirection === 'asc')
-                        &uarr;
-                    @else
-                        &darr;
-                    @endif
-                @endif
-            </button>
-            <button wire:click="sortBy('created_at')" class="text-sm font-semibold hover:underline">
-                Created At
-                @if($sortField === 'created_at')
-                    @if($sortDirection === 'asc')
-                        &uarr;
-                    @else
-                        &darr;
-                    @endif
-                @endif
+        <div class="mb-2">
+            <label class="block mb-1">Product Image</label>
+            <input type="file" wire:model="image" class="form-input w-full">
+        </div>
+
+        <div class="flex gap-2">
+            <button wire:click="createProduct" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Create</button>
+            <button wire:click="cancelCreateForm" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
+        </div>
+    </div>
+    @endif
+
+    {{-- Edit Product Form --}}
+    @if($productId)
+    <div id="edit-product-form" class="bg-yellow-100 p-4 rounded shadow mb-4 mt-4" x-init="$nextTick(() => { $dispatch('scroll-to-edit-form') })">
+        <h2 class="text-lg font-semibold mb-2">Edit Product</h2>
+
+        <div class="mb-2">
+            <label class="block mb-1">Name</label>
+            <input type="text" wire:model="name" class="w-full border rounded p-2">
+        </div>
+
+        <div class="mb-2">
+            <label class="block mb-1">Price</label>
+            <input type="number" wire:model="price" class="w-full border rounded p-2">
+        </div>
+
+        <div class="mb-2">
+            <label class="block mb-1">Description</label>
+            <textarea wire:model="description" class="w-full border rounded p-2"></textarea>
+        </div>
+
+        <div class="mb-2">
+            <label class="block mb-1">Category</label>
+            <select wire:model="category_id" class="w-full border rounded p-2">
+                <option value="">Select Category</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        @if ($image)
+            <div class="mb-4">
+                <label class="block mb-1">Product Image</label>
+                <img src="{{ Storage::url($image) }}" alt="Product Image" class="w-32 h-32 object-cover">
+            </div>
+        @endif
+
+        <div class="mb-2">
+            <input type="file" wire:model="image" class="form-input w-full">
+        </div>
+
+        <div class="flex gap-2">
+            <button wire:click="updateProduct" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Update</button>
+            <button wire:click="$set('productId', null)" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
+        </div>
+    </div>
+    @endif
+
+    {{-- Filters --}}
+    <div class="flex flex-wrap gap-4 items-center mt-6">
+        {{-- Category Filter --}}
+        <div>
+            <select wire:model="category" class="border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">All Categories</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Search Box --}}
+        <form wire:submit.prevent="applySearch" class="flex gap-2 flex-1">
+            <input type="text" wire:model.defer="searchInput" placeholder="Search products..." class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <button type="submit" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Search</button>
+            <button type="button" wire:click="resetFilters" class="inline-block px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500">Reset</button>
+        </form>
+
+        {{-- Add Product Button --}}
+        <div class="ml-auto">
+            <button wire:click="openCreateForm" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                Add Product
             </button>
         </div>
     </div>
 
-    <div wire:loading.delay class="mb-2 text-center text-gray-500">
-        Loading...
-    </div>
-
-    <table class="min-w-full bg-white shadow rounded">
-        <thead>
-            <tr>
-                <th class="px-4 py-2 border">
-                    <input type="checkbox" wire:model="selectPage">
-                </th>
-                <th class="px-4 py-2 border cursor-pointer" wire:click="sortBy('name')">Name</th>
-                <th class="px-4 py-2 border cursor-pointer" wire:click="sortBy('price')">Price</th>
-                <th class="px-4 py-2 border cursor-pointer" wire:click="sortBy('stock')">Stock</th>
-                <th class="px-4 py-2 border">Category</th>
-                <th class="px-4 py-2 border">Description</th>
-                <th class="px-4 py-2 border cursor-pointer" wire:click="sortBy('created_at')">Created At</th>
-                <th class="px-4 py-2 border text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($products as $product)
-                <tr class="hover:bg-gray-100">
-                    <td class="border px-4 py-2 text-center">
-                        <input type="checkbox" wire:model="selected" value="{{ $product->id }}">
-                    </td>
-                    <td class="border px-4 py-2">{{ $product->name }}</td>
-                    <td class="border px-4 py-2">Rs. {{ number_format($product->price, 2) }}</td>
-                    <td class="border px-4 py-2">{{ $product->stock }}</td>
-                    <td class="border px-4 py-2">{{ $product->category->name ?? '-' }}</td>
-                    <td class="border px-4 py-2 truncate max-w-xs" title="{{ $product->description }}">
-                        {{ Str::limit($product->description, 50) ?? '-' }}
-                    </td>
-                    <td class="border px-4 py-2">{{ $product->created_at->format('d M Y') }}</td>
-                    <td class="border px-4 py-2 text-center">
-                        <a href="{{ route('admin.products.edit', $product) }}" 
-                           class="text-blue-600 hover:underline mr-2" title="Edit">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <button
-                            wire:click="deleteSelected"
-                            onclick="confirm('Are you sure you want to delete this product?') || event.stopImmediatePropagation()"
-                            wire:click="$emit('deleteSingle', {{ $product->id }})"
-                            class="text-red-600 hover:underline"
-                            title="Delete"
-                        >
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            @empty
+    {{-- Product Table --}}
+    <div class="mt-6 overflow-x-auto bg-white shadow rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
                 <tr>
-                    <td colspan="8" class="text-center p-4 text-gray-500">No products found.</td>
+                    @foreach(['Name','Description','Price','Image','Category','Stock'] as $col)
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $col }}</th>
+                    @endforeach
+                    <th class="px-6 py-3"></th>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <div class="mt-4">
-        {{ $products->links() }}
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($products as $p)
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-3">{{ $p->name }}</td>
+                        <td class="px-6 py-3 text-sm text-gray-500">{{ Str::limit($p->description, 50) }}</td>
+                        <td class="px-6 py-3">Rs. {{ number_format($p->price, 2) }}</td>
+                        <td class="px-6 py-3">
+                            @if($p->image)
+                                <img src="{{ asset('storage/'.$p->image) }}" alt="{{ $p->name }}" class="h-10 w-10 object-cover rounded">
+                            @endif
+                        </td>
+                        <td class="px-6 py-3">{{ $p->category->name ?? '-' }}</td>
+                        <td class="px-6 py-3">{{ $p->stock }}</td>
+                        <td class="px-6 py-3 text-right space-x-2">
+                            <button wire:click="editProduct({{ $p->id }})" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Edit</button>
+                            <button x-data @click="if (confirm('Are you sure?')) { $wire.deleteProduct({{ $p->id }}) }" class="inline-block px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No products found.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-</div>
 
-<script>
-    Livewire.on('deleteSingle', productId => {
-        if (confirm('Are you sure you want to delete this product?')) {
-            Livewire.emit('deleteSingleConfirmed', productId);
-        }
-    });
-</script>
+    {{-- Pagination --}}
+    <div class="mt-4 mb-10">{{ $products->links() }}</div>
+</div>
