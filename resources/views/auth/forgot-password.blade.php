@@ -1,12 +1,11 @@
 <x-guest-layout>
+    @section('title', 'Forgot password - TastyDelight')
     <div class="max-w-md ml-auto mr-28">
         <x-authentication-card>
-            <x-slot name="logo">
-                <x-authentication-card-logo />
-            </x-slot>
+            <x-slot name="logo"></x-slot>
 
             <div class="text-center text-gray-600 mb-4">
-                <h1 class="text-2xl font-bold">Reset Password</h1>
+                <h1 class="text-2xl font-bold">Forgot Password</h1>
             </div>
 
             <div class="mb-4 text-sm text-gray-600">

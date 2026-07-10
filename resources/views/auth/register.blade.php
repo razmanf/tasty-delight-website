@@ -1,4 +1,5 @@
 <x-guest-layout>
+    @section('title', 'Register - TastyDelight')
     <div class="max-w-md ml-auto mr-28">
         <x-authentication-card>
             <x-slot name="logo"></x-slot>

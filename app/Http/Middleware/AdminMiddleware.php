@@ -9,11 +9,16 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Assuming you have a 'role' column in users table and 'admin' is the admin role
-        if (auth()->check() && auth()->user()->role === 'admin') {
-            return $next($request);
+        if (auth()->check()) {
+            if (auth()->user()->role === 'admin') {
+                return $next($request);
+            }
+
+            // Logged-in non-admin (regular user) → send to their dashboard
+            return redirect()->route('user.dashboard');
         }
 
-        abort(403, 'Unauthorized');
+        // Not logged in → send to login
+        return redirect()->route('login');
     }
 }

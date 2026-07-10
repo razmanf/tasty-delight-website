@@ -9,7 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TestController;
-use App\Http\Controllers\Api\FavouritesController;
+use App\Http\Controllers\Api\FavoriteController;
 use Illuminate\Http\Request;
 
 // Public routes
@@ -24,22 +24,22 @@ Route::middleware('auth:sanctum')->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Cart (singular)
-    Route::apiResource('cart', CartController::class);
+    // Carts (plural)
+    Route::apiResource('carts', CartController::class);
 
-    // Category (singular)
-    Route::apiResource('category', CategoryController::class);
+    // Categories (plural)
+    Route::apiResource('categories', CategoryController::class);
 
-    // Order (singular)
-    Route::apiResource('order', OrderController::class);
+    // Orders (plural)
+    Route::apiResource('orders', OrderController::class);
 
-    // Product (singular)
-    Route::apiResource('product', ProductController::class);
+    // Products (plural)
+    Route::apiResource('products', ProductController::class);
 
-    // Review (singular)
-    Route::apiResource('review', ReviewController::class);
+    // Reviews (plural)
+    Route::apiResource('reviews', ReviewController::class);
 
-    Route::get('/favourites', [FavouritesController::class, 'index']);
-    Route::post('/favourites/{productId}', [FavouritesController::class, 'store']);
-    Route::delete('/favourites/{productId}', [FavouritesController::class, 'destroy']);
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites/{productId}', [FavoriteController::class, 'store']);
+    Route::delete('/favorites/{productId}', [FavoriteController::class, 'destroy']);
 });

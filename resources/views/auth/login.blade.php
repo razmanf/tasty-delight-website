@@ -1,4 +1,5 @@
 <x-guest-layout>
+    @section('title', 'Login - TastyDelight')
 
         <div class="max-w-md ml-auto mr-28">
             <x-authentication-card>

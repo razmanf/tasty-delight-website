@@ -10,16 +10,15 @@ class UserMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Optional: Redirect if not logged in
         if (!Auth::check()) {
-            return redirect('/login');
+            return redirect()->route('login');
         }
 
-        // Check if role is 'user'
-        if (Auth::user()->role !== 'user') {
-            abort(403, 'Unauthorized - Users only.');
+        if (Auth::user()->role === 'user') {
+            return $next($request);
         }
 
-        return $next($request);
+        // Logged-in non-user (admin) → send to their dashboard
+        return redirect()->route('filament.admin.pages.dashboard');
     }
 }

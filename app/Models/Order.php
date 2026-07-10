@@ -9,9 +9,6 @@ class Order extends Model
 {
     use HasFactory;
 
-    // Explicit table name (since "order" is reserved in some DBs)
-    protected $table = 'order';
-
     protected $fillable = [
         'user_id',
         'total_amount',

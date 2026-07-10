@@ -15,7 +15,6 @@ class Review extends Model
     const MIN_RATING = 1;
     const MAX_RATING = 5;
 
-    protected $table = 'review';
     protected $fillable = [
         'user_id', 'product_id', 'rating', 'comment'
     ];

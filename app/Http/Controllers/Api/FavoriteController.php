@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Favourite;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class FavouritesController extends Controller
+class FavoriteController extends Controller
 {
     // Get all favourites for the authenticated user
     public function index()
     {
-        $favourites = Favourite::with('product')
+        $favorites = Favorite::with('product')
             ->where('user_id', Auth::id())
             ->get()
             ->map(fn($fav) => $fav->product);
 
-        return response()->json($favourites);
+        return response()->json($favorites);
     }
 
     // Add a product to favourites
@@ -25,12 +25,12 @@ class FavouritesController extends Controller
     {
         $userId = Auth::id();
 
-        $favourite = Favourite::firstOrCreate([
+        $favorite = Favorite::firstOrCreate([
             'user_id' => $userId,
             'product_id' => $productId,
         ]);
 
-        return response()->json(['message' => 'Added to favourites', 'favourite' => $favourite]);
+        return response()->json(['message' => 'Added to favorites', 'favorite' => $favorite]);
     }
 
     // Remove a product from favourites
@@ -38,10 +38,10 @@ class FavouritesController extends Controller
     {
         $userId = Auth::id();
 
-        Favourite::where('user_id', $userId)
+        Favorite::where('user_id', $userId)
             ->where('product_id', $productId)
             ->delete();
 
-        return response()->json(['message' => 'Removed from favourites']);
+        return response()->json(['message' => 'Removed from favorites']);
     }
 }
