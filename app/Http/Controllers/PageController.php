@@ -19,19 +19,21 @@ class PageController extends Controller
 
     public function privacy()
     {
-        $policy = File::exists(storage_path('app/policy.html'))
-            ? File::get(storage_path('app/policy.html'))
-            : 'Privacy Policy not found.';
-
-        return view('policy', compact('policy'));
+        return view('pages.policy');
     }
 
     public function terms()
     {
-        $terms = File::exists(storage_path('app/terms.html'))
-            ? File::get(storage_path('app/terms.html'))
-            : 'Terms of Service not found.';
+        return view('pages.terms');
+    }
 
-        return view('terms', compact('terms'));
+    public function about()
+    {
+        return view('about');
+    }
+
+    public function contact()
+    {
+        return view('contact');
     }
 }

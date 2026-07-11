@@ -1,13 +1,15 @@
-<x-guest-layout>
-    <div class="pt-4 bg-gray-100">
-        <div class="min-h-screen flex flex-col items-center pt-6 sm:pt-0">
-            <div>
-                <x-authentication-card-logo />
-            </div>
+@extends('layouts.user')
 
-            <div class="w-full sm:max-w-2xl mt-6 p-6 bg-white shadow-md overflow-hidden sm:rounded-lg prose">
+@section('title', 'Privacy Policy')
+
+@section('content')
+<div class="py-12">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden border" style="border-color: var(--td-border);">
+            <div class="p-8 sm:p-12 prose dark:prose-invert max-w-none" style="color: var(--td-text);">
                 {!! $policy !!}
             </div>
         </div>
     </div>
-</x-guest-layout>
+</div>
+@endsection

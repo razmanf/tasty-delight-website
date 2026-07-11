@@ -26,7 +26,7 @@
                         class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         wire:click="goToProduct({{ $item['id'] }})"
                     >
-                        {{ $item['name'] }} — Rs. {{ $item['price'] }}
+                        {{ $item['name'] }} — {{ $item['price'] }}
                     </li>
                 @endforeach
             </ul>

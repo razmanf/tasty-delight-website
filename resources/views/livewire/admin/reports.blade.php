@@ -36,12 +36,12 @@
 
         <div class="bg-white p-4 rounded shadow">
             <div class="text-sm text-gray-500">Total Revenue</div>
-            <div class="text-2xl font-semibold">Rs. {{ number_format($summary->totalRevenue, 2) }}</div>
+            <div class="text-2xl font-semibold">{{ number_format($summary->totalRevenue, 2) }}</div>
         </div>
 
         <div class="bg-white p-4 rounded shadow">
             <div class="text-sm text-gray-500">Average Order</div>
-            <div class="text-2xl font-semibold">Rs. {{ number_format($summary->avgOrder, 2) }}</div>
+            <div class="text-2xl font-semibold">{{ number_format($summary->avgOrder, 2) }}</div>
         </div>
     </div>
 
@@ -63,7 +63,7 @@
                         <tr>
                             <td class="px-6 py-3">{{ \Illuminate\Support\Carbon::parse($row->date)->format('Y-m-d') }}</td>
                             <td class="px-6 py-3">{{ $row->orders_count }}</td>
-                            <td class="px-6 py-3">Rs. {{ number_format($row->revenue ?? 0, 2) }}</td>
+                            <td class="px-6 py-3">{{ number_format($row->revenue ?? 0, 2) }}</td>
                         </tr>
                     @empty
                         <tr>

@@ -5,7 +5,7 @@
         <input
             type="text"
             wire:model.debounce.300ms="search"
-            placeholder="Search users..."
+            placeholder="Search use.."
             class="border border-gray-300 rounded px-4 py-2 w-64"
         />
     </div>

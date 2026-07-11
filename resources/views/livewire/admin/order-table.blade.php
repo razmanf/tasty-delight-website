@@ -69,7 +69,7 @@
     {{-- Search Filter --}}
     <div class="flex flex-wrap gap-4 items-center mt-6">
         <form wire:submit.prevent="applySearch" class="flex gap-2 flex-1">
-            <input type="text" wire:model.defer="searchInput" placeholder="Search orders..." class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <input type="text" wire:model.defer="searchInput" placeholder="Search orde.." class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             <button type="submit" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Search</button>
             <button type="button" wire:click="resetFilters" class="inline-block px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500">Reset</button>
         </form>
@@ -97,7 +97,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-3">{{ $order->id }}</td>
                         <td class="px-6 py-3">{{ $order->status }}</td>
-                        <td class="px-6 py-3">Rs. {{ number_format($order->total_amount, 2) }}</td>
+                        <td class="px-6 py-3">{{ number_format($order->total_amount, 2) }}</td>
                         <td class="px-6 py-3">{{ $order->user->name ?? '-' }}</td>
                         <td class="px-6 py-3">
                             {{ $order->created_at ? \Carbon\Carbon::parse($order->created_at)->format('Y-m-d') : '-' }}

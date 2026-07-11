@@ -32,10 +32,10 @@
                             <x-nav-link href="{{ route('admin.products.index') }}" :active="request()->routeIs('admin.products.*')">
                                 {{ __('Products') }}
                             </x-nav-link>
-                            <x-nav-link href="{{ route('admin.orders.index') }}" :active="request()->routeIs('admin.orders.*')">
+                            <x-nav-link href="{{ route('admin.ordeindex') }}" :active="request()->routeIs('admin.orde*')">
                                 {{ __('Orders') }}
                             </x-nav-link>
-                            <x-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
+                            <x-nav-link href="{{ route('admin.useindex') }}" :active="request()->routeIs('admin.use*')">
                                 {{ __('Users') }}
                             </x-nav-link>
                             <x-nav-link href="{{ route('admin.reports.index') }}" :active="request()->routeIs('admin.reports.*')">
@@ -183,10 +183,10 @@
                     <x-responsive-nav-link href="{{ route('admin.products.index') }}" :active="request()->routeIs('admin.products.*')">
                         {{ __('Products') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link href="{{ route('admin.orders.index') }}" :active="request()->routeIs('admin.orders.*')">
+                    <x-responsive-nav-link href="{{ route('admin.ordeindex') }}" :active="request()->routeIs('admin.orde*')">
                         {{ __('Orders') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
+                    <x-responsive-nav-link href="{{ route('admin.useindex') }}" :active="request()->routeIs('admin.use*')">
                         {{ __('Users') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link href="{{ route('admin.reports.index') }}" :active="request()->routeIs('admin.reports.*')">

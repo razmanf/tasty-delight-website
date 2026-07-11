@@ -11,16 +11,38 @@ use App\Models\Review;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ReviewResource extends Resource
 {
     protected static ?string $model = Review::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-star';
+
+    protected static string | UnitEnum | null $navigationGroup = 'People';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'comment';
+
+    public static function getGlobalSearchResultTitle($record): string
+    {
+        return "Review by {$record->user?->name}";
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'Product' => $record->product?->name ?? 'Unknown',
+            'Rating'  => str_repeat('★', $record->rating) . str_repeat('☆', 5 - $record->rating),
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl($record): string
+    {
+        return static::getUrl('edit', ['record' => $record]);
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -34,17 +56,15 @@ class ReviewResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListReviews::route('/'),
+            'index'  => ListReviews::route('/'),
             'create' => CreateReview::route('/create'),
-            'edit' => EditReview::route('/{record}/edit'),
+            'edit'   => EditReview::route('/{record}/edit'),
         ];
     }
 }

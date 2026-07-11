@@ -16,7 +16,7 @@ class LoginResponse implements LoginResponseContract
         $user = auth()->user();
 
         if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('filament.admin.pages.dashboard');
         }
 
         return redirect()->intended(RouteServiceProvider::HOME);

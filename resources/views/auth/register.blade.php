@@ -47,22 +47,60 @@
 
                 <div class="mt-4">
                     <x-label for="role" value="{{ __('Registering as') }}" />
-                    <select
-                        id="role"
-                        name="role"
-                        required
-                        class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                    >
-                        {{-- truly blank option --}}
-                        <option value="" {{ old('role') === '' ? 'selected' : '' }}></option>
+                    <div x-data="{
+                            open: false,
+                            selected: '{{ old('role') }}',
+                            options: [
+                                { value: '', label: 'Select a role...' },
+                                { value: 'user', label: 'User' },
+                                { value: 'admin', label: 'Admin' }
+                            ],
+                            get selectedLabel() {
+                                return this.options.find(opt => opt.value === this.selected)?.label || 'Select a role...';
+                            }
+                        }"
+                         class="relative mt-1"
+                         @click.outside="open = false">
+                         
+                        <select name="role" id="role" class="hidden" x-model="selected" required>
+                            <option value=""></option>
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
 
-                        <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>
-                            {{ __('User') }}
-                        </option>
-                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
-                            {{ __('Admin') }}
-                        </option>
-                    </select>
+                        <!-- Trigger Button -->
+                        <button type="button"
+                                @click="open = !open"
+                                class="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-[#DD6625] focus:ring-[#DD6625] sm:text-sm bg-white text-gray-700 transition-colors">
+                            <span x-text="selectedLabel" :class="selected === '' ? 'text-gray-500' : ''"></span>
+                            <svg class="h-5 w-5 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute z-50 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                             style="display: none;">
+                            <template x-for="option in options" :key="option.value">
+                                <button type="button"
+                                        @click="selected = option.value; open = false"
+                                        class="w-full text-left px-4 py-2 hover:bg-[#DD6625]/10 hover:text-[#DD6625] transition-colors flex items-center justify-between text-gray-900"
+                                        :class="selected === option.value ? 'bg-[#DD6625]/10 text-[#DD6625] font-medium' : ''">
+                                    <span x-text="option.label"></span>
+                                    <svg x-show="selected === option.value" class="h-5 w-5 text-[#DD6625]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
 
                     @error('role')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>

@@ -4,6 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\LogoutController;
 use App\Livewire\UserDashboard;
+use App\Livewire\User\UserOrders;
+use App\Livewire\User\UserFavorites;
+use App\Livewire\User\UserCart;
+use App\Livewire\User\UserReviews;
+use App\Livewire\User\UserNotifications;
+use App\Livewire\User\UserSettings;
+use App\Livewire\User\UserSearch;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ReviewController;
@@ -15,66 +22,39 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\PageController;
 
-// Welcome page
+// ─── Root / Login / Register ─────────────────────────────────────────────────
 Route::get('/', function () {
     return view('auth.register');
 });
 
-// Custom Login Routes
 Route::get('/user/login', [UserLoginController::class, 'showLoginForm'])->name('user.login');
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
 
-// Static Pages
-Route::get('/employees', [PageController::class, 'employees']);
+// ─── Static Pages ─────────────────────────────────────────────────────────────
+Route::get('/employees',    [PageController::class, 'employees']);
 Route::get('/appointments', [PageController::class, 'appointments']);
-Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
-Route::get('/terms', [PageController::class, 'terms'])->name('terms');
+Route::get('/privacy',      [PageController::class, 'privacy'])->name('privacy');
+Route::get('/terms',        [PageController::class, 'terms'])->name('terms');
+Route::get('/about',        [PageController::class, 'about'])->name('about');
+Route::get('/contact',      [PageController::class, 'contact'])->name('contact');
 
-// Testing routes
+// ─── Testing ──────────────────────────────────────────────────────────────────
 Route::get('/test-relationships', [TestController::class, 'testRelationships']);
-Route::get('/test-email', [TestController::class, 'testEmail']);
-Route::get('/test-verification', [TestController::class, 'testVerification']);
+Route::get('/test-email',         [TestController::class, 'testEmail']);
+Route::get('/test-verification',  [TestController::class, 'testVerification']);
 
-// Logout route
+// ─── Logout ───────────────────────────────────────────────────────────────────
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-// Default Jetstream login GET route
+// ─── Fortify Login Routes ─────────────────────────────────────────────────────
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
     ->middleware(['guest'])
     ->name('login');
 
-// Default Jetstream login POST route
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware(['guest']);
-    
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'), // in practice this is `web`
-    'verified',
-    'admin', // or 'user'
-])->prefix('admin')->name('admin.')->group(function () {
-    // OLD DASHBOARD - Disabled to prevent conflicts with Filament panel at /admin
-    // Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    // Route::get('products', [AdminProductController::class, 'index'])->name('products.index');
-    // Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
-    // Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
-
-    // Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-    // Route::get('settings', [SettingsController::class, 'index'])->name('settings');
-    // Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
-    // Route::resource('reviews', ReviewController::class);
-});
-
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-    'user'
-])->group(function () {
-    Route::get('/user/dashboard', UserDashboard::class)->name('user.dashboard');
-});
-
+// ─── Post-login Dashboard Redirect ───────────────────────────────────────────
 Route::get('/dashboard', function () {
     if (auth()->user()->role === 'admin') {
         return redirect()->route('filament.admin.pages.dashboard');
@@ -85,3 +65,25 @@ Route::get('/dashboard', function () {
     config('jetstream.auth_session'),
     'verified',
 ])->name('dashboard');
+
+// ─── User Panel Routes (protected — users only, admins redirected out) ────────
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'user',
+])->group(function () {
+    Route::get('/user/dashboard',     UserDashboard::class)->name('user.dashboard');
+    Route::get('/user/menu',          \App\Livewire\User\UserMenu::class)->name('user.menu');
+    Route::get('/user/orders',        UserOrders::class)->name('user.orders');
+    Route::get('/user/favorites',     UserFavorites::class)->name('user.favorites');
+    Route::get('/user/cart',          UserCart::class)->name('user.cart');
+    Route::get('/user/reviews',       UserReviews::class)->name('user.reviews');
+    Route::get('/user/notifications', UserNotifications::class)->name('user.notifications');
+    Route::get('/user/settings',      UserSettings::class)->name('user.settings');
+    Route::get('/user/search',        UserSearch::class)->name('user.search');
+    Route::get('/user/checkout',      \App\Livewire\User\UserCheckout::class)->name('user.checkout');
+
+    // Redirect /user/profile (old Jetstream route) to our new settings page
+    Route::get('/user/profile', fn () => redirect()->route('user.settings'));
+});

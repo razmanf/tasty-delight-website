@@ -135,7 +135,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-3">{{ $p->name }}</td>
                         <td class="px-6 py-3 text-sm text-gray-500">{{ Str::limit($p->description, 50) }}</td>
-                        <td class="px-6 py-3">Rs. {{ number_format($p->price, 2) }}</td>
+                        <td class="px-6 py-3">{{ number_format($p->price, 2) }}</td>
                         <td class="px-6 py-3">
                             @if($p->image)
                                 <img src="{{ asset('storage/'.$p->image) }}" alt="{{ $p->name }}" class="h-10 w-10 object-cover rounded">

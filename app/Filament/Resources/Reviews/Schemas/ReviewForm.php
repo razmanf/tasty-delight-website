@@ -12,18 +12,30 @@ class ReviewForm
     {
         return $schema
             ->components([
-                TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('product_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('rating')
-                    ->required()
-                    ->numeric(),
-                Textarea::make('comment')
-                    ->default(null)
-                    ->columnSpanFull(),
+                \Filament\Forms\Components\Section::make('Review Details')
+                    ->schema([
+                        \Filament\Forms\Components\Grid::make(3)
+                            ->schema([
+                                \Filament\Forms\Components\Select::make('user_id')
+                                    ->relationship('user', 'name')
+                                    ->required()
+                                    ->searchable(),
+                                \Filament\Forms\Components\Select::make('product_id')
+                                    ->relationship('product', 'name')
+                                    ->required()
+                                    ->searchable(),
+                                \Filament\Forms\Components\TextInput::make('rating')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(5)
+                                    ->suffix('Stars'),
+                                \Filament\Forms\Components\Textarea::make('comment')
+                                    ->default(null)
+                                    ->columnSpanFull()
+                                    ->rows(4),
+                            ])
+                    ])
             ]);
     }
 }

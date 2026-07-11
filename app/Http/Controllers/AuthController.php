@@ -25,7 +25,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
-            'token' => $user->createToken('api-token')->plainTextToken,
+            'token' => $user->createToken($request->input('device_name', 'flutter-app'))->plainTextToken,
             'user' => new UserResource($user)
         ]);
     }

@@ -66,10 +66,18 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function favorites()
+    {
+        return $this->hasMany(\App\Models\Favorite::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Order::class);
+    }
+
     /**
      * Check if the user is an admin.
-     *
-     * @return bool
      */
     public function isAdmin(): bool
     {
