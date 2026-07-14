@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-    x-data="{ dark: localStorage.getItem('td-dark') === 'true', mobileMenu: false, searchOpen: false, searchQuery: '', profileOpen: false }"
-    x-init="$watch('dark', val => { localStorage.setItem('td-dark', val); document.documentElement.classList.toggle('dark', val) }); document.documentElement.classList.toggle('dark', dark)"
+    x-data="{ dark: localStorage.getItem('theme') === 'dark', mobileMenu: false, searchOpen: false, searchQuery: '', profileOpen: false }"
+    x-init="$watch('dark', val => { localStorage.setItem('theme', val ? 'dark' : 'light'); document.documentElement.classList.toggle('dark', val) }); document.documentElement.classList.toggle('dark', dark)"
     :class="dark ? 'dark' : ''"
 >
 <head>
@@ -14,7 +14,6 @@
     <meta name="description" content="@yield('meta_description', 'TastyDelight — Fast & Fresh Food Delivery')">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/storage/favicons/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/storage/favicons/favicon.svg" />
     <link rel="shortcut icon" href="/storage/favicons/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/storage/favicons/apple-touch-icon.png" />
@@ -38,11 +37,17 @@
     <!-- Livewire -->
     @livewireStyles
 
-    <!-- Prevent Dark Mode FOUC -->
+    <!-- Prevent Dark Mode FOUC & Handle Livewire Navigation -->
     <script>
-        if (localStorage.getItem('td-dark') === 'true' || (!('td-dark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
+        function applyTheme() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         }
+        applyTheme();
+        document.addEventListener('livewire:navigated', applyTheme);
     </script>
 </head>
 
@@ -256,8 +261,8 @@
                         <button @click="dark = !dark"
                                 class="flex items-center gap-3 px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
                                 style="color: var(--td-text);">
-                            <i class="fa-solid text-gray-400 w-4" :class="dark ? 'fa-sun' : 'fa-moon'"></i>
-                            <span x-text="dark ? 'Light Mode' : 'Dark Mode'"></span>
+                            <i class="fa-solid text-gray-400 w-4" :class="dark ? 'fa-moon' : 'fa-sun'"></i>
+                            <span x-text="dark ? 'Dark Mode' : 'Light Mode'"></span>
                             <div class="ml-auto w-8 h-4 rounded-full transition-colors relative" :style="dark ? 'background:#DD6625' : 'background:#D1D5DB'">
                                 <div class="absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform duration-200" :class="dark ? 'translate-x-4' : 'translate-x-0.5'"></div>
                             </div>
@@ -300,7 +305,7 @@
      x-transition:leave="transition ease-in duration-150"
      x-transition:leave-start="opacity-100 translate-y-0"
      x-transition:leave-end="opacity-0 -translate-y-2"
-     class="fixed top-16 left-0 right-0 z-40 shadow-xl border-b md:hidden"
+     class="fixed top-20 left-0 right-0 z-40 shadow-xl border-b md:hidden"
      style="background-color: var(--td-header-bg); border-color: rgba(255,255,255,0.2);"
      @click.outside="mobileMenu = false">
 

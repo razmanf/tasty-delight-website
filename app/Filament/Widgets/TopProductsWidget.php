@@ -28,34 +28,40 @@ class TopProductsWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
-                    ->label('')
+                    ->label('Image')
                     ->circular()
+                    ->sortable()
+                    ->toggleable()
                     ->defaultImageUrl(asset('images/placeholder-food.png')),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Product')
                     ->searchable()
+                    ->toggleable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Category')
                     ->badge()
+                    ->toggleable()
                     ->color('primary'),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Price')
-                    ->prefix('')
-                    ->numeric(decimalPlaces: 2),
+                    ->label('Price ($)')
+                    ->toggleable()
+                    ->money('USD'),
 
                 Tables\Columns\TextColumn::make('orders_count')
                     ->label('Orders')
                     ->badge()
+                    ->toggleable()
                     ->color('success')
                     ->suffix(' orders'),
 
                 Tables\Columns\TextColumn::make('stock')
                     ->label('Stock')
                     ->badge()
+                    ->toggleable()
                     ->color(fn ($state) => match(true) {
                         $state <= 5  => 'danger',
                         $state <= 20 => 'warning',

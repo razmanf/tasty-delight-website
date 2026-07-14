@@ -24,7 +24,7 @@ class NewUserNotification extends Notification
             'message' => "{$this->newUser->name} just joined TastyDelight",
             'icon'    => 'heroicon-o-user-plus',
             'color'   => 'info',
-            'url'     => route('filament.admin.resources.useedit', $this->newUser),
+            'url'     => route('filament.admin.resources.users.edit', $this->newUser),
         ];
     }
 }

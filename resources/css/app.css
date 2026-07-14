@@ -10,7 +10,7 @@
         --td-accent:     #FFB400;
         --td-text:       #55555F;
         --td-bg:         #FFFFFF;
-        --td-footer-bg:  #F9FAFB;
+        --td-footer-bg:  #55555F;
         --td-header-bg:  #DD6625;
         --td-border:     #E5E7EB;
         --td-muted:      #9CA3AF;
@@ -22,7 +22,7 @@
     .dark {
         --td-text:      #F3F4F6;
         --td-bg:        #111827;
-        --td-footer-bg: #1F2937;
+        --td-footer-bg: #55555F;
         --td-border:    #374151;
         --td-muted:     #6B7280;
     }
@@ -125,7 +125,12 @@
     /* ── Footer ── */
     .td-footer {
         background-color: var(--td-footer-bg);
+        color: #ffffff;
         border-top: 1px solid var(--td-border);
+    }
+
+    .td-footer * {
+        color: #ffffff !important;
     }
 
     /* ── Page content offset for fixed navbar ── */

@@ -15,23 +15,29 @@ class ProductForm
             ->components([
                 TextInput::make('category_id')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->live(onBlur: true),
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true),
                 Textarea::make('description')
                     ->required()
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->live(onBlur: true),
                 TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
+                    ->prefix('$')
+                    ->live(onBlur: true),
                 TextInput::make('stock')
                     ->required()
                     ->numeric()
-                    ->default(0),
+                    ->default(0)
+                    ->live(onBlur: true),
                 FileUpload::make('image')
                     ->image()
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true),
             ]);
     }
 }

@@ -13,10 +13,12 @@ class CategoryForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true),
                 Textarea::make('description')
                     ->default(null)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->live(onBlur: true),
             ]);
     }
 }

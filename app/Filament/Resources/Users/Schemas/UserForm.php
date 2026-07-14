@@ -15,30 +15,51 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true),
                 TextInput::make('email')
                     ->label('Email address')
                     ->email()
-                    ->required(),
-                DateTimePicker::make('email_verified_at'),
+                    ->required()
+                    ->live(onBlur: true),
+                TextInput::make('contact_number')
+                    ->required()
+                    ->length(10)
+                    ->regex('/^0[0-9]{9}$/')
+                    ->validationMessages([
+                        'regex' => 'Enter a 10 digit contact number',
+                        'size' => 'Enter a 10 digit contact number',
+                        'length' => 'Enter a 10 digit contact number',
+                    ])
+                    ->live(onBlur: true),
+                DateTimePicker::make('email_verified_at')
+                    ->displayFormat('d/m/Y H:i')
+                    ->native(false)
+                    ->live(onBlur: true),
                 TextInput::make('password')
                     ->password()
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true),
                 Select::make('role')
                     ->options(['admin' => 'Admin', 'user' => 'User'])
                     ->default('user')
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true),
                 TextInput::make('current_team_id')
                     ->numeric()
-                    ->default(null),
+                    ->default(null)
+                    ->live(onBlur: true),
                 TextInput::make('profile_photo_path')
-                    ->default(null),
+                    ->default(null)
+                    ->live(onBlur: true),
                 Textarea::make('two_factor_secret')
                     ->default(null)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->live(onBlur: true),
                 Textarea::make('two_factor_recovery_codes')
                     ->default(null)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->live(onBlur: true),
             ]);
     }
 }

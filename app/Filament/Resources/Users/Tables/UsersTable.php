@@ -14,27 +14,39 @@ class UsersTable
     {
         return $table
             ->columns([
+                \Filament\Tables\Columns\ImageColumn::make('profile_photo_path')
+                    ->label('Profile photo')
+                    ->circular()
+                    ->sortable()
+                    ->toggleable()
+                    ->defaultImageUrl(asset('images/placeholder-avatar.png')),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('email')
                     ->label('Email address')
-                    ->searchable(),
-                TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('role')
-                    ->badge(),
+                    ->badge()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('current_team_id')
                     ->numeric()
-                    ->sortable(),
-                TextColumn::make('profile_photo_path')
-                    ->searchable(),
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('email_verified_at')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

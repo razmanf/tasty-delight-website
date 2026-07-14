@@ -12,12 +12,18 @@ class OrderForm
     {
         return $schema
             ->components([
-                TextInput::make('user_id')
+                TextInput::make('customer_name')
+                    ->label('Customer Name')
+                    ->loadStateFromRelationshipsUsing(fn ($record, $state, $component) => $component->state($record?->user?->name))
+                    ->saveRelationshipsUsing(fn ($record, $state) => $record?->user?->update(['name' => $state]))
+                    ->dehydrated(false)
                     ->required()
-                    ->numeric(),
+                    ->live(onBlur: true),
                 TextInput::make('total_amount')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('$')
+                    ->live(onBlur: true),
                 Select::make('status')
                     ->options([
             'pending' => 'Pending',
@@ -25,9 +31,16 @@ class OrderForm
             'completed' => 'Completed',
             'cancelled' => 'Cancelled',
         ])
-                    ->required(),
-                TextInput::make('payment_method')
-                    ->required(),
+                    ->required()
+                    ->live(onBlur: true),
+                Select::make('payment_method')
+                    ->options([
+                        'cash' => 'Cash',
+                        'credit_card' => 'Credit Card',
+                        'paypal' => 'Paypal',
+                    ])
+                    ->required()
+                    ->live(onBlur: true),
             ]);
     }
 }

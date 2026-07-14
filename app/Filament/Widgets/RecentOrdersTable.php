@@ -30,18 +30,20 @@ class RecentOrdersTable extends BaseWidget
                     ->label('Order #')
                     ->prefix('#')
                     ->sortable()
+                    ->toggleable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
+                    ->toggleable()
                     ->icon('heroicon-m-user'),
 
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->label('Amount')
-                    ->prefix('')
-                    ->numeric(decimalPlaces: 2)
-                    ->sortable(),
+                    ->label('Amount ($)')
+                    ->money('USD')
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
@@ -61,16 +63,19 @@ class RecentOrdersTable extends BaseWidget
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Payment')
+                    ->formatStateUsing(fn (string $state): string => ucwords(str_replace('_', ' ', $state)))
                     ->badge()
+                    ->toggleable()
                     ->color('gray'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Date')
                     ->dateTime('M d, Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->actions([
-                \Filament\Tables\Actions\Action::make('view')
+                \Filament\Actions\Action::make('view')
                     ->url(fn (\App\Models\Order $record) => route('filament.admin.resources.orders.edit', $record))
                     ->icon('heroicon-m-eye')
                     ->color('primary'),

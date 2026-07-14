@@ -43,7 +43,7 @@ class StatsOverview extends StatsOverviewWidget
             ->toArray();
 
         return [
-            Stat::make('Total Revenue', '' . number_format($totalRevenue, 2))
+            Stat::make('Total Revenue', '$' . number_format($totalRevenue, 2))
                 ->description('From completed & delivered orders')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->chart($revenueSparkline)

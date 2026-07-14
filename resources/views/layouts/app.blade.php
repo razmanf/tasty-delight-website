@@ -8,8 +8,6 @@
             <title>@hasSection('title') @yield('title') - {{ config('app.name', 'TastyDelight') }} @else {{ config('app.name', 'TastyDelight') }} @endif</title>
             
             <!-- FavIcon -->
-
-            <link rel="icon" type="image/png" href="/storage/favicons/favicon-96x96.png" sizes="96x96" />
             <link rel="icon" type="image/svg+xml" href="/storage/favicons/favicon.svg" />
             <link rel="shortcut icon" href="/storage/favicons/favicon.ico" />
             <link rel="apple-touch-icon" sizes="180x180" href="/storage/favicons/apple-touch-icon.png" />

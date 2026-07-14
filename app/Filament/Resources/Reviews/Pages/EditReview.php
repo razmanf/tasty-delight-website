@@ -16,4 +16,10 @@ class EditReview extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    public function getTitle(): string | \Illuminate\Contracts\Support\Htmlable
+    {
+        $userName = $this->record->user?->name ?? 'User';
+        return "Edit {$userName}'s review";
+    }
 }

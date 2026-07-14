@@ -1,11 +1,10 @@
 <x-guest-layout>
     @section('title', 'Login - TastyDelight')
 
-        <div class="max-w-md ml-auto mr-28">
+        <div class="w-full min-[1200px]:w-[50vw] min-[1200px]:ml-auto min-[1200px]:mr-0 px-4 sm:px-0">
             <x-authentication-card>
                 <x-slot name="logo"></x-slot>
     
-                <x-validation-errors class="mb-4" />
 
                 @session('status')
                     <div class="mb-4 font-medium text-sm text-green-600">
@@ -23,21 +22,27 @@
                     <div>
                         <x-label for="email" value="{{ __('Email') }}" />
                         <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                        @error('email')
+                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <div class="mt-4">
+                    <div class="mt-3">
                         <x-label for="password" value="{{ __('Password') }}" />
                         <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+                        @error('password')
+                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <div class="block mt-4">
+                    <div class="block mt-3">
                         <label for="remember_me" class="flex items-center">
                             <x-checkbox id="remember_me" name="remember" />
                             <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
                         </label>
                     </div>
 
-                    <div class="block mt-4">
+                    <div class="block mt-3">
                         <label for="show_password" class="flex items-center">
                             <x-checkbox id="show_password" name="show_password" />
                             <span class="ms-2 text-sm text-gray-600">{{ __('Show password') }}</span>
@@ -45,7 +50,6 @@
                     </div>    
 
                     <div class="flex items-center justify-end mt-4">
-
                         @if (Route::has('password.request'))
                             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
                                 {{ __('Forgot your password?') }}
@@ -67,25 +71,13 @@
                                 </a>
                             </p>
 
-                            {{-- OR Divider --}}
-                            <div class="flex items-center my-4">
-                                <div class="flex-grow border-t border-gray-300"></div>
-                                <span class="mx-3 text-gray-500 text-base">or</span>
-                                <div class="flex-grow border-t border-gray-300"></div>
-                            </div>
+
                         </div>
                     @endif
 
                 </form>
 
-                {{-- Visit Site Button --}}
-                <div class="text-center mt-4">
-                    <a href="{{ url('/') }}">
-                        <button class="bg-[#dd6625] hover:bg-orange-700 text-white px-4 py-2 rounded text-sm font-semibold transition duration-200">
-                            VISIT SITE
-                        </button>
-                    </a>
-                </div>
+
 
                 <script>
                     document.getElementById('show_password').addEventListener('change', function () {
@@ -94,7 +86,7 @@
                         const type = this.checked ? 'text' : 'password';
                 
                         password.type = type;
-                        passwordConfirm.type = type;
+                        if (passwordConfirm) passwordConfirm.type = type;
                     });
                 </script>
 

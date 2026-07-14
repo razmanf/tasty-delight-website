@@ -12,28 +12,32 @@ class ReviewForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Section::make('Review Details')
+                \Filament\Schemas\Components\Section::make('Review Details')
                     ->schema([
-                        \Filament\Forms\Components\Grid::make(3)
+                        \Filament\Schemas\Components\Grid::make(3)
                             ->schema([
                                 \Filament\Forms\Components\Select::make('user_id')
                                     ->relationship('user', 'name')
                                     ->required()
-                                    ->searchable(),
+                                    ->searchable()
+                                    ->live(onBlur: true),
                                 \Filament\Forms\Components\Select::make('product_id')
                                     ->relationship('product', 'name')
                                     ->required()
-                                    ->searchable(),
+                                    ->searchable()
+                                    ->live(onBlur: true),
                                 \Filament\Forms\Components\TextInput::make('rating')
                                     ->required()
                                     ->numeric()
                                     ->minValue(1)
                                     ->maxValue(5)
-                                    ->suffix('Stars'),
+                                    ->suffix('Stars')
+                                    ->live(onBlur: true),
                                 \Filament\Forms\Components\Textarea::make('comment')
                                     ->default(null)
                                     ->columnSpanFull()
-                                    ->rows(4),
+                                    ->rows(4)
+                                    ->live(onBlur: true),
                             ])
                     ])
             ]);

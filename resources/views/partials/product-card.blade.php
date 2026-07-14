@@ -1,10 +1,8 @@
 <div class="td-card p-0 overflow-hidden flex flex-col group relative hover:border-orange-200 transition-colors">
     <!-- Favorite Button -->
     <button wire:click="toggleFavorite({{ $product->id }})" 
-            class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 group/fav"
-            onmouseover="this.style.background='var(--td-primary)'; this.querySelector('i').style.color='white';"
-            onmouseout="this.style.background='rgba(255, 255, 255, 0.8)'; this.querySelector('i').style.color='#ef4444';">
-        <i class="fa-{{ in_array($product->id, $favorites ?? []) ? 'solid' : 'regular' }} fa-heart text-red-500 text-sm mt-0.5 transition-colors"></i>
+            class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 group/fav hover:bg-[#DD6625]">
+        <i class="fa-{{ in_array($product->id, $favorites ?? []) ? 'solid' : 'regular' }} fa-heart text-red-500 text-sm mt-0.5 transition-colors group-hover/fav:text-white"></i>
     </button>
 
     <div class="h-40 overflow-hidden relative bg-gray-100 dark:bg-gray-800">

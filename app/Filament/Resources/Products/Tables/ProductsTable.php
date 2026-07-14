@@ -15,24 +15,33 @@ class ProductsTable
     {
         return $table
             ->columns([
-                TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
+                \Filament\Tables\Columns\ImageColumn::make('image')
+                    ->defaultImageUrl(asset('images/placeholder-food.png'))
+                    ->toggleable(),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('category.name')
+                    ->label('Category')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('price')
+                    ->label('Price ($)')
                     ->money()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('stock')
                     ->numeric()
-                    ->sortable(),
-                ImageColumn::make('image'),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

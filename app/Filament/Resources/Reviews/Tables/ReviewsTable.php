@@ -14,21 +14,30 @@ class ReviewsTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('product_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label('User')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('product.name')
+                    ->label('Product')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('rating')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('comment')
+                    ->limit(50)
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

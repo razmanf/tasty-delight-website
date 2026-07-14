@@ -86,10 +86,7 @@
                         <textarea rows="4" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:border-transparent transition-all" style="color: var(--td-text); focus-ring-color: var(--td-primary);" required></textarea>
                     </div>
 
-                    <button type="submit" class="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-[1.02]" 
-                            style="background-color: var(--td-primary); box-shadow: 0 4px 14px 0 rgba(221, 102, 37, 0.39);"
-                            onmouseover="this.style.background='#c9561c';"
-                            onmouseout="this.style.background='var(--td-primary)';">
+                    <button type="submit" class="td-btn-primary w-full justify-center py-3">
                         Send Message
                     </button>
                 </form>

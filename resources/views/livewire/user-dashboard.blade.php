@@ -73,10 +73,7 @@
                 Hungry? Discover our curated selection of fresh, delicious meals prepared daily by our expert chefs.
             </p>
             <a href="{{ route('user.menu') }}" 
-               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold shadow-sm transition-all duration-300 relative overflow-hidden"
-               style="background: white; color: black;"
-               onmouseover="this.style.background='var(--td-primary)'; this.style.color='white';"
-               onmouseout="this.style.background='white'; this.style.color='black';">
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold shadow-sm transition-all duration-300 relative overflow-hidden bg-white text-black hover:bg-[#DD6625] hover:text-white group">
                 <i class="fa-solid fa-utensils"></i> Order Now
             </a>
         </div>
@@ -255,12 +252,9 @@
             @foreach($specialOffers as $product)
             <div class="td-card p-0 overflow-hidden flex flex-col sm:flex-row group relative border-2 border-green-500/20 hover:border-green-500/50 transition-colors">
                 
-                <!-- Favorite Button -->
                 <button wire:click="toggleFavorite({{ $product->id }})" 
-                        class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 group/fav"
-                        onmouseover="this.style.background='var(--td-primary)'; this.querySelector('i').style.color='white';"
-                        onmouseout="this.style.background='rgba(255, 255, 255, 0.8)'; this.querySelector('i').style.color='#ef4444';">
-                    <i class="fa-{{ in_array($product->id, $favorites) ? 'solid' : 'regular' }} fa-heart text-red-500 text-sm mt-0.5 transition-colors"></i>
+                        class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 group/fav hover:bg-[#DD6625]">
+                    <i class="fa-{{ in_array($product->id, $favorites) ? 'solid' : 'regular' }} fa-heart text-red-500 text-sm mt-0.5 transition-colors group-hover/fav:text-white"></i>
                 </button>
 
                 <div class="h-48 sm:h-auto sm:w-1/3 overflow-hidden relative bg-gray-100 dark:bg-gray-800">

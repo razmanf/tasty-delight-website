@@ -14,8 +14,6 @@ class UserMenu extends Component
 
     public string $search = '';
     public int $selectedCategoryId = 0; // 0 means all
-    public string $fulfillmentMode = 'delivery'; // 'delivery' or 'pickup'
-    public string $address = '';
 
     protected $queryString = ['search', 'selectedCategoryId'];
 
@@ -24,12 +22,7 @@ class UserMenu extends Component
         $this->selectedCategoryId = $id;
     }
 
-    public function setFulfillmentMode($mode)
-    {
-        if (in_array($mode, ['delivery', 'pickup'])) {
-            $this->fulfillmentMode = $mode;
-        }
-    }
+
 
     public function toggleFavorite($productId)
     {

@@ -14,7 +14,7 @@ class OrdersChart extends ChartWidget
 
     protected ?string $description = 'Daily order count for the last 30 days';
 
-    protected ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '270px';
 
     public ?string $filter = '30';
 

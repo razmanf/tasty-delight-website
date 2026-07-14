@@ -42,9 +42,9 @@
                         </div>
                     @endif
                     <!-- Remove button -->
-                    <button @click="confirmDelete('{{ $fav->product->id }}')"
-                            class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center bg-white shadow text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100">
-                        <i class="fa-solid fa-heart-crack text-sm"></i>
+                    <button @click="confirmDelete('{{ $fav->product->id }}')" 
+                            class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 group/fav hover:bg-[#DD6625] transform-gpu backface-hidden">
+                        <i class="fa-solid fa-heart fa-fw text-red-500 text-sm transition-colors group-hover/fav:text-white"></i>
                     </button>
                 </div>
                 <div class="p-4">

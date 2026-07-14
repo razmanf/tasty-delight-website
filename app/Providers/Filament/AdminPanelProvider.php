@@ -17,6 +17,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\View\PanelsRenderHook;
+use Filament\Enums\ThemeMode;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -32,8 +34,8 @@ class AdminPanelProvider extends PanelProvider
             // ─── Branding ────────────────────────────────────────────────
             ->brandName('TastyDelight')
             ->brandLogo(asset('images/tasty-delight-logo.png'))
-            ->brandLogoHeight('2.5rem')
-            ->favicon(asset('storage/favicons/favicon-96x96.png'))
+            ->brandLogoHeight('3.5rem')
+            ->favicon(asset('storage/favicons/favicon.svg'))
 
             // ─── Colors (exact TastyDelight palette) ─────────────────────
             ->colors([
@@ -48,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
 
             // ─── Dark Mode & Layout ───────────────────────────────────────────────
             ->darkMode(true)
+            ->defaultThemeMode(ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
             ->sidebarFullyCollapsibleOnDesktop()
 
@@ -89,6 +92,18 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => view('filament.admin-styles')->render()
+            )
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_NAV_START,
+                fn (): string => view('filament.sidebar-toggle')->render()
+            )
+            ->renderHook(
+                PanelsRenderHook::FOOTER,
+                fn (): string => view('filament.footer')->render()
+            );
     }
 }

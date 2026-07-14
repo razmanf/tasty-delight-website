@@ -33,5 +33,17 @@ class AppServiceProvider extends ServiceProvider
         Order::observe(OrderObserver::class);
         User::observe(UserObserver::class);
         Review::observe(ReviewObserver::class);
+
+        // Force Filament to use modern interactive dropdowns instead of native browser select menus globally
+        \Filament\Forms\Components\Select::configureUsing(function (\Filament\Forms\Components\Select $select): void {
+            $select->native(false);
+        });
+
+        // Globally quote the item being deleted in all Delete Action modals
+        \Filament\Actions\DeleteAction::configureUsing(function (\Filament\Actions\DeleteAction $action): void {
+            $action->modalHeading(function () use ($action): string {
+                return "Delete '{$action->getRecordTitle()}'";
+            });
+        });
     }
 }

@@ -14,22 +14,31 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label('User')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('total_amount')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Total amount ($)')
+                    ->money('USD')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('status')
-                    ->badge(),
+                    ->badge()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('payment_method')
-                    ->searchable(),
+                    ->formatStateUsing(fn (string $state): string => ucwords(str_replace('_', ' ', $state)))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -37,7 +46,7 @@ class OrdersTable
                 //
             ])
             ->recordActions([
-                \Filament\Tables\Actions\Action::make('approve')
+                \Filament\Actions\Action::make('approve')
                     ->label('Approve')
                     ->icon('heroicon-m-check-circle')
                     ->color('success')
@@ -47,26 +56,34 @@ class OrdersTable
                         $record->update(['status' => 'processing']);
                         // In a real app, you might trigger notifications here
                     }),
-                \Filament\Tables\Actions\Action::make('mark_delivery')
+                \Filament\Actions\Action::make('mark_delivery')
                     ->label('Mark Delivery')
                     ->icon('heroicon-m-truck')
                     ->color('info')
                     ->visible(fn ($record) => $record->status === 'processing')
                     ->action(fn ($record) => $record->update(['status' => 'out_for_delivery'])),
-                \Filament\Tables\Actions\Action::make('complete')
+                \Filament\Actions\Action::make('mark_delivered')
+                    ->label('Mark Delivered')
+                    ->icon('heroicon-m-home')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->status === 'out_for_delivery')
+                    ->action(fn ($record) => $record->update(['status' => 'delivered'])),
+                \Filament\Actions\Action::make('complete')
                     ->label('Complete')
                     ->icon('heroicon-m-check-badge')
                     ->color('primary')
-                    ->visible(fn ($record) => $record->status === 'out_for_delivery')
+                    ->visible(fn ($record) => in_array($record->status, ['out_for_delivery', 'delivered']))
                     ->action(fn ($record) => $record->update(['status' => 'completed'])),
-                \Filament\Tables\Actions\Action::make('cancel')
+                \Filament\Actions\Action::make('cancel')
                     ->label('Cancel')
                     ->icon('heroicon-m-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn ($record) => in_array($record->status, ['pending', 'processing']))
                     ->action(fn ($record) => $record->update(['status' => 'cancelled'])),
-                \Filament\Tables\Actions\EditAction::make(),
+                \Filament\Actions\EditAction::make(),
+            ])
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

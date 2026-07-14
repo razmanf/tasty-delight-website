@@ -70,7 +70,7 @@
             </label>
             <input type="email" value="{{ $user->email }}" disabled
                    class="w-full px-4 py-2.5 rounded-xl border text-sm opacity-60 cursor-not-allowed"
-                   style="border-color: var(--td-border); background: var(--td-footer-bg); color: var(--td-muted);">
+                   style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
             <p class="text-xs mt-1" style="color: var(--td-muted);">For security, email addresses cannot be changed after account creation.</p>
         </div>
 

@@ -16,4 +16,9 @@ class EditOrder extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    public function getTitle(): string | \Illuminate\Contracts\Support\Htmlable
+    {
+        return "Edit {$this->record->user?->name}'s order";
+    }
 }
