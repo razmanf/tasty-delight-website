@@ -43,6 +43,21 @@
         </div>
     </div>
 
+    <!-- Category Description -->
+    @if($selectedCategoryId != 0)
+        @php
+            $selectedCat = $categories->firstWhere('id', $selectedCategoryId);
+        @endphp
+        @if($selectedCat && $selectedCat->description)
+            <div class="mb-8 px-4 py-3 rounded-2xl border" style="background: var(--td-bg); border-color: var(--td-border);">
+                <p class="text-sm font-medium" style="color: var(--td-muted);">
+                    <i class="fa-solid fa-circle-info mr-2" style="color: var(--td-primary);"></i>
+                    {{ $selectedCat->description }}
+                </p>
+            </div>
+        @endif
+    @endif
+
     <!-- Products Grid -->
     @if($products->isEmpty())
         <div class="td-card text-center py-16">
@@ -64,8 +79,8 @@
                     <!-- Image -->
                     <div class="h-48 overflow-hidden relative bg-gray-100 dark:bg-gray-800">
                         @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" 
-                                 @click="$dispatch('open-image-modal', '{{ asset('storage/' . $product->image) }}')"
+                            <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" 
+                                 @click="$dispatch('open-image-modal', '{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}')"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
                                  onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
                         @else
@@ -94,24 +109,35 @@
                             @endif
                         </div>
                         
-                        <p class="text-sm line-clamp-2 mb-5 flex-1" style="color: var(--td-muted);">
+                        <p class="text-sm mb-5 flex-1" style="color: var(--td-muted);">
                             {{ $product->description ?? 'Freshly prepared and made to order.' }}
                         </p>
                         
-                        <button x-data="{ added: false }"
-                                wire:click="addToCart({{ $product->id }})"
-                                @click="added = true; setTimeout(() => added = false, 2000)"
-                                class="w-full py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-sm relative overflow-hidden"
-                                :style="added ? 'background: #16a34a !important; color: white !important;' : 'background: #DD662515; color: var(--td-primary);'"
-                                @mouseover="if(!added) { $el.style.background='var(--td-primary)'; $el.style.color='white'; }"
-                                @mouseout="if(!added) { $el.style.background='#DD662515'; $el.style.color='var(--td-primary)'; }">
-                            <div class="flex items-center gap-2 transition-transform duration-300" :class="added ? '-translate-x-3' : ''">
-                                <i class="fa-solid fa-cart-plus"></i>
-                                <span x-text="added ? 'Added to Cart' : 'Add to Cart'"></span>
-                            </div>
-                            <i class="fa-solid fa-check absolute right-4 transition-all duration-300 text-white"
-                               :class="added ? 'opacity-100 scale-100' : 'opacity-0 scale-50'"></i>
-                        </button>
+                        @if($product->stock > 0)
+                          <div x-data="{ added: false }" class="w-full">
+                              <button wire:click="addToCart({{ $product->id }})"
+                                      @click="added = true; setTimeout(() => added = false, 2000)"
+                                      class="w-full py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-sm relative overflow-hidden"
+                                      :style="added ? 'background: #16a34a !important; color: white !important;' : 'background: #DD662515; color: var(--td-primary);'"
+                                      @mouseover="if(!added) { $el.style.background='var(--td-primary)'; $el.style.color='white'; }"
+                                      @mouseout="if(!added) { $el.style.background='#DD662515'; $el.style.color='var(--td-primary)'; }">
+                                  <div class="flex items-center gap-2 transition-transform duration-300" :class="added ? '-translate-x-3' : ''">
+                                      <i class="fa-solid fa-cart-plus"></i>
+                                      <span x-text="added ? 'Added to Cart' : 'Add to Cart'"></span>
+                                  </div>
+                                  <i class="fa-solid fa-check absolute right-4 transition-all duration-300 text-white"
+                                     :class="added ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'"></i>
+                              </button>
+                          </div>
+                          @else
+                          <button disabled
+                                  class="w-full py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-sm relative overflow-hidden cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500">
+                              <div class="flex items-center gap-2">
+                                  <i class="fa-solid fa-ban"></i>
+                                  <span>Out of Stock</span>
+                              </div>
+                          </button>
+                          @endif
                     </div>
                 </div>
             @endforeach

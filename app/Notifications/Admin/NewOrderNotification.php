@@ -24,7 +24,7 @@ class NewOrderNotification extends Notification
             'message' => "Order #{$this->order->id} from {$this->order->user?->name} — " . number_format($this->order->total_amount, 2),
             'icon'    => 'heroicon-o-shopping-cart',
             'color'   => 'success',
-            'url'     => route('filament.admin.resources.ordeedit', $this->order),
+            'url'     => route('filament.admin.resources.orders.edit', $this->order),
         ];
     }
 }

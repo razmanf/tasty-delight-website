@@ -63,27 +63,27 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-bold mb-2" style="color: var(--td-text);">First Name</label>
-                            <input type="text" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:border-transparent transition-all" style="color: var(--td-text); focus-ring-color: var(--td-primary);" required>
+                            <input type="text" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-[#DD6625] focus:border-[#DD6625] transition-all" style="color: var(--td-text);" required>
                         </div>
                         <div>
                             <label class="block text-sm font-bold mb-2" style="color: var(--td-text);">Last Name</label>
-                            <input type="text" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:border-transparent transition-all" style="color: var(--td-text); focus-ring-color: var(--td-primary);" required>
+                            <input type="text" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-[#DD6625] focus:border-[#DD6625] transition-all" style="color: var(--td-text);" required>
                         </div>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-bold mb-2" style="color: var(--td-text);">Email Address</label>
-                        <input type="email" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:border-transparent transition-all" style="color: var(--td-text); focus-ring-color: var(--td-primary);" required>
+                        <input type="email" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-[#DD6625] focus:border-[#DD6625] transition-all" style="color: var(--td-text);" required>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold mb-2" style="color: var(--td-text);">Subject</label>
-                        <input type="text" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:border-transparent transition-all" style="color: var(--td-text); focus-ring-color: var(--td-primary);" required>
+                        <input type="text" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-[#DD6625] focus:border-[#DD6625] transition-all" style="color: var(--td-text);" required>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold mb-2" style="color: var(--td-text);">Message</label>
-                        <textarea rows="4" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:border-transparent transition-all" style="color: var(--td-text); focus-ring-color: var(--td-primary);" required></textarea>
+                        <textarea rows="4" class="w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-[#DD6625] focus:border-[#DD6625] transition-all" style="color: var(--td-text);" required></textarea>
                     </div>
 
                     <button type="submit" class="td-btn-primary w-full justify-center py-3">

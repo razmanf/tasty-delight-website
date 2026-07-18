@@ -49,7 +49,7 @@
             <div class="td-card overflow-hidden p-0 group">
                 <div class="h-40 overflow-hidden">
                     @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}"
+                        <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}"
                              alt="{{ $product->name }}"
                              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                              onerror="this.src='{{ asset('images/placeholder-food.png') }}'">

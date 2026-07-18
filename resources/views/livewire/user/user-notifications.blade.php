@@ -43,12 +43,27 @@
                 <!-- Icon or Thumbnail -->
                 @if(isset($data['image']) && $data['image'])
                     <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg overflow-hidden border border-gray-100 shadow-sm">
-                        <img src="{{ asset('storage/' . $data['image']) }}" alt="Thumbnail" class="w-full h-full object-cover">
+                        <img src="{{ \Illuminate\Support\Str::startsWith($data['image'], ['http://', 'https://']) ? $data['image'] : asset('storage/' . $data['image']) }}" alt="Thumbnail" class="w-full h-full object-cover">
                     </div>
                 @else
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg"
-                         style="background-color: {{ is_null($notification->read_at) ? '#DD66251A' : 'var(--td-border)' }};">
-                        {{ substr($data['title'] ?? '🔔', 0, 2) }}
+                    @php
+                        $icon = $data['icon'] ?? 'heroicon-o-bell';
+                        $color = $data['color'] ?? 'primary';
+                        
+                        $faIcon = 'fa-bell';
+                        if (str_contains($icon, 'shopping-cart')) $faIcon = 'fa-cart-shopping';
+                        if (str_contains($icon, 'check')) $faIcon = 'fa-check';
+                        if (str_contains($icon, 'truck')) $faIcon = 'fa-truck';
+                        if (str_contains($icon, 'gift') || str_contains($icon, 'sparkles')) $faIcon = 'fa-gift';
+                        
+                        $hexColor = 'var(--td-primary)';
+                        if ($color === 'success') $hexColor = '#22C55E';
+                        if ($color === 'danger') $hexColor = '#EF4444';
+                        if ($color === 'warning') $hexColor = '#F59E0B';
+                    @endphp
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg shadow-sm"
+                         style="background-color: {{ $hexColor }}1A;">
+                        <i class="fa-solid {{ $faIcon }}" style="color: {{ $hexColor }};"></i>
                     </div>
                 @endif
 

@@ -111,9 +111,16 @@
 
     /* ── Notification Bell ── */
     .td-notif-badge {
-        @apply absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white font-bold;
+        @apply absolute flex items-center justify-center text-white font-bold rounded-full;
         background-color: var(--td-danger);
-        font-size: 9px;
+        border: 2px solid #ffffff;
+        font-size: 11px;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 4px;
+        /* Position exactly at the top-right edge and transform outwards */
+        top: -8px;
+        right: -12px;
     }
 
     /* ── Section Header ── */

@@ -39,9 +39,13 @@ class RegistrationTest extends TestCase
             $this->markTestSkipped('Registration support is not enabled.');
         }
 
+        \Illuminate\Support\Facades\Cache::put('registration_otp_0123456789', '123456', now()->addMinutes(10));
+
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'contact_number' => '0123456789',
+            'otp_code' => '123456',
             'password' => 'password',
             'password_confirmation' => 'password',
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),

@@ -27,8 +27,13 @@ class UserReviews extends Component
     public function render()
     {
         $reviews = Review::where('user_id', Auth::id())
-            ->with('product')
-            ->when($this->search, fn ($q) => $q->whereHas('product', fn ($p) => $p->where('name', 'like', "%{$this->search}%")))
+            ->with(['product', 'order.products'])
+            ->when($this->search, function ($q) {
+                $q->where(function ($query) {
+                    $query->whereHas('product', fn ($p) => $p->where('name', 'like', "%{$this->search}%"))
+                          ->orWhereHas('order.products', fn ($p) => $p->where('name', 'like', "%{$this->search}%"));
+                });
+            })
             ->latest()
             ->paginate(10);
 

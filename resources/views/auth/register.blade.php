@@ -10,7 +10,7 @@
                 <h1 class="text-2xl font-bold">Register</h1>
             </div>
 
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" x-data="otpVerification()">
                 @csrf
 
                 <div class="grid grid-cols-2 gap-x-4 gap-y-3">
@@ -61,72 +61,31 @@
                     </div>
 
                     <!-- Row 3 -->
-                    <div>
+                    <div class="col-span-2 sm:col-span-1">
                         <x-label for="contact_number" value="{{ __('Contact Number') }}" />
-                        <x-input id="contact_number" class="block mt-1 w-full" type="text" name="contact_number" :value="old('contact_number')" required placeholder="0xxxxxxxxx" />
+                        <div class="flex gap-2 mt-1">
+                            <x-input id="contact_number" x-model="contactNumber" @input="backendError = ''" class="block w-full" type="text" name="contact_number" required placeholder="0xxxxxxxxx" maxlength="10" />
+                            <button type="button" @click="sendOtp()" :disabled="isLoading || !isContactValid" :class="{'opacity-50 cursor-not-allowed pointer-events-none': isLoading || !isContactValid, 'hover:bg-gray-300': !isLoading && isContactValid}" class="px-3 py-2 bg-gray-200 text-gray-700 font-bold rounded-md transition-colors text-sm flex-shrink-0 min-w-[100px]">
+                                <span x-show="!isLoading">Send OTP</span>
+                                <span x-show="isLoading" style="display: none;">Sending...</span>
+                            </button>
+                        </div>
+                        <div x-show="backendError" style="display: none;">
+                            <p x-text="backendError" class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden"></p>
+                        </div>
                         @error('contact_number')
-                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                            <p x-show="!backendError" class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div>
-                        <x-label for="role" value="{{ __('Registering as') }}" />
-                        <div x-data="{
-                                open: false,
-                                selected: '{{ old('role') }}',
-                                options: [
-                                    { value: '', label: 'Select a role...' },
-                                    { value: 'user', label: 'User' },
-                                    { value: 'admin', label: 'Admin' }
-                                ],
-                                get selectedLabel() {
-                                    return this.options.find(opt => opt.value === this.selected)?.label || 'Select a role...';
-                                }
-                            }"
-                             class="relative mt-1"
-                             @click.outside="open = false">
-                             
-                            <select name="role" id="role" class="hidden" x-model="selected">
-                                <option value=""></option>
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
-                            </select>
 
-                            <!-- Trigger Button -->
-                            <button type="button"
-                                    @click="open = !open"
-                                    class="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-[#DD6625] focus:ring-[#DD6625] sm:text-sm bg-white text-gray-700 transition-colors">
-                                <span x-text="selectedLabel" :class="selected === '' ? 'text-gray-500' : ''"></span>
-                                <svg class="h-5 w-5 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
 
-                            <!-- Dropdown Menu -->
-                            <div x-show="open"
-                                 x-transition:enter="transition ease-out duration-100"
-                                 x-transition:enter-start="transform opacity-0 scale-95"
-                                 x-transition:enter-end="transform opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-75"
-                                 x-transition:leave-start="transform opacity-100 scale-100"
-                                 x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="absolute z-50 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
-                                 style="display: none;">
-                                <template x-for="option in options" :key="option.value">
-                                    <button type="button"
-                                            @click="selected = option.value; open = false"
-                                            class="w-full text-left px-4 py-2 hover:bg-[#DD6625]/10 hover:text-[#DD6625] transition-colors flex items-center justify-between text-gray-900"
-                                            :class="selected === option.value ? 'bg-[#DD6625]/10 text-[#DD6625] font-medium' : ''">
-                                        <span x-text="option.label"></span>
-                                        <svg x-show="selected === option.value" class="h-5 w-5 text-[#DD6625]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </template>
-                            </div>
-                        </div>
-
-                        @error('role')
+                    <!-- OTP Code Input (Hidden until OTP is sent) -->
+                    <div class="col-span-2 sm:col-span-1" x-show="otpSent" style="display: none;">
+                        <x-label for="otp_code" value="{{ __('6-Digit OTP Code') }}" />
+                        <x-input id="otp_code" class="block mt-1 w-full text-center tracking-widest font-bold" type="text" name="otp_code" maxlength="6" placeholder="------" />
+                        <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Check terminal/logs.</p>
+                        @error('otp_code')
                             <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
                         @enderror
                     </div>
@@ -159,7 +118,7 @@
                         {{ __('Already registered?') }}
                     </a>
 
-                    <x-button class="ms-4">
+                    <x-button class="ms-4" x-bind:disabled="!otpSent && !{{ $errors->has('otp_code') ? 'true' : 'false' }}" x-bind:class="{ 'opacity-50 cursor-not-allowed pointer-events-none': !otpSent && !{{ $errors->has('otp_code') ? 'true' : 'false' }} }">
                         {{ __('Register') }}
                     </x-button>
                 </div>
@@ -178,6 +137,52 @@
                     password.type = type;
                     passwordConfirm.type = type;
                 });
+
+                function otpVerification() {
+                    return {
+                        contactNumber: '{{ old('contact_number') }}',
+                        backendError: '',
+                        // Keep open if there was an OTP validation error previously
+                        otpSent: {{ old('otp_code') || $errors->has('otp_code') ? 'true' : 'false' }},
+                        isLoading: false,
+                        get isContactValid() {
+                            return /^0[0-9]{9}$/.test(this.contactNumber);
+                        },
+                        sendOtp() {
+                            if (!this.isContactValid) {
+                                return;
+                            }
+                            this.isLoading = true;
+                            this.backendError = '';
+                            fetch('{{ route('registration.otp.send') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ contact_number: this.contactNumber })
+                            })
+                            .then(async res => {
+                                this.isLoading = false;
+                                if (res.ok) {
+                                    this.otpSent = true;
+                                } else {
+                                    const data = await res.json();
+                                    if(data.errors && data.errors.contact_number) {
+                                        this.backendError = data.errors.contact_number[0];
+                                    } else {
+                                        this.backendError = 'Error sending OTP. Make sure the number is valid and not already registered.';
+                                    }
+                                }
+                            })
+                            .catch(() => {
+                                this.isLoading = false;
+                                this.backendError = 'A network error occurred while sending the OTP.';
+                            });
+                        }
+                    }
+                }
             </script>
             
         </x-authentication-card>

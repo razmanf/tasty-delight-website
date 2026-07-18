@@ -32,7 +32,7 @@
                             <a href="{{ route('user.menu') ?? '#' }}?highlight={{ $product->id }}" 
                                class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" class="w-8 h-8 rounded-md object-cover">
+                                    <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" class="w-8 h-8 rounded-md object-cover">
                                 @else
                                     <div class="w-8 h-8 rounded-md flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-500">
                                         <i class="fa-solid fa-utensils text-xs"></i>

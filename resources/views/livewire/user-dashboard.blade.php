@@ -260,8 +260,8 @@
                 <div class="h-48 sm:h-auto sm:w-1/3 overflow-hidden relative bg-gray-100 dark:bg-gray-800">
                     <div class="absolute top-0 left-0 bg-green-500 text-white text-xs font-black px-3 py-1 z-10 shadow-lg">20% Off</div>
                     @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" 
-                             @click="$dispatch('open-image-modal', '{{ asset('storage/' . $product->image) }}')"
+                        <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" 
+                             @click="$dispatch('open-image-modal', '{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}')"
                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
                              onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
                     @endif
@@ -274,7 +274,7 @@
                             {{ $product->category?->name }}
                         </span>
                     </div>
-                    <p class="text-sm line-clamp-2 mb-4 flex-1" style="color: var(--td-muted);">
+                    <p class="text-sm mb-4 flex-1" style="color: var(--td-muted);">
                         {{ $product->description }}
                     </p>
                     <div class="flex items-center justify-between mt-auto mb-3">
@@ -289,20 +289,31 @@
                             </div>
                         @endif
                     </div>
-                    <button x-data="{ added: false }"
-                            wire:click="addToCart({{ $product->id }})"
-                            @click="added = true; setTimeout(() => added = false, 2000)"
-                            class="w-full py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-sm relative overflow-hidden"
-                            :style="added ? 'background: #16a34a !important; color: white !important;' : 'background: #FFCD38; color: black;'"
-                            @mouseover="if(!added) { $el.style.background='#16a34a'; $el.style.color='white'; }"
-                            @mouseout="if(!added) { $el.style.background='#FFCD38'; $el.style.color='black'; }">
-                        <div class="flex items-center gap-2 transition-transform duration-300" :class="added ? '-translate-x-3' : ''">
-                            <i class="fa-solid fa-cart-plus"></i>
-                            <span x-text="added ? 'Claimed' : 'Claim'"></span>
+                    @if($product->stock > 0)
+                        <div x-data="{ added: false }" class="w-full">
+                            <button wire:click="addToCart({{ $product->id }})"
+                                    @click="added = true; setTimeout(() => added = false, 2000)"
+                                    class="w-full py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-sm relative overflow-hidden"
+                                    :style="added ? 'background: #16a34a !important; color: white !important;' : 'background: #FFCD38; color: black;'"
+                                    @mouseover="if(!added) { $el.style.background='#16a34a'; $el.style.color='white'; }"
+                                    @mouseout="if(!added) { $el.style.background='#FFCD38'; $el.style.color='black'; }">
+                                <div class="flex items-center gap-2 transition-transform duration-300" :class="added ? '-translate-x-3' : ''">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                    <span x-text="added ? 'Claimed' : 'Claim'"></span>
+                                </div>
+                                <i class="fa-solid fa-check absolute right-4 transition-all duration-300 text-white"
+                                   :class="added ? 'opacity-100 scale-100' : 'opacity-0 scale-50'"></i>
+                            </button>
                         </div>
-                        <i class="fa-solid fa-check absolute right-4 transition-all duration-300 text-white"
-                           :class="added ? 'opacity-100 scale-100' : 'opacity-0 scale-50'"></i>
+                    @else
+                    <button disabled
+                            class="w-full py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shadow-sm relative overflow-hidden cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-ban"></i>
+                            <span>Out of Stock</span>
+                        </div>
                     </button>
+                    @endif
                 </div>
             </div>
             @endforeach

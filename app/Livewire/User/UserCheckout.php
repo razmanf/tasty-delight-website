@@ -10,11 +10,18 @@ use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 
+#[Title('Checkout')]
 class UserCheckout extends Component
 {
     public $cart;
+    
+    public $subtotal = 0;
+    public $tax_amount = 0;
+    public $delivery_fee = 0;
     public $total = 0;
+    
     public $clientSecret;
 
     // Multi-step state
@@ -47,6 +54,20 @@ class UserCheckout extends Component
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
+        
+        if ($propertyName === 'order_type') {
+            $this->calculateTotals();
+        }
+    }
+
+    public function calculateTotals()
+    {
+        if ($this->cart && $this->cart->items->isNotEmpty()) {
+            $this->subtotal = $this->cart->items->sum(fn ($item) => $item->quantity * $item->product->price);
+            $this->tax_amount = $this->subtotal * 0.05; // 5% tax
+            $this->delivery_fee = $this->order_type === 'delivery' ? 5.00 : 0.00; // $5 flat fee for delivery
+            $this->total = $this->subtotal + $this->tax_amount + $this->delivery_fee;
+        }
     }
 
     public function mount()
@@ -56,7 +77,11 @@ class UserCheckout extends Component
             return redirect()->route('user.cart');
         }
 
-        $this->total = $this->cart->items->sum(fn ($item) => $item->quantity * $item->product->price);
+        if (!$this->validateStock()) {
+            return redirect()->route('user.cart');
+        }
+
+        $this->calculateTotals();
         
         $this->delivery_date = date('Y-m-d');
         $this->pickup_date = date('Y-m-d');
@@ -80,8 +105,27 @@ class UserCheckout extends Component
         }
     }
 
+    public function validateStock(): bool
+    {
+        if ($this->cart) {
+            foreach ($this->cart->items as $item) {
+                // Refresh product to get latest stock
+                $product = Product::find($item->product_id);
+                if (!$product || $product->stock < $item->quantity) {
+                    session()->flash('error', 'An item in your cart is no longer available in the requested quantity. Please adjust your cart.');
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public function goToReview()
     {
+        if (!$this->validateStock()) {
+            return redirect()->route('user.cart');
+        }
+
         // Validation could be added here
         if ($this->order_type === 'delivery' && empty($this->delivery_address)) {
             $this->addError('delivery_address', 'Delivery address is required.');
@@ -97,6 +141,10 @@ class UserCheckout extends Component
 
     public function confirmOrder()
     {
+        if (!$this->validateStock()) {
+            return redirect()->route('user.cart');
+        }
+
         if ($this->order_type === 'pickup' || ($this->order_type === 'delivery' && $this->payment_method === 'cash')) {
             $this->processOrder();
         } else {
@@ -107,6 +155,10 @@ class UserCheckout extends Component
 
     public function processOrder()
     {
+        if (!$this->validateStock()) {
+            return redirect()->route('user.cart');
+        }
+
         $order = null;
         DB::transaction(function () use (&$order) {
             $actualPaymentMethod = $this->order_type === 'pickup' ? 'counter' : $this->payment_method;
@@ -114,6 +166,8 @@ class UserCheckout extends Component
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total_amount' => $this->total,
+                'tax_amount' => $this->tax_amount,
+                'delivery_fee' => $this->delivery_fee,
                 'status' => 'pending',
                 'payment_method' => $actualPaymentMethod,
                 'order_type' => $this->order_type,

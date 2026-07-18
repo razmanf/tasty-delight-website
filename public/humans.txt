@@ -1,0 +1,15 @@
+/* TEAM */
+  Developer: Razman Farook
+  Role: Full Stack Developer
+  From: Sri Lanka
+
+/* SITE */
+  Last update: 2026
+  Language: English
+  Standards: HTML5, CSS3
+  Components: Laravel, Livewire, Alpine.js, Tailwind CSS
+  Software: VS Code
+  
+/* LEGAL */
+  All code, design, and assets are the intellectual property of the author.
+  Do not copy without permission.

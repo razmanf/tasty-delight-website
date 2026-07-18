@@ -29,12 +29,15 @@ class ProductTable extends Component
     protected $updatesQueryString = ['search', 'category'];
     protected $paginationTheme = 'tailwind';
 
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'price' => 'required|numeric',
-        'description' => 'nullable|string',
-        'category_id' => 'required|exists:category,id',
-    ];
+    public function rules()
+    {
+        return [
+            'name' => 'required|string|max:255|unique:products,name,' . $this->productId,
+            'price' => 'required|numeric',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+        ];
+    }
 
     public function updatedSearch() 
     { 

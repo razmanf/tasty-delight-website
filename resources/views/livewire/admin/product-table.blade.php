@@ -138,7 +138,7 @@
                         <td class="px-6 py-3">{{ number_format($p->price, 2) }}</td>
                         <td class="px-6 py-3">
                             @if($p->image)
-                                <img src="{{ asset('storage/'.$p->image) }}" alt="{{ $p->name }}" class="h-10 w-10 object-cover rounded">
+                                <img src="{{ \Illuminate\Support\Str::startsWith($p->image, ['http://', 'https://']) ? $p->image : asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="h-10 w-10 object-cover rounded">
                             @endif
                         </td>
                         <td class="px-6 py-3">{{ $p->category->name ?? '-' }}</td>

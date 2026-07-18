@@ -48,7 +48,7 @@ class UserSettings extends Component
     {
         $this->validate([
             'currentPassword'         => 'required',
-            'newPassword'             => ['required', 'confirmed', Password::defaults()],
+            'newPassword'             => ['required', 'different:currentPassword', 'same:newPasswordConfirmation', Password::defaults()],
         ]);
 
         if (!Hash::check($this->currentPassword, Auth::user()->password)) {

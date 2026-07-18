@@ -87,6 +87,7 @@ class AdminSettings extends Page implements HasForms
                             ->password()
                             ->revealable()
                             ->rule(Password::defaults())
+                            ->different('current_password')
                             ->dehydrated(false),
 
                         TextInput::make('new_password_confirmation')

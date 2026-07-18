@@ -21,9 +21,8 @@ class ReviewForm
                                     ->required()
                                     ->searchable()
                                     ->live(onBlur: true),
-                                \Filament\Forms\Components\Select::make('product_id')
-                                    ->relationship('product', 'name')
-                                    ->required()
+                                \Filament\Forms\Components\Select::make('order_id')
+                                    ->relationship('order', 'id')
                                     ->searchable()
                                     ->live(onBlur: true),
                                 \Filament\Forms\Components\TextInput::make('rating')
@@ -36,8 +35,24 @@ class ReviewForm
                                 \Filament\Forms\Components\Textarea::make('comment')
                                     ->default(null)
                                     ->columnSpanFull()
-                                    ->rows(4)
+                                    ->rows(3)
                                     ->live(onBlur: true),
+                                \Filament\Forms\Components\TextInput::make('rider_rating')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(5)
+                                    ->suffix('Stars')
+                                    ->live(onBlur: true),
+                                \Filament\Forms\Components\Textarea::make('rider_comment')
+                                    ->default(null)
+                                    ->columnSpanFull()
+                                    ->rows(3)
+                                    ->live(onBlur: true),
+                                \Filament\Forms\Components\FileUpload::make('media')
+                                    ->multiple()
+                                    ->disk('public')
+                                    ->directory('reviews')
+                                    ->columnSpanFull(),
                             ])
                     ])
             ]);

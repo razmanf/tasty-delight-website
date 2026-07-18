@@ -14,9 +14,25 @@ class OrdersTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('Order #')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('user.name')
                     ->label('User')
                     ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('order_type')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'delivery' => 'info',
+                        'pickup' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('total_amount')

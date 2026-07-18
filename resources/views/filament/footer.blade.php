@@ -17,10 +17,13 @@
             </nav>
             
             <!-- Copyright & Version -->
-            <div class="td-admin-footer-copy">
-                <span>&copy; {{ date('Y') }} TastyDelight.</span>
-                <span class="td-divider hidden-mobile">•</span>
-                <span class="td-version-text">v1.0.0</span>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem;">
+                <div class="td-admin-footer-copy">
+                    <span>&copy; {{ date('Y') }} TastyDelight by Razman Farook. All rights reserved.</span>
+                    <span class="td-divider hidden-mobile">•</span>
+                    <span class="td-version-text">v1.0.0</span>
+                </div>
+                <a href="/humans.txt" target="_blank" style="color: #9ca3af; font-size: 0.7rem; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Unauthorized copying prohibited.</a>
             </div>
             
         </div>

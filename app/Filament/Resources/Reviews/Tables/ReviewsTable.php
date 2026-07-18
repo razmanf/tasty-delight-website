@@ -19,12 +19,16 @@ class ReviewsTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('product.name')
-                    ->label('Product')
+                TextColumn::make('order.id')
+                    ->label('Order #')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('rating')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('rider_rating')
                     ->numeric()
                     ->sortable()
                     ->toggleable(),

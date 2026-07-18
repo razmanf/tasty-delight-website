@@ -16,7 +16,11 @@ class Review extends Model
     const MAX_RATING = 5;
 
     protected $fillable = [
-        'user_id', 'product_id', 'rating', 'comment'
+        'user_id', 'product_id', 'order_id', 'rating', 'comment', 'rider_rating', 'rider_comment', 'media'
+    ];
+
+    protected $casts = [
+        'media' => 'array'
     ];
 
     public function user()
@@ -27,5 +31,10 @@ class Review extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 }

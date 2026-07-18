@@ -54,6 +54,11 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware(['guest']);
 
+// ─── Pre-Registration OTP Route ────────────────────────────────────────────────
+Route::post('/send-registration-otp', [App\Http\Controllers\Auth\RegistrationOtpController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('registration.otp.send');
+
 // ─── Post-login Dashboard Redirect ───────────────────────────────────────────
 Route::get('/dashboard', function () {
     if (auth()->user()->role === 'admin') {

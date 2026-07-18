@@ -19,6 +19,7 @@ class ProductForm
                     ->live(onBlur: true),
                 TextInput::make('name')
                     ->required()
+                    ->unique(ignoreRecord: true)
                     ->live(onBlur: true),
                 Textarea::make('description')
                     ->required()
@@ -32,11 +33,13 @@ class ProductForm
                 TextInput::make('stock')
                     ->required()
                     ->numeric()
+                    ->minValue(0)
                     ->default(0)
                     ->live(onBlur: true),
                 FileUpload::make('image')
                     ->image()
-                    ->required()
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn ($state) => filled($state))
                     ->live(onBlur: true),
             ]);
     }

@@ -25,14 +25,32 @@
                         $currentFilterValue = $this->filter ?? array_key_first($filters);
                         $currentFilterLabel = $filters[$currentFilterValue] ?? 'Select';
                     @endphp
-                    <div x-data="{ open: false }" style="position: relative; display: inline-block; text-align: left;" class="fi-wi-chart-filter" @click.outside="open = false">
+                    <style>
+                        .chart-filter-vars {
+                            --cf-bg: #ffffff;
+                            --cf-border: #e5e7eb;
+                            --cf-text: #374151;
+                            --cf-muted: #9ca3af;
+                            --cf-primary: #DD6625;
+                            --cf-hover: #f3f4f6;
+                        }
+                        .dark .chart-filter-vars {
+                            --cf-bg: #1f2937;
+                            --cf-border: #374151;
+                            --cf-text: #e5e7eb;
+                            --cf-hover: rgba(55, 65, 81, 0.5);
+                        }
+                    </style>
+                    <div x-data="{ open: false }" class="chart-filter-vars" style="position: relative; display: inline-block; text-align: left;" @click.outside="open = false">
                         <button type="button" @click="open = !open" 
-                                style="display: flex; align-items: center; justify-content: space-between; min-width: 140px; flex-shrink: 0; padding: 0.5rem 1rem; border-radius: 0.75rem; border: 1px solid #E5E7EB; background-color: #FFFFFF; color: #55555F; font-size: 0.875rem; white-space: nowrap; outline: none; transition: all 0.2s; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);"
-                                class="dark:!bg-gray-800 dark:!border-gray-700 dark:!text-gray-200">
+                                style="display: flex; align-items: center; justify-content: space-between; min-width: 140px; flex-shrink: 0; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.875rem; white-space: nowrap; outline: none; cursor: pointer; border: 1px solid var(--cf-border); background: var(--cf-bg); color: var(--cf-text); transition: all 0.2s;"
+                                class="shadow-sm">
                             <span>{{ $currentFilterLabel }}</span>
-                            <svg :style="open ? 'transform: rotate(180deg);' : ''" style="width: 12px; height: 12px; margin-left: 8px; transition: transform 0.2s; color: #9CA3AF;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
+                            <x-filament::icon
+                                icon="heroicon-m-chevron-down"
+                                class="ml-2"
+                                x-bind:style="open ? 'transform: rotate(180deg); width: 20px; height: 20px; color: var(--cf-muted); transition: transform 0.2s ease-in-out;' : 'transform: rotate(0deg); width: 20px; height: 20px; color: var(--cf-muted); transition: transform 0.2s ease-in-out;'"
+                            />
                         </button>
 
                         <div x-show="open" x-cloak
@@ -42,19 +60,21 @@
                              x-transition:leave="transition ease-in duration-75"
                              x-transition:leave-start="transform opacity-100 scale-100"
                              x-transition:leave-end="transform opacity-0 scale-95"
-                             style="position: absolute; right: 0; margin-top: 0.5rem; min-width: 140px; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: #FFFFFF; border: 1px solid #E5E7EB; overflow: hidden; z-index: 50; display: none;"
-                             class="dark:!bg-gray-800 dark:!border-gray-700">
-                            <div style="padding: 0.5rem 0;" role="menu">
+                             style="display: none; position: absolute; right: 0; margin-top: 0px; min-width: 140px; border-radius: 0.75rem; overflow: hidden; z-index: 10; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: var(--cf-bg); border: 1px solid var(--cf-border);">
+                            <div style="display: flex; flex-direction: column; padding: 0.25rem 0;" role="menu">
                                 @foreach ($filters as $value => $label)
                                     <button type="button" wire:click="$set('filter', '{{ $value }}')" @click="open = false"
-                                            style="display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; padding: 0.5rem 1rem; font-size: 0.875rem; transition: background-color 0.2s;"
-                                            class="hover:!bg-gray-50 dark:hover:!bg-gray-700 {{ $currentFilterValue == $value ? 'text-[#DD6625] font-semibold' : 'text-[#55555F] dark:text-gray-200' }}" 
+                                            style="display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; padding: 0.5rem 1rem; font-size: 0.875rem; color: var(--cf-text); transition: background-color 0.2s;"
+                                            onmouseover="this.style.backgroundColor='var(--cf-hover)'"
+                                            onmouseout="this.style.backgroundColor='transparent'"
                                             role="menuitem">
-                                        {{ $label }}
+                                        <span style="{{ $currentFilterValue == $value ? 'font-weight: 600;' : '' }}">{{ $label }}</span>
                                         @if($currentFilterValue == $value)
-                                            <svg style="width: 14px; height: 14px; color: #DD6625;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                            </svg>
+                                            <x-filament::icon
+                                                icon="heroicon-m-check"
+                                                class="ml-2"
+                                                style="width: 16px; height: 16px; color: var(--cf-primary);"
+                                            />
                                         @endif
                                     </button>
                                 @endforeach

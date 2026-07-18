@@ -27,15 +27,66 @@ class UserCart extends Component
         }
     }
 
-    public function toggleAll($isChecked)
+    public bool $selectAll = false;
+
+    public function updatedSelectAll($value)
     {
-        if ($isChecked) {
+        if ($value) {
             $cart = Cart::where('user_id', Auth::id())->with('items')->first();
             if ($cart) {
                 $this->selectedItems = $cart->items->pluck('id')->map(fn($id) => (string)$id)->toArray();
             }
         } else {
             $this->selectedItems = [];
+        }
+    }
+
+    public function updatedSelectedItems()
+    {
+        $cart = Cart::where('user_id', Auth::id())->first();
+        if ($cart && $cart->items()->count() > 0) {
+            $this->selectAll = count($this->selectedItems) === $cart->items()->count();
+        } else {
+            $this->selectAll = false;
+        }
+    }
+
+    public function cancelEdit()
+    {
+        $this->syncQuantities();
+        $this->selectedItems = [];
+        $this->selectAll = false;
+    }
+
+    public function deleteSelected()
+    {
+        if (!empty($this->selectedItems)) {
+            CartItem::whereIn('id', $this->selectedItems)
+                ->whereHas('cart', fn ($q) => $q->where('user_id', Auth::id()))
+                ->delete();
+            
+            foreach ($this->selectedItems as $id) {
+                unset($this->quantities[$id]);
+            }
+            $this->selectedItems = [];
+            $this->selectAll = false;
+            
+            $this->dispatch('cart-updated');
+            session()->flash('success', 'Selected items deleted from cart!');
+        }
+    }
+
+    public function clearCart()
+    {
+        $cart = Cart::where('user_id', Auth::id())->first();
+        if ($cart) {
+            $cart->items()->delete();
+            $this->quantities = [];
+            $this->selectedItems = [];
+            $this->selectAll = false;
+            
+            $this->dispatch('cart-updated');
+            session()->flash('success', 'Cart cleared successfully!');
         }
     }
 
@@ -55,18 +106,6 @@ class UserCart extends Component
 
     public function applyChanges()
     {
-        // Handle deletions of selected items
-        if (!empty($this->selectedItems)) {
-            CartItem::whereIn('id', $this->selectedItems)
-                ->whereHas('cart', fn ($q) => $q->where('user_id', Auth::id()))
-                ->delete();
-            
-            foreach ($this->selectedItems as $id) {
-                unset($this->quantities[$id]);
-            }
-            $this->selectedItems = [];
-        }
-
         // Handle quantity updates for remaining items
         foreach ($this->quantities as $id => $quantity) {
             $item = CartItem::where('id', $id)
@@ -77,6 +116,9 @@ class UserCart extends Component
                 $item->update(['quantity' => $quantity]);
             }
         }
+
+        $this->selectedItems = [];
+        $this->selectAll = false;
 
         $this->dispatch('cart-updated');
         session()->flash('success', 'Cart changes applied successfully!');
@@ -90,16 +132,24 @@ class UserCart extends Component
 
         // Calculate total based on local $quantities
         $total = 0;
+        $hasStockIssues = false;
+        
         if ($cart) {
             foreach ($cart->items as $item) {
                 $q = $this->quantities[$item->id] ?? $item->quantity;
+                
+                // Check stock
+                if ($item->product->stock < $q) {
+                    $hasStockIssues = true;
+                }
+                
                 if (!in_array($item->id, $this->selectedItems)) {
                     $total += $q * $item->product->price;
                 }
             }
         }
 
-        return view('livewire.user.user-cart', compact('cart', 'total'))
+        return view('livewire.user.user-cart', compact('cart', 'total', 'hasStockIssues'))
             ->layout('layouts.user');
     }
 }

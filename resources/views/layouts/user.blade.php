@@ -69,26 +69,26 @@
     </div>
 
     <!-- Center: Nav Links (desktop) -->
-    <div class="hidden md:flex items-center justify-center flex-1 gap-1 mx-6">
+    <div class="hidden nav:flex items-center justify-center flex-1 gap-1 mx-6">
         @if(auth()->check())
             <a href="{{ route('user.dashboard') }}"
                wire:navigate
-               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all {{ request()->routeIs('user.dashboard') ? 'bg-white/20 text-white' : '' }}">
+               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all flex items-center {{ request()->routeIs('user.dashboard') ? 'bg-white/20 text-white' : '' }}">
                 <i class="fa-solid fa-house mr-1"></i> Dashboard
             </a>
             <a href="{{ route('user.menu') ?? '#' }}"
                wire:navigate
-               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all {{ request()->routeIs('user.menu') ? 'bg-white/20 text-white' : '' }}">
+               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all flex items-center {{ request()->routeIs('user.menu') ? 'bg-white/20 text-white' : '' }}">
                 <i class="fa-solid fa-utensils mr-1"></i> Menu
             </a>
             <a href="{{ route('user.orders') }}"
                wire:navigate
-               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all {{ request()->routeIs('user.orders') ? 'bg-white/20 text-white' : '' }}">
+               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all flex items-center {{ request()->routeIs('user.orders') ? 'bg-white/20 text-white' : '' }}">
                 <i class="fa-solid fa-bag-shopping mr-1"></i> My Orders
             </a>
             <a href="{{ route('user.favorites') }}"
                wire:navigate
-               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all {{ request()->routeIs('user.favorites') ? 'bg-white/20 text-white' : '' }}">
+               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all flex items-center {{ request()->routeIs('user.favorites') ? 'bg-white/20 text-white' : '' }}">
                 <i class="fa-solid fa-heart mr-1"></i> Favorites
             </a>
             <a href="{{ route('user.cart') }}"
@@ -98,7 +98,7 @@
             </a>
             <a href="{{ route('user.reviews') }}"
                wire:navigate
-               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all {{ request()->routeIs('user.reviews') ? 'bg-white/20 text-white' : '' }}">
+               class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all flex items-center {{ request()->routeIs('user.reviews') ? 'bg-white/20 text-white' : '' }}">
                 <i class="fa-solid fa-star mr-1"></i> Reviews
             </a>
         @endif
@@ -116,9 +116,9 @@
                 <button @click="notifOpen = !notifOpen" class="relative text-white/80 hover:text-white transition-colors p-2">
                     <i class="fa-regular fa-bell text-lg"></i>
                     @php $unreadCount = auth()->user()->unreadNotifications->count() @endphp
-                    @if($unreadCount > 0)
-                        <span class="td-notif-badge">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
-                    @endif
+                      @if($unreadCount > 0)
+                        <span class="td-notif-badge">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+                      @endif
                 </button>
                 
                 <div x-show="notifOpen"
@@ -283,7 +283,7 @@
         @endauth
         
         @guest
-            <div class="hidden md:flex items-center gap-2">
+            <div class="hidden nav:flex items-center gap-2">
                 <a href="{{ route('login') }}" class="px-4 py-2 rounded-full text-sm font-bold text-white/90 hover:text-white hover:bg-white/15 transition-all">Sign In</a>
                 <a href="{{ route('register') }}" class="px-4 py-2 rounded-full text-sm font-bold bg-white text-black hover:scale-105 transition-transform shadow-md">Sign Up</a>
             </div>
@@ -291,7 +291,7 @@
 
         <!-- Mobile Hamburger -->
         <button @click="mobileMenu = !mobileMenu"
-                class="md:hidden text-white/80 hover:text-white p-2 transition-colors">
+                class="nav:hidden text-white/80 hover:text-white p-2 transition-colors">
             <i class="fa-solid text-lg" :class="mobileMenu ? 'fa-xmark' : 'fa-bars'"></i>
         </button>
     </div>
@@ -305,7 +305,7 @@
      x-transition:leave="transition ease-in duration-150"
      x-transition:leave-start="opacity-100 translate-y-0"
      x-transition:leave-end="opacity-0 -translate-y-2"
-     class="fixed top-20 left-0 right-0 z-40 shadow-xl border-b md:hidden"
+     class="fixed top-20 left-0 right-0 z-40 shadow-xl border-b nav:hidden"
      style="background-color: var(--td-header-bg); border-color: rgba(255,255,255,0.2);"
      @click.outside="mobileMenu = false">
 
@@ -328,7 +328,7 @@
             <a href="{{ route('user.favorites') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-heart w-5 text-center"></i> Favorites</a>
             <a href="{{ route('user.cart') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium">@livewire('user.cart-count-badge')</a>
             <a href="{{ route('user.reviews') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-star w-5 text-center"></i> My Reviews</a>
-            <a href="{{ route('user.notifications') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-regular fa-bell w-5 text-center"></i> Notifications @if(auth()->user()->unreadNotifications->count() > 0)<span class="ml-auto text-xs font-bold text-white px-1.5 py-0.5 rounded-full" style="background-color:var(--td-danger)">{{ auth()->user()->unreadNotifications->count() }}</span>@endif</a>
+            <a href="{{ route('user.notifications') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-regular fa-bell w-5 text-center"></i> Notifications @if(auth()->user()->unreadNotifications->count() > 0)<span class="ml-auto text-xs font-bold text-white px-1.5 py-0.5 rounded-full" style="background-color:var(--td-danger)">{{ auth()->user()->unreadNotifications->count() > 99 ? '99+' : auth()->user()->unreadNotifications->count() }}</span>@endif</a>
             <a href="{{ route('user.settings') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-gear w-5 text-center"></i> Settings</a>
             <div class="border-t border-white/20 mt-2 pt-2">
                 <form method="POST" action="{{ route('logout') }}">
@@ -443,10 +443,11 @@
         <div class="border-t py-4" style="border-color: var(--td-border);">
             <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <p class="text-xs" style="color: var(--td-muted);">
-                    &copy; {{ date('Y') }} TastyDelight. All rights reserved.
+                    &copy; {{ date('Y') }} TastyDelight by Razman Farook. All rights reserved.<br>
+                    <a href="/humans.txt" target="_blank" class="hover:underline">Unauthorized copying prohibited.</a>
                 </p>
                 <p class="text-xs" style="color: var(--td-muted);">
-                    Made with <i class="fa-solid fa-heart text-red-500 mx-0.5"></i> in Sri Lanka
+                    Made with <i class="fa-solid fa-heart mx-0.5" style="color: var(--td-primary);"></i> in Sri Lanka
                 </p>
             </div>
         </div>

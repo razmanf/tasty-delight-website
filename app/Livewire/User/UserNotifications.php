@@ -10,16 +10,19 @@ class UserNotifications extends Component
     public function markAllRead(): void
     {
         Auth::user()->unreadNotifications->markAsRead();
+        $this->redirect(route('user.notifications'), navigate: true);
     }
 
     public function markRead(string $id): void
     {
         Auth::user()->notifications()->where('id', $id)->update(['read_at' => now()]);
+        $this->redirect(route('user.notifications'), navigate: true);
     }
 
     public function deleteNotification(string $id): void
     {
         Auth::user()->notifications()->where('id', $id)->delete();
+        $this->redirect(route('user.notifications'), navigate: true);
     }
 
     public function render()
