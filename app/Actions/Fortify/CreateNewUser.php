@@ -66,6 +66,7 @@ class CreateNewUser implements CreatesNewUsers
             'email' => $input['email'],
             'contact_number' => $input['contact_number'],
             'phone_verified_at' => now(),
+            'email_verified_at' => now(), // Automatically verify since OTP was sent via email
             'password' => Hash::make($input['password']),
             'role' => 'user',
         ]);

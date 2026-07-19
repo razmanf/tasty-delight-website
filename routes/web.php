@@ -31,8 +31,7 @@ Route::get('/user/login', [UserLoginController::class, 'showLoginForm'])->name('
 Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
 
 // ─── Static Pages ─────────────────────────────────────────────────────────────
-Route::get('/employees',    [PageController::class, 'employees']);
-Route::get('/appointments', [PageController::class, 'appointments']);
+
 Route::get('/privacy',      [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms',        [PageController::class, 'terms'])->name('terms');
 Route::get('/about',        [PageController::class, 'about'])->name('about');

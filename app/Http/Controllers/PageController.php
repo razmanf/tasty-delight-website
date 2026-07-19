@@ -7,15 +7,7 @@ use Illuminate\Support\Facades\File;
 
 class PageController extends Controller
 {
-    public function employees()
-    {
-        return view('employees');
-    }
 
-    public function appointments()
-    {
-        return view('appointments');
-    }
 
     public function privacy()
     {

@@ -12,10 +12,12 @@ class RegistrationOtpController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'email' => ['required', 'string', 'email', 'unique:users'],
             'contact_number' => ['required', 'string', 'size:10', 'regex:/^0[0-9]{9}$/', 'unique:users'],
         ]);
 
         $contactNumber = $request->contact_number;
+        $email = $request->email;
 
         // Generate a 6-digit code
         $code = random_int(100000, 999999);
@@ -23,10 +25,14 @@ class RegistrationOtpController extends Controller
         // Save to Cache for 10 minutes, using the phone number as the key
         Cache::put('registration_otp_' . $contactNumber, $code, now()->addMinutes(10));
 
-        // Simulate sending SMS via log (prints to php artisan serve terminal)
-        error_log("===========================================");
-        error_log("REGISTRATION SMS OTP for " . $contactNumber . ": " . $code);
-        error_log("===========================================");
+        // Actually send the OTP via Email!
+        \Illuminate\Support\Facades\Mail::raw("Your TastyDelight Registration OTP is: $code", function ($message) use ($email) {
+            $message->to($email)
+                    ->subject('TastyDelight - Registration OTP');
+        });
+
+        // Also log it for debugging
+        error_log("REGISTRATION OTP for $email (Phone: $contactNumber): $code");
 
         return response()->json(['message' => 'OTP sent successfully']);
     }

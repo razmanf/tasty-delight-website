@@ -284,8 +284,8 @@
         
         @guest
             <div class="hidden nav:flex items-center gap-2">
-                <a href="{{ route('login') }}" class="px-4 py-2 rounded-full text-sm font-bold text-white/90 hover:text-white hover:bg-white/15 transition-all">Sign In</a>
-                <a href="{{ route('register') }}" class="px-4 py-2 rounded-full text-sm font-bold bg-white text-black hover:scale-105 transition-transform shadow-md">Sign Up</a>
+                <a href="{{ route('login') }}" class="px-4 py-2 rounded-full text-sm font-bold text-white/90 hover:text-white hover:bg-white/15 transition-all">Log In</a>
+                <a href="{{ route('register') }}" class="px-4 py-2 rounded-full text-sm font-bold bg-white text-black hover:bg-gray-100 transition-colors shadow-md">Register</a>
             </div>
         @endguest
 
@@ -339,8 +339,8 @@
                 </form>
             </div>
         @else
-            <a href="{{ route('login') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-right-to-bracket w-5 text-center"></i> Sign In</a>
-            <a href="{{ route('register') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-user-plus w-5 text-center"></i> Sign Up</a>
+            <a href="{{ route('login') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-right-to-bracket w-5 text-center"></i> Log In</a>
+            <a href="{{ route('register') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-user-plus w-5 text-center"></i> Register</a>
         @endif
     </div>
 </div>
