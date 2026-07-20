@@ -149,7 +149,9 @@
                             return /^0[0-9]{9}$/.test(this.contactNumber);
                         },
                         sendOtp() {
-                            if (!this.isContactValid) {
+                            const emailField = document.getElementById('email').value;
+                            if (!this.isContactValid || !emailField) {
+                                this.backendError = 'Please enter a valid email and contact number first.';
                                 return;
                             }
                             this.isLoading = true;
@@ -161,7 +163,7 @@
                                     'Accept': 'application/json',
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                 },
-                                body: JSON.stringify({ contact_number: this.contactNumber })
+                                body: JSON.stringify({ contact_number: this.contactNumber, email: emailField })
                             })
                             .then(async res => {
                                 this.isLoading = false;
