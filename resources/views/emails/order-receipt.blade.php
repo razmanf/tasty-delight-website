@@ -15,7 +15,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">TastyDelight</div>
+            <div class="logo">
+                <img src="{{ asset('storage/favicons/favicon-96x96.png') }}" alt="TastyDelight Logo" style="vertical-align: middle; height: 32px; margin-right: 10px; display: inline-block;">
+                <span style="vertical-align: middle;">TastyDelight</span>
+            </div>
             <h2>Order Receipt #{{ $order->id }}</h2>
         </div>
         <p>Hi {{ $order->user->name }},</p>
