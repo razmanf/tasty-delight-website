@@ -1,2 +1,10 @@
 *
 !.gitignore
+!favicons/
+!favicons/**
+!product-images/
+!product-images/**
+!products/
+!products/**
+!reviews/
+!reviews/**
