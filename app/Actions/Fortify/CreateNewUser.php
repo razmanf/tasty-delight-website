@@ -74,6 +74,25 @@ class CreateNewUser implements CreatesNewUsers
         // Dispatch Welcome Email to the Queue Worker
         \Illuminate\Support\Facades\Mail::to($user)->queue(new \App\Mail\WelcomeEmail($user));
 
+        // 1. Send Welcome Notification to the New User
+        \Filament\Notifications\Notification::make()
+            ->title('Welcome to TastyDelight!')
+            ->body('We are absolutely thrilled to have you here. Explore our menu and place your first order today!')
+            ->success()
+            ->icon('heroicon-o-sparkles')
+            ->sendToDatabase($user);
+
+        // 2. Send Alert Notification to all Admins
+        $admins = User::where('role', 'admin')->get();
+        if ($admins->count() > 0) {
+            \Filament\Notifications\Notification::make()
+                ->title('New User Registered')
+                ->body("{$user->name} ({$user->email}) has just joined the platform.")
+                ->info()
+                ->icon('heroicon-o-user-plus')
+                ->sendToDatabase($admins);
+        }
+
         return $user;
     }
 }
