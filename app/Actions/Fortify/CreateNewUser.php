@@ -61,7 +61,7 @@ class CreateNewUser implements CreatesNewUsers
         // Clear the OTP from cache
         Cache::forget('registration_otp_' . $input['contact_number']);
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'contact_number' => $input['contact_number'],
@@ -70,5 +70,10 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
             'role' => 'user',
         ]);
+
+        // Dispatch Welcome Email to the Queue Worker
+        \Illuminate\Support\Facades\Mail::to($user)->queue(new \App\Mail\WelcomeEmail($user));
+
+        return $user;
     }
 }

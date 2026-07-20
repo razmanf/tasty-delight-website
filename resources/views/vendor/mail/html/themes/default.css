@@ -103,7 +103,7 @@ img {
 }
 
 .header a {
-    color: #f59e0b;
+    color: #DD6625;
     font-size: 24px;
     font-weight: 900;
     text-decoration: none;
@@ -237,11 +237,11 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #f59e0b;
-    border-bottom: 10px solid #f59e0b;
-    border-left: 22px solid #f59e0b;
-    border-right: 22px solid #f59e0b;
-    border-top: 10px solid #f59e0b;
+    background-color: #DD6625;
+    border-bottom: 10px solid #DD6625;
+    border-left: 22px solid #DD6625;
+    border-right: 22px solid #DD6625;
+    border-top: 10px solid #DD6625;
     border-radius: 6px;
     font-weight: bold;
 }
@@ -267,7 +267,7 @@ img {
 /* Panels */
 
 .panel {
-    border-left: #f59e0b solid 4px;
+    border-left: #DD6625 solid 4px;
     margin: 21px 0;
 }
 
