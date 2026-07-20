@@ -12,13 +12,16 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="{{ asset('storage/favicons/favicon-96x96.png') }}" alt="TastyDelight Logo" style="vertical-align: middle; height: 32px; margin-right: 10px; display: inline-block;">
-                <span style="vertical-align: middle;">TastyDelight</span>
-            </div>
-            <h2>Verify Your Registration</h2>
-        </div>
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 2px solid #DD6625; margin-bottom: 20px; padding-bottom: 20px;">
+            <tr>
+                <td style="text-align: center;">
+                    <img src="{{ asset('images/tasty-delight-logo.png') }}" alt="TastyDelight" style="height: 40px; vertical-align: middle; margin-right: 10px; display: inline-block;">
+                    <span class="logo" style="vertical-align: middle;">TastyDelight</span>
+                </td>
+            </tr>
+        </table>
+        
+        <h2 style="text-align: center; color: #111827;">Verify Your Registration</h2>
         <p>Hi there,</p>
         <p>Thank you for registering an account with TastyDelight! Please use the following 6-digit One-Time Password (OTP) to complete your registration:</p>
         
