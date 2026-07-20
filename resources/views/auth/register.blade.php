@@ -84,7 +84,7 @@
                     <div class="col-span-2 sm:col-span-1" x-show="otpSent" style="display: none;">
                         <x-label for="otp_code" value="{{ __('6-Digit OTP Code') }}" />
                         <x-input id="otp_code" class="block mt-1 w-full text-center tracking-widest font-bold" type="text" name="otp_code" maxlength="6" placeholder="------" />
-                        <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Check terminal/logs.</p>
+                        <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Please check your email inbox (and spam folder).</p>
                         @error('otp_code')
                             <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
                         @enderror

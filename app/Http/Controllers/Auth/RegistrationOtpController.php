@@ -26,7 +26,7 @@ class RegistrationOtpController extends Controller
         Cache::put('registration_otp_' . $contactNumber, $code, now()->addMinutes(10));
 
         // Actually send the OTP via Email!
-        \Illuminate\Support\Facades\Mail::raw("Your TastyDelight Registration OTP is: $code", function ($message) use ($email) {
+        \Illuminate\Support\Facades\Mail::send('emails.otp', ['code' => $code], function ($message) use ($email) {
             $message->to($email)
                     ->subject('TastyDelight - Registration OTP');
         });
