@@ -14,6 +14,9 @@
         <meta name="apple-mobile-web-app-title" content="TastyDelight" />
         <link rel="manifest" href="/storage/favicons/site.webmanifest" />
 
+        <!-- Preload Important Assets -->
+        <link rel="preload" as="image" href="{{ asset('images/background.svg') }}" type="image/svg+xml" />
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
