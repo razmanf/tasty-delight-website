@@ -25,9 +25,12 @@
 
                     <div>
                         <x-label for="email" value="{{ __('Email') }}" />
-                        <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+                        <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" @input="emailError = ''" />
+                        <div x-show="emailError" style="display: none;">
+                            <p x-text="emailError" class="text-red-600 text-xs mt-1"></p>
+                        </div>
                         @error('email')
-                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                            <p x-show="!emailError" class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -85,7 +88,7 @@
                     <!-- Contact Number Error Message Row -->
                     <div class="col-span-2">
                         <div x-show="backendError" style="display: none;">
-                            <p x-text="backendError" class="text-red-600 text-xs live-validation-error"></p>
+                            <p x-text="backendError" class="text-red-600 text-xs"></p>
                         </div>
                         @error('contact_number')
                             <div>
@@ -145,6 +148,7 @@
                     return {
                         contactNumber: '{{ old('contact_number') }}',
                         backendError: '',
+                        emailError: '',
                         // Keep open if there was an OTP validation error previously
                         otpSent: {{ old('otp_code') || $errors->has('otp_code') ? 'true' : 'false' }},
                         isLoading: false,
@@ -159,6 +163,7 @@
                             }
                             this.isLoading = true;
                             this.backendError = '';
+                            this.emailError = '';
                             fetch('{{ route('registration.otp.send') }}', {
                                 method: 'POST',
                                 headers: {
@@ -175,8 +180,17 @@
                                 } else {
                                     const data = await res.json();
                                     if (data.errors) {
-                                        const firstErrorKey = Object.keys(data.errors)[0];
-                                        this.backendError = data.errors[firstErrorKey][0];
+                                        if (data.errors.email) {
+                                            console.log("Setting emailError to:", data.errors.email[0]);
+                                            this.emailError = data.errors.email[0];
+                                        }
+                                        if (data.errors.contact_number) {
+                                            this.backendError = data.errors.contact_number[0];
+                                        }
+                                        if (!data.errors.email && !data.errors.contact_number) {
+                                            const firstErrorKey = Object.keys(data.errors)[0];
+                                            this.backendError = data.errors[firstErrorKey][0];
+                                        }
                                     } else {
                                         this.backendError = data.message || 'Error sending OTP. Please try again.';
                                     }
