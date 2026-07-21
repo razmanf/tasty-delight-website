@@ -70,8 +70,11 @@
                         }
                     }
 
+                    // Handle inputs inside flex wrappers (like contact number + button)
+                    let parent = field.parentNode.classList.contains('flex') ? field.parentNode.parentNode : field.parentNode;
+                    
                     // Remove existing error smoothly if it exists
-                    let errorContainer = field.parentNode.querySelector('.live-validation-error');
+                    let errorContainer = parent.querySelector('.live-validation-error');
                     if (errorContainer && !errorMsg) {
                         errorContainer.classList.remove('opacity-100', 'max-h-10');
                         errorContainer.classList.add('opacity-0', 'max-h-0');
@@ -82,7 +85,7 @@
                         errorContainer = document.createElement('p');
                         errorContainer.className = 'text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-0 max-h-0 overflow-hidden';
                         errorContainer.textContent = errorMsg;
-                        field.parentNode.appendChild(errorContainer);
+                        parent.appendChild(errorContainer);
                         
                         // force reflow
                         void errorContainer.offsetWidth;

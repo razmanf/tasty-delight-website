@@ -63,18 +63,34 @@
                     <!-- Row 3 -->
                     <div class="col-span-2 sm:col-span-1">
                         <x-label for="contact_number" value="{{ __('Contact Number') }}" />
-                        <div class="flex gap-2 mt-1">
+                        <div class="flex gap-2 mt-1 w-full">
                             <x-input id="contact_number" x-model="contactNumber" @input="backendError = ''" class="block w-full" type="text" name="contact_number" required placeholder="0xxxxxxxxx" maxlength="10" />
                             <button type="button" @click="sendOtp()" :disabled="isLoading || !isContactValid" :class="{'opacity-50 cursor-not-allowed pointer-events-none': isLoading || !isContactValid, 'hover:bg-gray-300': !isLoading && isContactValid}" class="px-3 py-2 bg-gray-200 text-gray-700 font-bold rounded-md transition-colors text-sm flex-shrink-0 min-w-[100px]">
                                 <span x-show="!isLoading">Send OTP</span>
                                 <span x-show="isLoading" style="display: none;">Sending...</span>
                             </button>
                         </div>
+                    </div>
+
+                    <!-- OTP Code Input (Hidden until OTP is sent) -->
+                    <div class="col-span-2 sm:col-span-1" x-show="otpSent" style="display: none;">
+                        <x-label for="otp_code" value="{{ __('6-Digit OTP Code') }}" />
+                        <x-input id="otp_code" class="block mt-1 w-full text-center tracking-widest font-bold" type="text" name="otp_code" maxlength="6" placeholder="------" />
+                        <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Please check your email inbox (and spam folder).</p>
+                        @error('otp_code')
+                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Contact Number Error Message Row -->
+                    <div class="col-span-2">
                         <div x-show="backendError" style="display: none;">
-                            <p x-text="backendError" class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden"></p>
+                            <p x-text="backendError" class="text-red-600 text-xs live-validation-error"></p>
                         </div>
                         @error('contact_number')
-                            <p x-show="!backendError" class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                            <div>
+                                <p x-show="!backendError" class="text-red-600 text-xs live-validation-error">{{ $message }}</p>
+                            </div>
                         @enderror
                     </div>
 
