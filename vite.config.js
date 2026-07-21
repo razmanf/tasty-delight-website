@@ -4,7 +4,10 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     server: {
         fs: {
-          allow: ['vendor/livewire/livewire/dist']
+          allow: [
+              '.', 
+              'vendor/livewire/livewire/dist'
+          ]
         },
     },
     plugins: [
