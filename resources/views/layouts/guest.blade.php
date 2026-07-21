@@ -7,6 +7,19 @@
 
         <title>@hasSection('title') @yield('title') @else Login or register - TastyDelight @endif</title>
 
+        <!-- Open Graph / WhatsApp Link Previews -->
+        <meta property="og:title" content="@hasSection('title') @yield('title') @else TastyDelight - Premium Food Delivery @endif" />
+        <meta property="og:description" content="Experience the best food in town. Fast delivery, fresh ingredients, and mouth-watering meals delivered straight to your door." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="{{ url()->current() }}" />
+        <meta property="og:image" content="{{ asset('images/tasty-delight-logo.png') }}" />
+        
+        <!-- Twitter / iMessage Large Image -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="@hasSection('title') @yield('title') @else TastyDelight - Premium Food Delivery @endif" />
+        <meta name="twitter:description" content="Experience the best food in town. Fast delivery, fresh ingredients, and mouth-watering meals delivered straight to your door." />
+        <meta name="twitter:image" content="{{ asset('images/tasty-delight-logo.png') }}" />
+
         <!-- FavIcon -->
         <link rel="icon" type="image/svg+xml" href="/storage/favicons/favicon.svg" />
         <link rel="shortcut icon" href="/storage/favicons/favicon.ico" />
