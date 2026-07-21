@@ -64,9 +64,9 @@ class UserCheckout extends Component
     {
         if ($this->cart && $this->cart->items->isNotEmpty()) {
             $this->subtotal = $this->cart->items->sum(fn ($item) => $item->quantity * $item->product->price);
-            $this->tax_amount = $this->subtotal * 0.05; // 5% tax
+            $this->tax_amount = round($this->subtotal * 0.05, 2); // 5% tax
             $this->delivery_fee = $this->order_type === 'delivery' ? 5.00 : 0.00; // $5 flat fee for delivery
-            $this->total = $this->subtotal + $this->tax_amount + $this->delivery_fee;
+            $this->total = round($this->subtotal + $this->tax_amount + $this->delivery_fee, 2);
         }
     }
 
@@ -91,7 +91,7 @@ class UserCheckout extends Component
             Stripe::setApiKey($stripeSecret);
             try {
                 $paymentIntent = PaymentIntent::create([
-                    'amount' => max((int)($this->total * 100), 50),
+                    'amount' => max((int)round($this->total * 100), 50),
                     'currency' => 'usd',
                     'metadata' => ['user_id' => Auth::id()],
                 ]);

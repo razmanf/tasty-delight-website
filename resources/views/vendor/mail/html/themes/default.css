@@ -295,3 +295,39 @@ img {
 .break-all {
     word-break: break-all;
 }
+
+@media (prefers-color-scheme: dark) {
+    body,
+    .body,
+    .wrapper,
+    .content {
+        background-color: #111827 !important;
+        color: #f9fafb !important;
+    }
+    
+    .inner-body {
+        background-color: #1f2937 !important;
+        border-color: #374151 !important;
+    }
+    
+    h1, h2, h3 {
+        color: #f9fafb !important;
+    }
+    
+    p, ul, ol, blockquote, td, th {
+        color: #d1d5db !important;
+    }
+    
+    .footer p {
+        color: #9ca3af !important;
+    }
+    
+    .panel-content {
+        background-color: #374151 !important;
+        color: #d1d5db !important;
+    }
+    
+    .panel-content p {
+        color: #d1d5db !important;
+    }
+}

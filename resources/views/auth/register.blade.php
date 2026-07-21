@@ -76,7 +76,7 @@
                     <div class="col-span-2 sm:col-span-1" x-show="otpSent" style="display: none;">
                         <x-label for="otp_code" value="{{ __('6-Digit OTP Code') }}" />
                         <x-input id="otp_code" class="block mt-1 w-full text-center tracking-widest font-bold" type="text" name="otp_code" maxlength="6" placeholder="------" />
-                        <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Please check your email inbox (and spam folder).</p>
+                        <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Please check your email inbox.</p>
                         @error('otp_code')
                             <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
                         @enderror
@@ -93,20 +93,7 @@
                             </div>
                         @enderror
                     </div>
-
-
-
-                    <!-- OTP Code Input (Hidden until OTP is sent) -->
-                    <div class="col-span-2 sm:col-span-1" x-show="otpSent" style="display: none;">
-                        <x-label for="otp_code" value="{{ __('6-Digit OTP Code') }}" />
-                        <x-input id="otp_code" class="block mt-1 w-full text-center tracking-widest font-bold" type="text" name="otp_code" maxlength="6" placeholder="------" />
-                        <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Please check your email inbox (and spam folder).</p>
-                        @error('otp_code')
-                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
-                        @enderror
-                    </div>
                 </div>
-
 
 
                 @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
@@ -187,10 +174,11 @@
                                     this.otpSent = true;
                                 } else {
                                     const data = await res.json();
-                                    if(data.errors && data.errors.contact_number) {
-                                        this.backendError = data.errors.contact_number[0];
+                                    if (data.errors) {
+                                        const firstErrorKey = Object.keys(data.errors)[0];
+                                        this.backendError = data.errors[firstErrorKey][0];
                                     } else {
-                                        this.backendError = 'Error sending OTP. Make sure the number is valid and not already registered.';
+                                        this.backendError = data.message || 'Error sending OTP. Please try again.';
                                     }
                                 }
                             })

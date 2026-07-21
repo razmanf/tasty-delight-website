@@ -70,7 +70,7 @@
                 <div class="flex-1 min-w-0">
                     <p class="font-semibold text-sm {{ is_null($notification->read_at) ? 'font-bold' : '' }}"
                        style="color: var(--td-text);">{{ $data['title'] ?? 'Notification' }}</p>
-                    <p class="text-sm mt-0.5" style="color: var(--td-muted);">{{ $data['message'] ?? '' }}</p>
+                    <p class="text-sm mt-0.5" style="color: var(--td-muted);">{{ $data['body'] ?? $data['message'] ?? '' }}</p>
                     <p class="text-xs mt-1" style="color: var(--td-muted);">{{ $notification->created_at->diffForHumans() }}</p>
                 </div>
 

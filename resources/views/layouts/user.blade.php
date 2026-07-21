@@ -173,7 +173,7 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-bold truncate" style="color: var(--td-text);">{{ $notif->data['title'] ?? 'Notification' }}</p>
-                                            <p class="text-xs line-clamp-2 mt-0.5" style="color: var(--td-muted);">{{ $notif->data['message'] ?? 'You have a new update.' }}</p>
+                                            <p class="text-xs line-clamp-2 mt-0.5" style="color: var(--td-muted);">{{ $notif->data['body'] ?? $notif->data['message'] ?? 'You have a new update.' }}</p>
                                             <p class="text-[10px] mt-1 uppercase font-bold" style="color: var(--td-muted);">{{ $notif->created_at->diffForHumans() }}</p>
                                         </div>
                                         @if(is_null($notif->read_at))

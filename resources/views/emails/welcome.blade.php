@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
     <style>
         body { font-family: 'Inter', Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px; }
         .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; border: 1px solid #e5e7eb; }
@@ -10,6 +12,14 @@
         .features { margin: 30px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; }
         .feature-item { margin-bottom: 10px; font-size: 15px; color: #4b5563; }
         h3 { color: #1f2937; margin-top: 0; }
+        
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #111827 !important; color: #f9fafb !important; }
+            .container { background-color: #1f2937 !important; border-color: #374151 !important; }
+            h2, h3 { color: #f9fafb !important; }
+            .feature-item, p, th, td { color: #d1d5db !important; }
+            .features { background-color: #374151 !important; }
+        }
     </style>
 </head>
 <body>
@@ -39,11 +49,11 @@
         <p>Ready to discover your next favorite meal?</p>
         
         <div style="text-align:center">
-            <a href="{{ url('/') }}" class="btn">Explore the Menu</a>
+            <a href="{{ url('/') }}" class="btn" style="color: #ffffff; text-decoration: none;">Explore the Menu</a>
         </div>
         
         <p style="margin-top: 40px; font-size: 13px; color: #6b7280; text-align: center;">
-            Have questions? Our support team is always here for you. Just hit reply!
+            Have questions? Please contact our support team.
         </p>
     </div>
 </body>
