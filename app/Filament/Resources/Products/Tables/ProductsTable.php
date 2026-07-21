@@ -17,6 +17,8 @@ class ProductsTable
             ->columns([
                 \Filament\Tables\Columns\ImageColumn::make('image')
                     ->defaultImageUrl(asset('images/placeholder-food.png'))
+                    ->square()
+                    ->size(40)
                     ->toggleable(),
                 TextColumn::make('name')
                     ->searchable()

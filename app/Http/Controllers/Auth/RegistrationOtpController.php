@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMailable;
 
 class RegistrationOtpController extends Controller
 {
@@ -26,10 +28,7 @@ class RegistrationOtpController extends Controller
         Cache::put('registration_otp_' . $contactNumber, $code, now()->addMinutes(10));
 
         // Actually send the OTP via Email!
-        \Illuminate\Support\Facades\Mail::send('emails.otp', ['code' => $code], function ($message) use ($email) {
-            $message->to($email)
-                    ->subject('TastyDelight - Registration OTP');
-        });
+        Mail::to($email)->send(new OtpMailable($code));
 
         // Also log it for debugging
         error_log("REGISTRATION OTP for $email (Phone: $contactNumber): $code");

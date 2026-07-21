@@ -24,6 +24,12 @@ use App\Http\Controllers\PageController;
 
 // ─── Root / Login / Register ─────────────────────────────────────────────────
 Route::get('/', function () {
+    if (auth()->check()) {
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('filament.admin.pages.dashboard');
+        }
+        return redirect()->route('user.dashboard');
+    }
     return view('auth.register');
 });
 

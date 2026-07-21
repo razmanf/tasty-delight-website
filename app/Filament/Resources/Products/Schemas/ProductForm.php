@@ -38,6 +38,11 @@ class ProductForm
                     ->live(onBlur: true),
                 FileUpload::make('image')
                     ->image()
+                    ->maxSize(5120) // 5MB limit
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('1:1') // Force square crop
+                    ->imageResizeTargetWidth('600')
+                    ->imageResizeTargetHeight('600')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn ($state) => filled($state))
                     ->live(onBlur: true),
