@@ -5,9 +5,9 @@
     <div x-data="{
             activeSlide: 0,
             slides: [
-                'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2000&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1493770348161-369560ae357d?q=80&w=2000&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?q=80&w=2000&auto=format&fit=crop'
+                'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=60&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1493770348161-369560ae357d?q=60&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?q=60&w=1200&auto=format&fit=crop'
             ],
             interval: null,
             next() {

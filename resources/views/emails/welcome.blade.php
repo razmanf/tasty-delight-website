@@ -27,7 +27,9 @@
         <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 2px solid #DD6625; margin-bottom: 20px; padding-bottom: 20px;">
             <tr>
                 <td style="text-align: center;">
-                    <img src="{{ asset('images/tasty-delight-logo.png') }}" alt="TastyDelight" style="height: 40px; vertical-align: middle; margin-right: 10px; display: inline-block;">
+                    <a href="{{ config('app.url') }}" style="text-decoration: none; border: none;">
+                        <img src="{{ asset('images/tasty-delight-logo.png') }}" alt="TastyDelight" style="height: 60px; vertical-align: middle; margin-right: 10px; display: inline-block; border: none;">
+                    </a>
                     <span class="logo" style="vertical-align: middle;">TastyDelight</span>
                 </td>
             </tr>
