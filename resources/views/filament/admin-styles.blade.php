@@ -364,12 +364,64 @@ document.addEventListener('click', function(event) {
 
 <!-- Prevent Dark Mode Glitch on Livewire Navigation in Admin Panel -->
 <script>
+    // 1. Sync Scoped Theme to Global Theme BEFORE Filament boots
+    let authId = '{{ auth()->id() }}';
+    let scopedTheme = localStorage.getItem('theme_' + authId);
+    
+    // If the admin has no saved preference, explicitly enforce Light Mode as default
+    if (!scopedTheme) {
+        scopedTheme = 'light';
+        localStorage.setItem('theme_' + authId, 'light');
+    }
+    
+    // Force Filament's global theme to match the Admin's scoped theme
+    localStorage.setItem('theme', scopedTheme);
+
+    // 2. Ensure the DOM has the correct class immediately for Livewire Navigation
     document.addEventListener('livewire:navigated', function () {
-        let theme = localStorage.getItem('theme') || 'system';
-        if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        let currentTheme = localStorage.getItem('theme_' + authId);
+        if (currentTheme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
+    });
+
+    // 3. Bi-directional Sync: When Filament's toggle changes the class, update the scoped theme!
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'dark' : 'light';
+                localStorage.setItem('theme_' + authId, newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+        });
+    });
+    
+    // Observe the <html> tag for class changes
+    observer.observe(document.documentElement, { attributes: true });
+
+    // 4. Live update the topbar avatar without reloading the page
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('admin-avatar-updated', (data) => {
+            // Livewire 3 passes named arguments as an object or array. Safely extract the URL.
+            let newUrl = null;
+            if (data && data.url) {
+                newUrl = data.url;
+            } else if (data && data[0] && data[0].url) {
+                newUrl = data[0].url;
+            }
+
+            if (newUrl) {
+                let avatars = document.querySelectorAll('.fi-topbar img');
+                avatars.forEach(img => {
+                    // Ensure we don't accidentally replace a logo if it's an img
+                    if (!img.closest('.fi-logo')) {
+                        img.src = newUrl;
+                    }
+                });
+            }
+        });
     });
 </script>

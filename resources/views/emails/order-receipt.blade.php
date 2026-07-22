@@ -40,6 +40,9 @@
             .address-box { background-color: #422006 !important; border-color: #9a3412 !important; }
             .badge { background-color: #854d0e !important; color: #fef08a !important; }
         }
+        
+        /* Hide Gmail Image Download Icon */
+        img + div { display: none !important; }
     </style>
 </head>
 <body>

@@ -39,6 +39,14 @@
 
         <!-- Styles -->
         @livewireStyles
+        
+        <!-- Force Light Mode for Guest Pages -->
+        <script>
+            document.documentElement.classList.remove('dark');
+            document.addEventListener('livewire:navigated', () => {
+                document.documentElement.classList.remove('dark');
+            });
+        </script>
     </head>
     <body class="bg-no-repeat bg-[length:700px] max-[470px]:bg-[length:150vw] sm:bg-[length:800px] min-[1200px]:bg-[length:950px] bg-[position:center_0rem] min-[1200px]:bg-[position:calc(50vw-750px)_center] min-[1440px]:bg-[length:1200px] min-[1440px]:bg-[position:calc(50vw-920px)_center]" style="background-image: url('{{ asset('images/background.svg') }}');">
         <div class="font-sans text-gray-900 antialiased bg-transparent">

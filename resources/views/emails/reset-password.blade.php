@@ -20,6 +20,9 @@
             .feature-item, p, th, td { color: #d1d5db !important; }
             .features { background-color: #374151 !important; }
         }
+        
+        /* Hide Gmail Image Download Icon */
+        img + div { display: none !important; }
     </style>
 </head>
 <body>

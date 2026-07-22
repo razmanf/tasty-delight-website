@@ -39,7 +39,7 @@ class AdminSettings extends Page implements HasForms
         $user = Auth::user();
         $this->form->fill([
             'name'           => $user->name,
-            'profile_photo'  => null,
+            'profile_photo'  => $user->profile_photo_path,
         ]);
     }
 
@@ -53,9 +53,8 @@ class AdminSettings extends Page implements HasForms
                     ->schema([
                         FileUpload::make('profile_photo')
                             ->label('Profile Photo')
+                            ->avatar()
                             ->image()
-                            ->imageEditor()
-                            ->circleCropper()
                             ->directory('profile-photos')
                             ->disk('public')
                             ->maxSize(2048)
@@ -64,6 +63,7 @@ class AdminSettings extends Page implements HasForms
                         TextInput::make('name')
                             ->label('Full Name')
                             ->required()
+                            ->autocomplete('name')
                             ->maxLength(255),
 
                         Placeholder::make('email')
@@ -79,12 +79,14 @@ class AdminSettings extends Page implements HasForms
                         TextInput::make('current_password')
                             ->label('Current Password')
                             ->password()
+                            ->autocomplete('current-password')
                             ->revealable()
                             ->dehydrated(false),
 
                         TextInput::make('new_password')
                             ->label('New Password')
                             ->password()
+                            ->autocomplete('new-password')
                             ->revealable()
                             ->rule(Password::defaults())
                             ->different('current_password')
@@ -93,6 +95,7 @@ class AdminSettings extends Page implements HasForms
                         TextInput::make('new_password_confirmation')
                             ->label('Confirm New Password')
                             ->password()
+                            ->autocomplete('new-password')
                             ->revealable()
                             ->same('new_password')
                             ->dehydrated(false),
@@ -119,8 +122,8 @@ class AdminSettings extends Page implements HasForms
         // Update name
         $user->name = $data['name'];
 
-        // Update profile photo if provided
-        if (!empty($data['profile_photo'])) {
+        // Update profile photo (allows setting to null if deleted)
+        if (array_key_exists('profile_photo', $data)) {
             $user->profile_photo_path = $data['profile_photo'];
         }
 
@@ -137,10 +140,20 @@ class AdminSettings extends Page implements HasForms
         }
 
         $user->save();
+        
+        // Update the password hash in the session so AuthenticateSession doesn't log the user out
+        if (request()->hasSession()) {
+            request()->session()->put([
+                'password_hash_'.Auth::getDefaultDriver() => $user->getAuthPassword(),
+            ]);
+        }
 
         Notification::make()
             ->title('Settings saved successfully!')
             ->success()
             ->send();
+            
+        // Dispatch event for live topbar avatar update (avoids page reload glitches)
+        $this->dispatch('admin-avatar-updated', url: $user->profile_photo_url);
     }
 }

@@ -20,6 +20,7 @@ class UserSettings extends Component
     public string $currentPassword = '';
     public string $newPassword = '';
     public string $newPasswordConfirmation = '';
+    public string $passwordForDeletion = '';
 
     public function mount(): void
     {
@@ -41,6 +42,7 @@ class UserSettings extends Component
         }
 
         $user->save();
+        $this->dispatch('profile-updated');
         session()->flash('success', 'Profile updated successfully!');
     }
 
@@ -56,9 +58,40 @@ class UserSettings extends Component
             return;
         }
 
-        Auth::user()->update(['password' => Hash::make($this->newPassword)]);
+        $user = Auth::user();
+        $user->update(['password' => Hash::make($this->newPassword)]);
+        
+        // Update the password hash in the session so AuthenticateSession doesn't log the user out
+        if (request()->hasSession()) {
+            request()->session()->put([
+                'password_hash_'.Auth::getDefaultDriver() => $user->getAuthPassword(),
+            ]);
+        }
+
         $this->reset('currentPassword', 'newPassword', 'newPasswordConfirmation');
         session()->flash('success', 'Password changed successfully!');
+    }
+
+    public function deleteAccount(): void
+    {
+        $user = Auth::user();
+
+        $this->validate([
+            'passwordForDeletion' => 'required',
+        ]);
+
+        if (!Hash::check($this->passwordForDeletion, $user->password)) {
+            $this->addError('passwordForDeletion', 'The password you entered is incorrect.');
+            return;
+        }
+
+        Auth::guard('web')->logout();
+        $user->delete();
+        
+        session()->invalidate();
+        session()->regenerateToken();
+        
+        $this->redirect(route('register'));
     }
 
     public function render()
