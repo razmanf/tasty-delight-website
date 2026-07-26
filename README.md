@@ -22,7 +22,7 @@
 - **Payments:** Stripe API
 - **Emails & OTP:** Resend API
 - **DevOps & Hosting:** DigitalOcean, Coolify (Docker)
-- **Backups:** Cloudflare R2 (S3-compatible)
+- **Backups:** Coolify Automated Backups
 
 ## ✨ Key Features
 
@@ -36,7 +36,7 @@
 This application is deployed using a modern, enterprise-grade cloud architecture:
 - **Zero-Downtime Deployments:** Managed by **Coolify**, which watches the GitHub repository and automatically builds, optimizes (`php artisan optimize`), and swaps Docker containers seamlessly on a **DigitalOcean** Droplet.
 - **Persistent Asset Storage:** User-uploaded assets (like product images) bypass ephemeral containers using Coolify's Persistent Volumes, directly mapping to the DigitalOcean server's hard drive.
-- **Automated Off-site Backups:** Coolify automatically dumps the live MySQL database and securely ships it to **Cloudflare R2** on a scheduled cron job, protected by a 30-day lifecycle deletion rule.
+- **Automated Backups:** Coolify automatically dumps the live MySQL database on a scheduled cron job to ensure data safety.
 - **Secure Networking:** Fully automated Let's Encrypt SSL generation for `tastydelight.shop`.
 
 ---
