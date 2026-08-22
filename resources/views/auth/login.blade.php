@@ -12,6 +12,13 @@
                     </div>
                 @endsession
 
+                @if(request('expired'))
+                    <div class="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl text-amber-800 bg-amber-100 border border-amber-200">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span class="text-sm font-medium">For your security, your session has expired due to inactivity. Please log in again.</span>
+                    </div>
+                @endif
+
                 <div class="text-center text-gray-600 mb-4">
                     <h1 class="text-2xl font-bold">Login</h1>
                 </div>

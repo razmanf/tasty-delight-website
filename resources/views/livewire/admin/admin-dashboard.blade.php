@@ -5,13 +5,18 @@
     <h1 class="text-white text-2xl font-medium">Overview</h1>
     
     <div id="search-bar" class="w-[20rem] bg-white rounded-md shadow-lg z-10 relative">
-        <div class="flex items-center justify-center p-2">
+        <div class="flex items-center justify-center p-2 relative">
             <input 
                 type="text" 
                 placeholder="Search here"
-                wire:model.debounce.300ms="searchQuery"
-                class="w-full rounded-md px-2 py-1 bg-white border-none focus:outline-none focus:ring-0 focus:ring-gray-600 focus:border-transparent"
+                wire:model.live.debounce.300ms="searchQuery"
+                class="w-full rounded-md pl-2 pr-8 py-1 bg-white border-none focus:outline-none focus:ring-0 focus:ring-gray-600 focus:border-transparent"
             >        
+            @if(strlen($searchQuery) > 0)
+                <button type="button" wire:click="$set('searchQuery', '')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            @endif
         </div>
 
         {{-- Livewire loading spinner (appears below the input box) --}}

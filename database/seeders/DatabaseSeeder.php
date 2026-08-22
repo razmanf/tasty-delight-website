@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
-            CartSeeder::class,
-            CartItemSeeder::class,
-            OrderSeeder::class,
-            OrderProductSeeder::class,
-            ReviewSeeder::class,
-            NotificationSeeder::class,
+            // CartSeeder::class,
+            // CartItemSeeder::class,
+            // OrderSeeder::class,
+            // OrderProductSeeder::class,
+            // ReviewSeeder::class,
+            // NotificationSeeder::class,
         ]);
     }
 }

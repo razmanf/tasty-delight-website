@@ -13,16 +13,16 @@ class UserSeeder extends Seeder
         // Admin User
         User::create([
             'name' => 'Admin User',
-            'email' => 'admin@tastydelight.com',
+            'email' => 'admin@tastydelight.shop',
             'password' => 'password', // plain text, model will hash it
             'role' => 'admin',
             'email_verified_at' => now(),
         ]);
 
-        // Regular User
-        User::create([
+        // Regular user
+        User::factory()->create([
             'name' => 'Test User',
-            'email' => 'user@tastydelight.com',
+            'email' => 'testuser@example.com',
             'password' => 'password',
             'role' => 'user',
             'email_verified_at' => now(),

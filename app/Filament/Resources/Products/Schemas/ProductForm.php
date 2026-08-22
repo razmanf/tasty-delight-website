@@ -38,14 +38,26 @@ class ProductForm
                     ->live(onBlur: true),
                 FileUpload::make('image')
                     ->image()
+                    ->disk('public')
                     ->maxSize(5120) // 5MB limit
-                    ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('1:1') // Force square crop
-                    ->imageResizeTargetWidth('600')
-                    ->imageResizeTargetHeight('600')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn ($state) => filled($state))
-                    ->live(onBlur: true),
+                    ->live(onBlur: true)
+                    ->saveUploadedFileUsing(function (\Illuminate\Http\UploadedFile $file, $get) {
+                        $categoryId = $get('category_id') ?? 'uncategorized';
+                        $productFolder = 'product-images/' . $categoryId;
+                        
+                        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                        $img = $manager->read($file->getRealPath());
+                        
+                        // Scale down to max 600x600 but preserve original aspect ratio (no cropping)
+                        $img->scaleDown(600, 600);
+                        
+                        $filename = $productFolder . '/' . uniqid() . '.webp';
+                        \Illuminate\Support\Facades\Storage::disk('public')->put($filename, (string) $img->toWebp(80));
+                        
+                        return $filename;
+                    }),
             ]);
     }
 }

@@ -24,7 +24,7 @@ class OrderReceiptMailable extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your TastyDelight Order Receipt #' . $this->order->id,
+            subject: 'Your order has been received - TastyDelight Receipt #' . $this->order->id,
         );
     }
 

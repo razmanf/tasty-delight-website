@@ -86,8 +86,26 @@ class UserOrders extends Component
 
         $mediaPaths = [];
         if ($this->media) {
+            $userFolder = 'reviews/' . Auth::id();
+            
             foreach ($this->media as $file) {
-                $mediaPaths[] = $file->store('reviews', 'public');
+                $mimeType = $file->getMimeType();
+                
+                // If it is an image, optimize and convert to WebP
+                if (str_starts_with($mimeType, 'image/')) {
+                    $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                    $img = $manager->read($file->getRealPath());
+                    
+                    // Scale down to max 1200x1200 but keep aspect ratio to save space on large photos
+                    $img->scaleDown(1200, 1200);
+                    
+                    $filename = $userFolder . '/' . uniqid() . '.webp';
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($filename, (string) $img->toWebp(80));
+                    $mediaPaths[] = $filename;
+                } else {
+                    // For videos (mp4, mov, avi), just save them normally
+                    $mediaPaths[] = $file->store($userFolder, 'public');
+                }
             }
         }
 

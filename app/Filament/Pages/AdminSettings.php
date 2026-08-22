@@ -58,7 +58,19 @@ class AdminSettings extends Page implements HasForms
                             ->directory('profile-photos')
                             ->disk('public')
                             ->maxSize(2048)
-                            ->helperText('Max 2MB. Will be cropped to a circle.'),
+                            ->helperText('Max 2MB. Will be scaled to max 400x400.')
+                            ->saveUploadedFileUsing(function (\Illuminate\Http\UploadedFile $file) {
+                                $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                                $img = $manager->read($file->getRealPath());
+                                
+                                $img->scaleDown(400, 400);
+                                
+                                $userFolder = 'profile-photos/' . \Illuminate\Support\Facades\Auth::id();
+                                $filename = $userFolder . '/' . uniqid() . '.webp';
+                                \Illuminate\Support\Facades\Storage::disk('public')->put($filename, (string) $img->toWebp(80));
+                                
+                                return $filename;
+                            }),
 
                         TextInput::make('name')
                             ->label('Full Name')

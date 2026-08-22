@@ -26,9 +26,14 @@
         <input wire:model.live.debounce.400ms="query" type="text"
                placeholder="Search menu items, categories..."
                value="{{ $query }}"
-               class="w-full pl-11 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all"
+               class="w-full pl-11 pr-11 py-3 rounded-2xl border text-sm outline-none transition-all"
                style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--td-muted);"></i>
+        @if(strlen($query) > 0)
+            <button type="button" wire:click="$set('query', '')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        @endif
     </div>
 
     @if(strlen($query) < 2)
@@ -46,13 +51,14 @@
     @else
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             @foreach($results as $product)
-            <div class="td-card overflow-hidden p-0 group">
+            <div wire:key="search-product-{{ $product->id }}" class="td-card overflow-hidden p-0 group transition-all duration-300" 
+                 @if($product->match_tier == 3) x-data="{ highlight: true }" x-init="setTimeout(() => highlight = false, 2000)" :class="highlight ? 'ring-2 ring-yellow-400/80 shadow-[0_0_15px_rgba(250,204,21,0.4)]' : ''" @endif>
                 <div class="h-40 overflow-hidden">
                     @if($product->image)
                         <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}"
                              alt="{{ $product->name }}"
                              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                             onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
+                             onerror="this.src='{{ asset('images/placeholder-food.webp') }}'">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background: #DD66251A;">
                             <i class="fa-solid fa-utensils text-3xl" style="color: var(--td-primary);"></i>

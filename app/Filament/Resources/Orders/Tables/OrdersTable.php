@@ -13,6 +13,7 @@ class OrdersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->poll('15s')
             ->columns([
                 TextColumn::make('id')
                     ->label('Order #')
@@ -70,7 +71,13 @@ class OrdersTable
                     ->visible(fn ($record) => $record->status === 'pending')
                     ->action(function ($record) {
                         $record->update(['status' => 'processing']);
-                        // In a real app, you might trigger notifications here
+                        if ($record->user && $record->user->email) {
+                            try {
+                                \Illuminate\Support\Facades\Mail::to($record->user->email)->send(new \App\Mail\OrderProcessingNotification($record));
+                            } catch (\Exception $e) {
+                                \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
+                            }
+                        }
                     }),
                 \Filament\Actions\Action::make('mark_delivery')
                     ->label('Mark Delivery')

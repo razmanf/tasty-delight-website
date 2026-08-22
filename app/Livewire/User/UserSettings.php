@@ -39,11 +39,27 @@ class UserSettings extends Component
 
         if ($this->photo) {
             $user->updateProfilePhoto($this->photo);
+            $this->reset('photo');
         }
 
         $user->save();
         $this->dispatch('profile-updated');
         session()->flash('success', 'Profile updated successfully!');
+    }
+
+    public function deleteProfilePhoto(): void
+    {
+        $user = Auth::user();
+        
+        if ($user->profile_photo_path) {
+            $user->deleteProfilePhoto();
+            
+            // Dispatch event to update the topbar avatars without page reload
+            $this->dispatch('admin-avatar-updated', url: $user->getFilamentAvatarUrl());
+            $this->dispatch('profile-updated'); 
+            
+            session()->flash('success', 'Profile photo removed successfully!');
+        }
     }
 
     public function savePassword(): void

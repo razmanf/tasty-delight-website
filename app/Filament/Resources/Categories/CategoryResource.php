@@ -26,6 +26,8 @@ class CategoryResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?array $globallySearchableAttributes = ['name', 'description'];
+
     public static function getGlobalSearchResultTitle($record): string
     {
         return $record->name;

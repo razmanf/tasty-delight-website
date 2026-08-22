@@ -1,7 +1,5 @@
 <div class="max-w-4xl mx-auto pb-10" x-data="checkoutState()">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
-    
+
     <h1 class="text-2xl font-bold mb-6" style="color: var(--td-text);">
         <i class="fa-solid fa-credit-card mr-2" style="color: var(--td-primary);"></i> Checkout
     </h1>
@@ -14,7 +12,7 @@
             <!-- STEP 1: Fulfillment -->
             <div x-show="step === 1" x-cloak>
                 <div class="td-card">
-                    <h2 class="font-bold text-lg mb-4" style="color: var(--td-text);">1. Fulfillment Method</h2>
+                    <h2 class="font-bold text-lg mb-4" style="color: var(--td-text);">{{ config('labels.order_details', 'Fulfillment Method') }}</h2>
                     
                     <!-- Toggle Delivery/Pickup (Pill Selector) -->
                     <div class="relative flex items-center p-1 bg-gray-100 dark:bg-gray-800/50 rounded-full mb-6 w-full max-w-sm border shadow-inner" style="border-color: var(--td-border);">
@@ -75,12 +73,12 @@
                             <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Date</label>
                             @if($order_type === 'delivery')
                                 <div class="relative">
-                                    <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today' })" wire:model.blur="delivery_date" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date" required>
+                                    <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today', disableMobile: true })" wire:model.blur="delivery_date" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date" required>
                                     <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                                 </div>
                             @else
                                 <div class="relative">
-                                    <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today' })" wire:model.blur="pickup_date" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date" required>
+                                    <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today', disableMobile: true })" wire:model.blur="pickup_date" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date" required>
                                     <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                                 </div>
                             @endif
@@ -156,20 +154,12 @@
                     </div>
                     @endif
 
-                    <div class="mt-6">
-                        <button wire:click="goToReview" wire:loading.attr="disabled" class="td-btn-primary w-full py-3 justify-center">Continue to Review</button>
-                    </div>
                 </div>
-            </div>
 
-            <!-- STEP 2: Review & Notes -->
-            @if($step === 2 || $step === 3)
-                <div class="td-card">
+                <!-- Review & Notes (Now part of Step 1) -->
+                <div class="td-card mt-6">
                     <h2 class="font-bold text-lg mb-4 flex items-center justify-between" style="color: var(--td-text);">
                         <span>2. Order Review</span>
-                        @if($step === 2)
-                            <button wire:click="goBack" class="text-sm text-blue-500 hover:underline">Edit Details</button>
-                        @endif
                     </h2>
                     
                     <div class="space-y-4">
@@ -184,8 +174,9 @@
                         </div>
                         @endif
                     </div>
+                    </div>
                 </div>
-            @endif
+            </div>
 
         </div>
 
@@ -218,7 +209,7 @@
                     </div>
                 </div>
 
-                @if($step === 2)
+                @if($step === 1)
                     <button wire:click="confirmOrder" wire:loading.attr="disabled" class="td-btn-primary w-full py-3 justify-center">
                         @if($order_type === 'pickup' || ($order_type === 'delivery' && $payment_method === 'cash'))
                             <i class="fa-solid fa-check mr-2"></i> Place Order Now
@@ -230,7 +221,10 @@
                 
                 @if($step === 3 && $order_type === 'delivery' && $payment_method === 'card')
                     <div class="mt-6 border-t pt-6" style="border-color: var(--td-border);" wire:ignore>
-                        <h3 class="font-bold mb-4" style="color: var(--td-text);">Card Details</h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold" style="color: var(--td-text);">Card Details</h3>
+                            <button type="button" wire:click="goBack" class="text-sm text-blue-500 hover:underline"><i class="fa-solid fa-arrow-left mr-1"></i> Edit Details</button>
+                        </div>
                         @if($clientSecret === 'simulated_test_secret')
                             <div class="p-4 mb-6 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center space-y-3" style="border-color: var(--td-primary); background: #DD66250A;">
                                 <div class="flex gap-2 text-2xl text-gray-400">
@@ -258,9 +252,6 @@
 
     </div>
 
-    <!-- Flatpickr script -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
     <!-- Map & Payment Logic -->
     <script>
         function checkoutState() {
@@ -272,8 +263,12 @@
                 storeLat: 7.2906,
                 storeLng: 80.6337,
                 orderType: @entangle('order_type').live,
+                paymentMethod: @entangle('payment_method').live,
                 step: @entangle('step'),
                 addressQuery: @entangle('delivery_address'),
+                deliveryLat: @entangle('delivery_lat'),
+                deliveryLng: @entangle('delivery_lng'),
+                clientSecret: @entangle('clientSecret'),
                 showSuggestions: false,
                 suggestions: [],
 
@@ -300,9 +295,15 @@
                     const lng = parseFloat(item.lon);
                     
                     if (this.orderType === 'delivery') {
-                        this.map.setView([lat, lng], 15);
-                        this.deliveryMarker.setLatLng([lat, lng]);
-                        this.updateRoute(lat, lng);
+                        if (lat >= 5.9 && lat <= 9.9 && lng >= 79.5 && lng <= 81.9) {
+                            this.map.setView([lat, lng], 15);
+                            this.deliveryMarker.setLatLng([lat, lng]);
+                            this.updateRoute(lat, lng);
+                            this.deliveryLat = lat;
+                            this.deliveryLng = lng;
+                        } else {
+                            alert("Sorry, we only deliver within Sri Lanka.");
+                        }
                     }
                 },
 
@@ -319,33 +320,28 @@
                         }
                     });
                     
-                    // Delay slightly to ensure DOM is ready
                     setTimeout(() => {
                         this.initMap();
                     }, 100);
                 },
 
                 initMap() {
-                    if (!document.getElementById('checkout-map')) return;
-
-                    this.map = L.map('checkout-map').setView([this.storeLat, this.storeLng], 14);
+                    this.map = L.map('checkout-map').setView([this.storeLat, this.storeLng], 15);
                     
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19,
                         attribution: '© OpenStreetMap'
                     }).addTo(this.map);
 
-                    // Store Marker
-                    const storeIcon = L.divIcon({
-                        className: 'custom-div-icon',
-                        html: '<' + 'div style="background-color:var(--td-primary);color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 6px rgba(0,0,0,0.3);"><' + 'i class="fa-solid fa-store"><' + '/i><' + '/div>',
-                        iconSize: [30, 30],
-                        iconAnchor: [15, 15]
-                    });
-
                     this.storeMarker = L.marker([this.storeLat, this.storeLng], {
-                        icon: storeIcon,
-                        title: 'TastyDelight Kandy'
+                        icon: L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })
                     }).addTo(this.map);
 
                     this.storeMarker.bindPopup(
@@ -353,7 +349,6 @@
                         '<' + 'a href="https://www.google.com/maps/search/?api=1&query=' + this.storeLat + ',' + this.storeLng + '" target="_blank" class="text-blue-500 text-xs underline mt-1 block">Open in Google Maps<' + '/a>'
                     );
 
-                    // Delivery Marker
                     this.deliveryMarker = L.marker([this.storeLat + 0.01, this.storeLng + 0.01], {
                         draggable: true
                     });
@@ -362,6 +357,8 @@
                         const pos = e.target.getLatLng();
                         this.updateRoute(pos.lat, pos.lng);
                         this.reverseGeocode(pos.lat, pos.lng);
+                        this.deliveryLat = pos.lat;
+                        this.deliveryLng = pos.lng;
                     });
 
                     this.map.on('click', (e) => {
@@ -369,10 +366,22 @@
                             this.deliveryMarker.setLatLng(e.latlng);
                             this.updateRoute(e.latlng.lat, e.latlng.lng);
                             this.reverseGeocode(e.latlng.lat, e.latlng.lng);
+                            this.deliveryLat = e.latlng.lat;
+                            this.deliveryLng = e.latlng.lng;
                         }
                     });
 
                     this.updateMapMode();
+
+                    this.$watch('step', (val) => {
+                        if (val === 3 && this.orderType === 'delivery' && this.paymentMethod === 'card') {
+                            this.initPayment();
+                        }
+                    });
+
+                    if (this.step === 3 && this.orderType === 'delivery' && this.paymentMethod === 'card') {
+                        this.initPayment();
+                    }
                 },
 
                 updateMapMode() {
@@ -384,6 +393,7 @@
                         this.map.touchZoom.disable();
                         this.map.doubleClickZoom.disable();
                         this.map.scrollWheelZoom.disable();
+                        this.storeMarker.openPopup();
                         
                         if (this.map.hasLayer(this.deliveryMarker)) {
                             this.map.removeLayer(this.deliveryMarker);
@@ -391,7 +401,6 @@
                         if (this.routeLine && this.map.hasLayer(this.routeLine)) {
                             this.map.removeLayer(this.routeLine);
                         }
-                        this.storeMarker.openPopup();
                     } else {
                         this.map.dragging.enable();
                         this.map.touchZoom.enable();
@@ -407,6 +416,8 @@
                                 [this.storeLat, this.storeLng],
                                 [currentPos.lat, currentPos.lng]
                             ], { padding: [50, 50] });
+                            this.deliveryLat = currentPos.lat;
+                            this.deliveryLng = currentPos.lng;
                         }
                     }
                 },
@@ -426,7 +437,7 @@
                         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&countrycodes=lk`);
                         const data = await res.json();
                         if(data && data.display_name) {
-                            @this.set('delivery_address', data.display_name);
+                            this.addressQuery = data.display_name;
                         }
                     } catch(e) { console.error(e); }
                 },
@@ -450,74 +461,66 @@
                             alert("Unable to retrieve your location.");
                         });
                     }
+                },
+
+                initPayment() {
+                    this.$nextTick(() => {
+                        const formButton = document.getElementById('submit');
+                        if(!formButton || formButton.dataset.initialized) return;
+                        formButton.dataset.initialized = true;
+
+                        if (this.clientSecret === 'simulated_test_secret') {
+                            formButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                document.querySelector('#button-text').classList.add('hidden');
+                                document.querySelector('#spinner').classList.remove('hidden');
+                                formButton.disabled = true;
+                                setTimeout(() => { this.$wire.processOrder(); }, 1500);
+                            });
+                        } else {
+                            if (typeof Stripe === 'undefined') {
+                                const stripeScript = document.createElement('script');
+                                stripeScript.src = "https://js.stripe.com/v3/";
+                                document.head.appendChild(stripeScript);
+                                stripeScript.onload = () => this.mountStripe(formButton);
+                            } else {
+                                this.mountStripe(formButton);
+                            }
+                        }
+                    });
+                },
+
+                mountStripe(formButton) {
+                    const stripe = Stripe('{{ env("STRIPE_KEY") }}');
+                    const elements = stripe.elements({ clientSecret: this.clientSecret });
+                    const paymentElement = elements.create('payment', { layout: 'tabs' });
+                    paymentElement.mount('#payment-element');
+
+                    formButton.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        document.querySelector('#button-text').classList.add('hidden');
+                        document.querySelector('#spinner').classList.remove('hidden');
+                        formButton.disabled = true;
+
+                        const { error } = await stripe.confirmPayment({
+                            elements,
+                            confirmParams: {},
+                            redirect: 'if_required' 
+                        });
+
+                        if (error) {
+                            const msg = document.querySelector('#payment-message');
+                            msg.classList.remove('hidden');
+                            msg.textContent = error.message;
+                            document.querySelector('#button-text').classList.remove('hidden');
+                            document.querySelector('#spinner').classList.add('hidden');
+                            formButton.disabled = false;
+                        } else {
+                            this.$wire.processOrder();
+                        }
+                    });
                 }
             }
         }
-
-        // Stripe Logic when Step 3 is activated
-        document.addEventListener('livewire:initialized', () => {
-            Livewire.hook('morph.updated', ({ component, el }) => {
-                const step = @this.get('step');
-                const orderType = @this.get('order_type');
-                const paymentMethod = @this.get('payment_method');
-                const clientSecret = '{{ $clientSecret }}';
-                
-                if (step === 3 && orderType === 'delivery' && paymentMethod === 'card') {
-                    const formButton = document.getElementById('submit');
-                    if(!formButton || formButton.dataset.initialized) return;
-                    formButton.dataset.initialized = true;
-
-                    if (clientSecret === 'simulated_test_secret') {
-                        formButton.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            document.querySelector('#button-text').classList.add('hidden');
-                            document.querySelector('#spinner').classList.remove('hidden');
-                            formButton.disabled = true;
-                            setTimeout(() => { @this.processOrder(); }, 1500);
-                        });
-                    } else {
-                        if (typeof Stripe === 'undefined') {
-                            const stripeScript = document.createElement('script');
-                            stripeScript.src = "https://js.stripe.com/v3/";
-                            document.head.appendChild(stripeScript);
-                            stripeScript.onload = () => initStripe(clientSecret, formButton);
-                        } else {
-                            initStripe(clientSecret, formButton);
-                        }
-                    }
-                }
-            });
-            
-            function initStripe(clientSecret, formButton) {
-                const stripe = Stripe('{{ env('STRIPE_KEY') }}');
-                const elements = stripe.elements({ clientSecret });
-                const paymentElement = elements.create('payment', { layout: 'tabs' });
-                paymentElement.mount('#payment-element');
-
-                formButton.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    document.querySelector('#button-text').classList.add('hidden');
-                    document.querySelector('#spinner').classList.remove('hidden');
-                    formButton.disabled = true;
-
-                    const { error } = await stripe.confirmPayment({
-                        elements,
-                        confirmParams: {},
-                        redirect: 'if_required' 
-                    });
-
-                    if (error) {
-                        const msg = document.querySelector('#payment-message');
-                        msg.classList.remove('hidden');
-                        msg.textContent = error.message;
-                        document.querySelector('#button-text').classList.remove('hidden');
-                        document.querySelector('#spinner').classList.add('hidden');
-                        formButton.disabled = false;
-                    } else {
-                        @this.processOrder();
-                    }
-                });
-            }
-        });
     </script>
 </div>

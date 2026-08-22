@@ -35,7 +35,7 @@ class ProductResource extends Resource
     {
         return [
             'Category' => $record->category?->name ?? 'Uncategorised',
-            'Price'    => '' . number_format($record->price, 2),
+            'Price'    => '$' . number_format($record->price, 2),
             'Stock'    => $record->stock . ' units',
         ];
     }

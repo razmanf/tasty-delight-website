@@ -106,7 +106,14 @@
 
         {{-- Search Box --}}
         <form wire:submit.prevent="applySearch" class="flex gap-2 flex-1">
-            <input type="text" wire:model.defer="searchInput" placeholder="Search products..." class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <div class="relative w-full">
+                <input type="text" wire:model.defer="searchInput" placeholder="Search products..." class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 pr-8">
+                @if(strlen($searchInput ?? '') > 0)
+                    <button type="button" wire:click="$set('searchInput', ''); $wire.applySearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                @endif
+            </div>
             <button type="submit" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Search</button>
             <button type="button" wire:click="resetFilters" class="inline-block px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500">Reset</button>
         </form>

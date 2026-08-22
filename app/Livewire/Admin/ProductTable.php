@@ -9,6 +9,8 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
 use Livewire\WithFileUploads;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductTable extends Component
 {
@@ -86,8 +88,13 @@ class ProductTable extends Component
         $product->category_id = $this->category_id;
 
         if ($this->image instanceof \Illuminate\Http\UploadedFile) {
-            $path = $this->image->store('product-images', 'public');
-            $product->image = $path;
+            $manager = new ImageManager(new Driver());
+            $img = $manager->read($this->image->getRealPath());
+            
+            $filename = 'product-images/' . uniqid() . '.webp';
+            Storage::disk('public')->put($filename, (string) $img->toWebp(80));
+            
+            $product->image = $filename;
         }
 
         $product->save();
@@ -129,8 +136,13 @@ class ProductTable extends Component
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
-            $path = $this->image->store('product-images', 'public');
-            $product->image = $path;
+            $manager = new ImageManager(new Driver());
+            $img = $manager->read($this->image->getRealPath());
+            
+            $filename = 'product-images/' . uniqid() . '.webp';
+            Storage::disk('public')->put($filename, (string) $img->toWebp(80));
+            
+            $product->image = $filename;
         }
 
         $product->save();

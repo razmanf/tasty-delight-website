@@ -41,48 +41,41 @@ class ReviewSeeder extends Seeder
             return;
         }
 
+        $users = User::all();
         $products = Product::all();
 
         // Create 80 random reviews (1-5 stars)
-        Review::factory()
-            ->count(80)
-            ->create([
+        for ($i = 0; $i < 80; $i++) {
+            $product = $products->random();
+            Review::factory()->create([
+                'user_id' => $users->random()->id,
+                'product_id' => $product->id,
                 'rating' => fake()->numberBetween(Review::MIN_RATING, Review::MAX_RATING),
-                'comment' => function() use ($products) {
-                    $product = $products->random();
-                    return $this->getFoodReview($product->name);
-                }
+                'comment' => $this->getFoodReview($product->name)
             ]);
+        }
 
         // Create 10 perfect reviews (5 stars)
-        Review::factory()
-            ->count(10)
-            ->create([
+        for ($i = 0; $i < 10; $i++) {
+            $product = $products->random();
+            Review::factory()->create([
+                'user_id' => $users->random()->id,
+                'product_id' => $product->id,
                 'rating' => Review::MAX_RATING,
-                'comment' => function() use ($products) {
-                    $product = $products->random();
-                    return str_replace(
-                        '[PRODUCT]', 
-                        $product->name, 
-                        fake()->randomElement($this->foodReviews['positive'])
-                    );
-                }
+                'comment' => str_replace('[PRODUCT]', $product->name, fake()->randomElement($this->foodReviews['positive']))
             ]);
+        }
 
         // Create 10 bad reviews (1 star)
-        Review::factory()
-            ->count(10)
-            ->create([
+        for ($i = 0; $i < 10; $i++) {
+            $product = $products->random();
+            Review::factory()->create([
+                'user_id' => $users->random()->id,
+                'product_id' => $product->id,
                 'rating' => Review::MIN_RATING,
-                'comment' => function() use ($products) {
-                    $product = $products->random();
-                    return str_replace(
-                        '[PRODUCT]', 
-                        $product->name, 
-                        fake()->randomElement($this->foodReviews['negative'])
-                    );
-                }
+                'comment' => str_replace('[PRODUCT]', $product->name, fake()->randomElement($this->foodReviews['negative']))
             ]);
+        }
 
         $this->command->info('Successfully seeded TastyDelight food reviews!');
     }

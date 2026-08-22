@@ -1,21 +1,16 @@
-<div class="relative hidden md:block" x-data="{ open: false }" @click.outside="open = false">
-    <button @click="open = !open"
+<div class="relative" x-data="{ isOpen: false }" @click.outside="if (typeof isOpen !== 'undefined') isOpen = false">
+    <button @click="isOpen = !isOpen"
             class="flex items-center gap-2 text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/15">
-        @if(auth()->user()->profile_photo_path)
-            <img src="{{ auth()->user()->profile_photo_url }}"
-                 alt="{{ auth()->user()->name }}"
-                 class="w-8 h-8 rounded-full object-cover border-2 border-white/30 bg-white/10">
-        @else
-            <img src="{{ asset('images/placeholder-avatar.png') }}"
-                 alt="{{ auth()->user()->name }}"
-                 class="w-8 h-8 rounded-full object-cover border-2 border-white/30 bg-white/10">
-        @endif
+        <img src="{{ auth()->user()->profile_photo_url }}"
+             draggable="false"
+             alt="{{ auth()->user()->name }}"
+             class="w-8 h-8 rounded-full object-cover border-2 border-white/30 bg-white/10 select-none pointer-events-none">
         <span class="hidden md:block text-sm font-medium">{{ explode(' ', auth()->user()->name)[0] }}</span>
-        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''"></i>
     </button>
 
     <!-- Dropdown Menu -->
-    <div x-show="open"
+    <div x-show="typeof isOpen !== 'undefined' && isOpen"
          x-transition:enter="transition ease-out duration-150"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"

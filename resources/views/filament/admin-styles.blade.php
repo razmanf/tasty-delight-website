@@ -3,6 +3,7 @@
     .fi-topbar {
         background-color: #DD6625 !important;
         border-bottom: none !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
     }
     
     @media (min-width: 1024px) {
@@ -14,6 +15,11 @@
     /* Force all select chevrons to maintain correct aspect ratio natively */
     .fi-select-input {
         background-size: 1.25rem 1.25rem !important;
+    }
+
+    /* Push notifications below the topbar so they don't overlap */
+    .fi-no {
+        top: 4.5rem !important;
     }
 
     /* Ensure topbar items are white, but DO NOT affect dropdown panels */
@@ -37,10 +43,10 @@
         color: #ffffff !important;
     }
     .fi-topbar .fi-global-search-field .fi-input-wrp input::placeholder {
-        color: rgba(255, 255, 255, 0.8) !important;
+        color: rgba(255, 255, 255, 0.5) !important;
     }
     .fi-topbar .fi-global-search-field .fi-input-wrp svg {
-        color: rgba(255, 255, 255, 0.8) !important;
+        color: rgba(255, 255, 255, 0.5) !important;
     }
 
     /* 2. Sidebar Background & Scrollbar */
@@ -91,6 +97,16 @@
         color: #ffffff !important;
     }
     
+    /* 3. Industry Standard Image Protections */
+    img {
+        -webkit-user-drag: none !important;
+        user-drag: none !important;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+    }
+    .fi-topbar img {
+        pointer-events: none !important;
+    }
 
 
 
@@ -104,15 +120,10 @@
 
     /* Force Desktop Sidebar Behavior on Mobile */
     @media (max-width: 1024px) {
-        /* Force the main content container to have space on the left */
+        /* Always reserve collapsed sidebar width in the main content */
         .fi-main-ctn {
             padding-left: 5.5rem !important;
             transition: padding-left 0.3s ease !important;
-        }
-
-        /* If Alpine state says it's open, expand the padding */
-        .fi-main-ctn.fi-main-ctn-sidebar-open {
-            padding-left: 16rem !important;
         }
 
         /* Keep sidebar constantly on-screen and below topbar */
@@ -131,17 +142,32 @@
             top: 4rem !important; /* Height of the topbar */
             height: calc(100vh - 4rem) !important;
             height: calc(100dvh - 4rem) !important;
-            z-index: 2147483647 !important; /* Max z-index */
+            z-index: 50 !important;
             background-color: #ffffff !important;
             position: fixed !important;
             border-right: 1px solid rgba(0,0,0,0.05) !important;
+            transition: width 0.3s ease !important;
         }
 
-        /* When expanded on mobile (using custom toggle) */
+        /* When expanded on mobile — overlay mode, do NOT push content */
         .fi-layout aside.fi-sidebar.fi-sidebar-open {
-            width: 16rem !important; /* Expanded width */
+            width: 16rem !important;
             min-width: 16rem !important;
             max-width: 16rem !important;
+            z-index: 9999 !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18) !important;
+        }
+
+        /* Dark backdrop when sidebar is open on mobile */
+        .fi-layout aside.fi-sidebar.fi-sidebar-open::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            left: 16rem;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: -1;
+            pointer-events: auto;
+            top: 4rem;
         }
 
         /* Hide text labels when collapsed on mobile, but DO NOT hide the logo */
@@ -161,70 +187,59 @@
             display: flex !important;
         }
         
-        /* Hide the dark overlay since it's no longer an off-canvas menu */
+        /* Hide the default Filament dark overlay since we handle it ourselves */
         .fi-sidebar-close-overlay {
             display: none !important;
         }
     }
 
+
     /* Prevent Sidebar Text Wrapping Glitch during Animation */
     .fi-sidebar nav * {
         white-space: nowrap !important;
     }
-    
-    .fi-sidebar-group-sub-nav {
-        overflow: hidden !important;
-    }
 
-    /* Hide native search clear cross mark globally */
+    /* ─── Fix: All Filament dropdown panels must float ABOVE the sidebar ─── */
+    /* Our sidebar is z-index: 50. Filament's default panel z-index is ~20.   */
+    /* Without this, the Columns/Filter/etc. dropdowns render behind the sidebar */
+    /* on narrow mobile viewports where the dropdown extends leftward.          */
+    .fi-dropdown-panel {
+        z-index: 60 !important;
+    }
+    
+    /* Base: Style native search clear cross mark globally (Gray for Light Mode) */
     input[type="search"]::-webkit-search-cancel-button {
         -webkit-appearance: none;
         appearance: none;
+        height: 16px;
+        width: 16px;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(107,114,128,0.7)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4 L20 20 M20 4 L4 20'/></svg>");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+        margin-right: 2px;
+    }
+    input[type="search"]::-webkit-search-cancel-button:hover {
+        opacity: 1;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(107,114,128,1)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4 L20 20 M20 4 L4 20'/></svg>");
+    }
+
+    /* Dark Mode & Topbar: White cross mark */
+    .dark input[type="search"]::-webkit-search-cancel-button,
+    .fi-topbar input[type="search"]::-webkit-search-cancel-button {
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4 L20 20 M20 4 L4 20'/></svg>");
+    }
+    .dark input[type="search"]::-webkit-search-cancel-button:hover,
+    .fi-topbar input[type="search"]::-webkit-search-cancel-button:hover {
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,1)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4 L20 20 M20 4 L4 20'/></svg>");
+    }
+
+    /* Hide the entire 'Active filters' row globally since the search query is already in the bar */
+    .fi-ta-filter-indicators {
         display: none !important;
-    }
-
-    /* Replace the 'Remove all filters' cross mark with a nice button */
-    .fi-ta-filter-indicators .fi-icon-btn:not(.fi-badge-delete-btn) {
-        background-color: #EF4444 !important; /* Nice solid red */
-        color: white !important;
-        border-radius: 0.5rem !important;
-        padding: 0.25rem 0.75rem !important; /* Reduced padding */
-        width: auto !important;
-        height: auto !important;
-        transition: all 0.2s ease-in-out !important;
-        box-shadow: none !important;
-        border: 1px solid transparent !important;
-        outline: none !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin-top: -2px !important; /* Pulled UP to perfectly optical center */
-    }
-    
-    .fi-ta-filter-indicators .fi-icon-btn:not(.fi-badge-delete-btn):hover {
-        background-color: #EF4444 !important;
-        filter: brightness(1.1) !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
-    }
-
-    .fi-ta-filter-indicators .fi-icon-btn:not(.fi-badge-delete-btn) svg {
-        display: none !important; /* Hide the X icon */
-    }
-    
-    .fi-ta-filter-indicators .fi-icon-btn:not(.fi-badge-delete-btn)::after {
-        content: 'Remove all filters';
-        font-size: 0.75rem; /* Reduced text size */
-        font-weight: 600;
-        white-space: nowrap;
-        line-height: 1.25rem; /* Standard tight line height */
-    }
-
-    /* Enlarge the individual filter cross for better UX */
-    .fi-badge-delete-btn svg {
-        width: 1.25rem !important;
-        height: 1.25rem !important;
-        stroke-width: 2 !important;
     }
 
     /* ─── Filament Primary Button Override (Match User Dashboard td-btn-primary) ─── */
@@ -344,6 +359,61 @@
         letter-spacing: normal !important;
         opacity: 1 !important;
     }
+
+    /* Fix clipped SVG sparkline strokes in Stats Overview */
+    .fi-wi-stats-overview-stat-chart svg {
+        overflow: visible !important;
+        margin-top: 4px !important;
+    }
+
+    /* ─── Chart Widget Section Header: Stack vertically on mobile ─── */
+    @media (max-width: 1024px) {
+        /* The section header contains heading+description (left) and afterHeader slot (right).
+           On narrow screens, force it to stack: heading on top, filter below. */
+        .fi-wi-chart .fi-section-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.75rem !important;
+        }
+
+        /* Allow the heading block to take full width */
+        .fi-wi-chart .fi-section-header-heading-wrapper {
+            width: 100% !important;
+        }
+
+        /* Allow heading text to wrap naturally — do NOT let it get trapped in a thin column */
+        .fi-wi-chart .fi-section-heading {
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        /* Move filter dropdown to a new row below the heading */
+        .fi-wi-chart .fi-section-header-end {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: flex-start !important;
+        }
+
+        /* Also fix stats overview cards from overflowing on narrow screens */
+        .fi-wi-stats-overview-stat {
+            min-width: 0 !important;
+        }
+    }
+    /* ─── Pagination Per-Page Dropdown: match chart widget filter vars ─── */
+    .pagination-per-page-vars {
+        --ppg-bg: #ffffff;
+        --ppg-border: #e5e7eb;
+        --ppg-text: #374151;
+        --ppg-muted: #9ca3af;
+        --ppg-primary: #DD6625;
+        --ppg-hover: #f3f4f6;
+    }
+    .dark .pagination-per-page-vars {
+        --ppg-bg: #1f2937;
+        --ppg-border: #374151;
+        --ppg-text: #e5e7eb;
+        --ppg-hover: rgba(55, 65, 81, 0.5);
+    }
 </style>
 
 <script>
@@ -399,8 +469,8 @@ document.addEventListener('click', function(event) {
         });
     });
     
-    // Observe the <html> tag for class changes
-    observer.observe(document.documentElement, { attributes: true });
+    // Observe the <html> tag for class changes only
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     // 4. Live update the topbar avatar without reloading the page
     document.addEventListener('livewire:initialized', () => {

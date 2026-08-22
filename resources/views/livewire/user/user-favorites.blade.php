@@ -29,13 +29,14 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             @foreach($favorites as $fav)
             @if($fav->product)
-            <div class="td-card overflow-hidden p-0 group">
+            <div class="td-card overflow-hidden p-0 group" wire:key="fav-{{ $fav->id }}">
                 <div class="h-40 overflow-hidden relative">
                     @if($fav->product->image)
                         <img src="{{ \Illuminate\Support\Str::startsWith($fav->product->image, ['http://', 'https://']) ? $fav->product->image : asset('storage/' . $fav->product->image) }}"
                              alt="{{ $fav->product->name }}"
-                             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                             onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
+                             @click="$dispatch('open-image-modal', '{{ \Illuminate\Support\Str::startsWith($fav->product->image, ['http://', 'https://']) ? $fav->product->image : asset('storage/' . $fav->product->image) }}')"
+                             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
+                             onerror="this.src='{{ asset('images/placeholder-food.webp') }}'">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background: #DD66251A;">
                             <i class="fa-solid fa-utensils text-3xl" style="color: var(--td-primary);"></i>

@@ -29,10 +29,11 @@ class TopProductsWidget extends BaseWidget
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Image')
+                    ->disk('public')
                     ->circular()
                     ->sortable()
                     ->toggleable()
-                    ->defaultImageUrl(asset('images/placeholder-food.png')),
+                    ->defaultImageUrl(asset('images/placeholder-food.webp')),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Product')

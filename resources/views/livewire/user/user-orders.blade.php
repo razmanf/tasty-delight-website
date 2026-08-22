@@ -9,13 +9,18 @@
             <!-- Search in table -->
             <div class="relative">
                 <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search by order #..."
-                       class="pl-9 pr-4 py-2 rounded-xl border text-sm outline-none transition-all w-full sm:w-48"
+                       class="pl-9 pr-9 py-2 rounded-xl border text-sm outline-none transition-all w-full sm:w-48"
                        style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: var(--td-muted);"></i>
+                @if(strlen($search) > 0)
+                    <button type="button" wire:click="$set('search', '')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                @endif
             </div>
             <!-- Status Filter (Alpine JS Dropdown) -->
             <div x-data="{
-                    open: false,
+                    isOpen: false,
                     selected: @entangle('statusFilter').live,
                     options: [
                         { value: '', label: 'All Statuses' },
@@ -31,21 +36,21 @@
                     }
                 }"
                  class="relative"
-                 @click.outside="open = false">
+                 @click.outside="if (typeof isOpen !== 'undefined') isOpen = false">
                  
                 <!-- Trigger Button -->
                 <button type="button"
-                        @click="open = !open"
+                        @click="isOpen = !isOpen"
                         class="flex items-center justify-between w-full sm:w-44 px-4 py-2 rounded-xl border text-sm outline-none transition-all"
                         style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
-                    <span x-text="selectedLabel"></span>
+                    <span x-text="typeof selectedLabel !== 'undefined' ? selectedLabel : ''"></span>
                     <i class="fa-solid fa-chevron-down text-xs ml-2 transition-transform duration-200"
-                       :class="open ? 'rotate-180' : ''"
+                       :class="typeof isOpen !== 'undefined' && isOpen ? 'rotate-180' : ''"
                        style="color: var(--td-muted);"></i>
                 </button>
 
                 <!-- Dropdown Menu -->
-                <div x-show="open"
+                <div x-show="typeof isOpen !== 'undefined' && isOpen"
                      x-transition:enter="transition ease-out duration-100"
                      x-transition:enter-start="transform opacity-0 scale-95"
                      x-transition:enter-end="transform opacity-100 scale-100"
@@ -55,9 +60,9 @@
                      class="absolute z-50 right-0 w-44 rounded-xl shadow-xl border overflow-hidden"
                      style="background-color: var(--td-bg); border-color: var(--td-border); display: none;">
                     <div class="py-1">
-                        <template x-for="option in options" :key="option.value">
+                        <template x-for="option in (typeof options !== 'undefined' ? options : [])" :key="option.value">
                             <button type="button"
-                                    @click="selected = option.value; open = false"
+                                    @click="selected = option.value; isOpen = false"
                                     class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors flex items-center justify-between"
                                     :class="selected === option.value ? 'font-semibold' : ''"
                                     style="color: var(--td-text);">
@@ -80,7 +85,7 @@
     @else
         <div class="space-y-4">
             @foreach($orders as $order)
-            <div class="td-card" x-data="{ expanded: false }">
+            <div class="td-card" x-data="{ expanded: false }" wire:key="order-{{ $order->id }}">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -163,9 +168,15 @@
                             <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl">
                                 <div class="flex justify-between items-center text-sm mb-2" style="color: var(--td-muted);">
                                     <span>Subtotal</span>
-                                    @php $subtotal = $order->total_amount - $order->tax_amount - $order->delivery_fee; @endphp
+                                    @php $subtotal = $order->total_amount - $order->tax_amount - $order->delivery_fee + $order->discount_amount; @endphp
                                     <span>${{ number_format($subtotal, 2) }}</span>
                                 </div>
+                                @if($order->discount_amount > 0)
+                                <div class="flex justify-between items-center text-sm mb-2 text-green-600 font-medium">
+                                    <span>Discount ({{ $order->promo_code }})</span>
+                                    <span>-${{ number_format($order->discount_amount, 2) }}</span>
+                                </div>
+                                @endif
                                 <div class="flex justify-between items-center text-sm mb-2" style="color: var(--td-muted);">
                                     <span>Tax (5%)</span>
                                     <span>${{ number_format($order->tax_amount, 2) }}</span>

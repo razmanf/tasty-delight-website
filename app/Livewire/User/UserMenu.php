@@ -41,8 +41,12 @@ class UserMenu extends Component
         
         $products = Product::query()
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('description', 'like', '%' . $this->search . '%');
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('description', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('category', fn ($c) => $c->where('name', 'like', '%' . $this->search . '%')
+                                                            ->orWhere('description', 'like', '%' . $this->search . '%'));
+                });
             })
             ->when($this->selectedCategoryId > 0, function ($query) {
                 $query->where('category_id', $this->selectedCategoryId);

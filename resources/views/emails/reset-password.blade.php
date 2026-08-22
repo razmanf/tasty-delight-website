@@ -31,7 +31,7 @@
             <tr>
                 <td style="text-align: center;">
                     <a href="{{ config('app.url') }}" style="text-decoration: none; border: none;">
-                        <img src="{{ asset('images/tasty-delight-logo.png') }}" alt="TastyDelight" style="height: 60px; vertical-align: middle; margin-right: 10px; display: inline-block; border: none;">
+                        <img src="{{ asset('images/tasty-delight-logo.webp') }}" alt="TastyDelight" style="height: 60px; vertical-align: middle; margin-right: 10px; display: inline-block; border: none;">
                     </a>
                     <span class="logo" style="vertical-align: middle;">TastyDelight</span>
                 </td>

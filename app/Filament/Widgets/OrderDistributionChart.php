@@ -91,26 +91,32 @@ class OrderDistributionChart extends ChartWidget
         return [
             'plugins' => [
                 'legend' => [
-                    'display' => true,
+                    'display'  => true,
                     'position' => 'right',
-                    'labels' => [
+                    'labels'   => [
                         'usePointStyle' => true,
-                        'boxWidth' => 10,
-                        'padding' => 20,
-                        'font' => [
+                        'boxWidth'      => 8,
+                        'padding'       => 14,   // was 20 — tighter so labels don't crowd the edge
+                        'font'          => [
                             'family' => 'inherit',
+                            'size'   => 11,       // explicit size prevents Chart.js inheriting a larger computed value
                         ],
                     ],
                 ],
                 'tooltip' => [
-                    'mode' => 'index',
+                    'mode'      => 'index',
                     'intersect' => false,
                 ],
             ],
             'layout' => [
-                'padding' => 10,
+                'padding' => [
+                    'top'    => 8,
+                    'right'  => 20,  // extra right buffer — prevents legend text touching the canvas edge
+                    'bottom' => 8,
+                    'left'   => 8,
+                ],
             ],
-            'cutout' => '75%', // Makes it a modern sleek doughnut
+            'cutout'              => '75%',
             'maintainAspectRatio' => false,
         ];
     }

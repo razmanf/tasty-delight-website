@@ -60,7 +60,7 @@
                 </section>
 
                 <div class="pt-8 mt-8 border-t border-gray-100 dark:border-gray-800 text-center">
-                    <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:privacy@tastydelight.com" class="text-orange-500 font-bold hover:underline">privacy@tastydelight.com</a>.</p>
+                    <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:privacy@tastydelight.shop" class="text-orange-500 font-bold hover:underline">privacy@tastydelight.shop</a>.</p>
                     <a href="/" class="td-btn-primary mt-8 inline-block">Return to Home</a>
                 </div>
             </div>

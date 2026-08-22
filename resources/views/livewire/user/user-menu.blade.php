@@ -3,7 +3,7 @@
 <div>
     <!-- Hero/Header Section -->
     <div class="relative bg-black rounded-3xl overflow-hidden mb-8 h-48 md:h-64 shadow-xl">
-        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2000&auto=format&fit=crop" 
+        <img src="{{ asset('images/menu-hero.webp') }}" 
              class="absolute inset-0 w-full h-full object-cover opacity-50" alt="Restaurant Atmosphere">
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
         <div class="absolute bottom-0 left-0 p-6 md:p-8 w-full flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -15,31 +15,74 @@
     </div>
 
     <!-- Navigation & Search Row -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 sticky top-[72px] z-30 py-4" style="background: var(--td-bg);">
-        <!-- Category Slider -->
-        <div class="w-full md:w-2/3 overflow-x-auto hide-scrollbar pb-1">
-            <div class="flex gap-2 min-w-max">
-                <button wire:click="selectCategory(0)" 
-                        class="px-5 py-2 rounded-full text-sm font-bold border transition-all shadow-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                        style="{{ $selectedCategoryId == 0 ? 'background: var(--td-primary); color: white; border-color: var(--td-primary);' : 'background: transparent; color: var(--td-text); border-color: var(--td-border);' }}">
-                    All Items
-                </button>
-                @foreach($categories as $category)
-                    <button wire:click="selectCategory({{ $category->id }})" 
-                            class="px-5 py-2 rounded-full text-sm font-bold border transition-all shadow-sm whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-800"
-                            style="{{ $selectedCategoryId == $category->id ? 'background: var(--td-primary); color: white; border-color: var(--td-primary);' : 'background: transparent; color: var(--td-text); border-color: var(--td-border);' }}">
-                        {{ $category->name }}
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 sticky top-20 z-30 py-4 border-b transition-shadow duration-300" 
+         x-data="{ isStuck: false }" 
+         @scroll.window="isStuck = $el.getBoundingClientRect().top <= 81"
+         :class="isStuck ? 'shadow-[0_10px_10px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_20px_-20px_rgba(0,0,0,1)]' : ''"
+         style="background: var(--td-bg); border-color: var(--td-border);">
+         
+        <!-- Category Slider Wrapper -->
+        <div class="w-full md:w-2/3 relative"
+             x-data="{ 
+                 isDown: false, startX: 0, scrollLeft: 0, dragged: false,
+                 showLeft: false, showRight: true,
+                 checkScroll() {
+                     const el = this.$refs.slider;
+                     if (!el) return;
+                     this.showLeft = el.scrollLeft > 0;
+                     this.showRight = Math.ceil(el.scrollLeft) < (el.scrollWidth - el.clientWidth);
+                 },
+                 getMaskStyle() {
+                     if (this.showLeft && this.showRight) {
+                         return '-webkit-mask-image: linear-gradient(to right, transparent, black var(--fade-w), black calc(100% - var(--fade-w)), transparent); mask-image: linear-gradient(to right, transparent, black var(--fade-w), black calc(100% - var(--fade-w)), transparent);';
+                     } else if (this.showLeft) {
+                         return '-webkit-mask-image: linear-gradient(to right, transparent, black var(--fade-w), black); mask-image: linear-gradient(to right, transparent, black var(--fade-w), black);';
+                     } else if (this.showRight) {
+                         return '-webkit-mask-image: linear-gradient(to right, black, black calc(100% - var(--fade-w)), transparent); mask-image: linear-gradient(to right, black, black calc(100% - var(--fade-w)), transparent);';
+                     }
+                     return 'mask-image: none; -webkit-mask-image: none;';
+                 }
+             }"
+             x-init="$nextTick(() => checkScroll()); window.addEventListener('resize', () => checkScroll())">
+
+            <div x-ref="slider"
+                 @scroll="checkScroll()"
+                 :style="getMaskStyle()"
+                 class="overflow-x-auto hide-scrollbar py-1 w-full transition-all duration-300 [--fade-w:8px] dark:[--fade-w:20px]"
+                 @mousedown="isDown = true; dragged = false; startX = $event.pageX - $el.offsetLeft; scrollLeft = $el.scrollLeft"
+                 @mouseleave="isDown = false"
+                 @mouseup="isDown = false"
+                 @mousemove="if(!isDown) return; $event.preventDefault(); dragged = true; const x = $event.pageX - $el.offsetLeft; const walk = (x - startX) * 2; $el.scrollLeft = scrollLeft - walk; checkScroll();"
+                 @click.capture="if(dragged) { $event.preventDefault(); $event.stopPropagation(); }"
+                 :class="isDown ? 'cursor-grabbing' : 'cursor-grab'">
+                <div class="flex gap-2 min-w-max px-1">
+                    <button wire:click="selectCategory(0)" 
+                            class="px-5 py-2 rounded-full text-sm font-bold border transition-all shadow-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                            style="{{ $selectedCategoryId == 0 ? 'background: var(--td-primary); color: white; border-color: var(--td-primary);' : 'background: transparent; color: var(--td-text); border-color: var(--td-border);' }}">
+                        All Items
                     </button>
-                @endforeach
+                    @foreach($categories as $category)
+                        <button wire:click="selectCategory({{ $category->id }})" 
+                                class="px-5 py-2 rounded-full text-sm font-bold border transition-all shadow-sm whitespace-nowrap hover:bg-gray-100 dark:hover:bg-gray-800"
+                                style="{{ $selectedCategoryId == $category->id ? 'background: var(--td-primary); color: white; border-color: var(--td-primary);' : 'background: transparent; color: var(--td-text); border-color: var(--td-border);' }}">
+                            {{ $category->name }}
+                        </button>
+                    @endforeach
+                </div>
             </div>
         </div>
         
         <!-- Menu Search Bar -->
-        <div class="w-full md:w-1/3 relative">
+        <div class="w-full md:w-1/3 relative md:mr-1 py-1">
             <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search menu items..." 
-                   class="w-full rounded-full border pl-11 pr-4 py-2 text-sm outline-none transition-all shadow-sm focus:shadow-md"
+                   class="w-full rounded-full border pl-11 pr-10 py-2 text-sm outline-none transition-all shadow-sm focus:shadow-md placeholder:text-gray-400 dark:placeholder:text-gray-500"
                    style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--td-muted);"></i>
+            @if(strlen($search) > 0)
+                <button type="button" wire:click="$set('search', '')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            @endif
         </div>
     </div>
 
@@ -68,7 +111,13 @@
     @else
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @foreach($products as $product)
-                <div class="td-card p-0 overflow-hidden flex flex-col group relative">
+                <div @if(request('highlight') == $product->id) 
+                     x-data="{ highlight: true }" 
+                     x-init="$nextTick(() => { $el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => highlight = false, 3000) })"
+                     :class="highlight ? 'ring-4 ring-yellow-400 shadow-[0_0_25px_rgba(250,204,21,0.6)] scale-[1.02] transition-all duration-700' : 'transition-all duration-700'"
+                     @endif
+                     wire:key="product-{{ $product->id }}"
+                     class="td-card p-0 overflow-hidden flex flex-col group relative">
                     
                     <!-- Favorite Button -->
                     <button wire:click="toggleFavorite({{ $product->id }})" 
@@ -82,7 +131,7 @@
                             <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" 
                                  @click="$dispatch('open-image-modal', '{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}')"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
-                                 onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
+                                 onerror="this.src='{{ asset('images/placeholder-food.webp') }}'">
                         @else
                             <div class="w-full h-full flex items-center justify-center">
                                 <i class="fa-solid fa-utensils text-4xl" style="color: var(--td-muted);"></i>

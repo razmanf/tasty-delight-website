@@ -5,9 +5,9 @@
     <div x-data="{
             activeSlide: 0,
             slides: [
-                'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=60&w=1200&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1493770348161-369560ae357d?q=60&w=1200&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?q=60&w=1200&auto=format&fit=crop'
+                '{{ asset('images/banners/banner-1.webp') }}',
+                '{{ asset('images/banners/banner-2.webp') }}',
+                '{{ asset('images/banners/banner-3.webp') }}'
             ],
             interval: null,
             next() {
@@ -21,9 +21,12 @@
             },
             stop() {
                 clearInterval(this.interval);
+            },
+            init() {
+                this.start();
+                return () => this.stop();
             }
          }"
-         x-init="start()"
          @mouseenter="stop()"
          @mouseleave="start()"
          class="rounded-3xl mb-8 relative overflow-hidden shadow-xl min-h-[300px] flex items-center group/carousel">
@@ -37,8 +40,8 @@
                  x-transition:leave="transition ease-in duration-1000"
                  x-transition:leave-start="opacity-100 scale-100"
                  x-transition:leave-end="opacity-0 scale-105"
-                 class="absolute inset-0 w-full h-full">
-                <img :src="image" class="w-full h-full object-cover opacity-90 dark:opacity-70" alt="Delicious Food">
+                 class="absolute inset-0 w-full h-full pointer-events-none select-none">
+                <img :src="image" draggable="false" class="w-full h-full object-cover opacity-90 dark:opacity-70 pointer-events-none select-none" alt="Delicious Food">
             </div>
         </template>
         <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent pointer-events-none"></div>
@@ -55,15 +58,13 @@
         
         <div class="relative z-10 max-w-2xl p-8 md:p-12">
             <div class="flex items-center gap-4 mb-4">
-                @if(auth()->user()->profile_photo_path)
-                    <img src="{{ Storage::url(auth()->user()->profile_photo_path) }}" alt="{{ $user->name }}"
-                         class="w-14 h-14 rounded-full object-cover border-2 border-white/50 shadow-lg">
-                @else
-                    <img src="{{ asset('images/placeholder-avatar.png') }}" alt="{{ $user->name }}"
-                         class="w-14 h-14 rounded-full object-cover border-2 border-white/50 shadow-lg bg-white/10 backdrop-blur-md">
-                @endif
+                <img src="{{ auth()->user()->profile_photo_url }}" draggable="false" alt="{{ auth()->user()->name }}" class="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-md select-none pointer-events-none">
                 <div>
-                    <p class="text-white/80 font-medium">{{ $greeting }},</p>
+                    <p class="text-white/80 font-medium" 
+                       x-data="{ greeting() { const h = new Date().getHours(); if(h < 12) return 'Good morning'; if(h < 18) return 'Good afternoon'; return 'Good evening'; } }" 
+                       x-text="greeting() + ','">
+                        {{ $greeting }},
+                    </p>
                     <h1 class="text-2xl md:text-4xl font-black text-white leading-tight" style="font-family: 'Outfit', sans-serif;">
                         {{ explode(' ', $user->name)[0] }}! 👋
                     </h1>
@@ -93,7 +94,7 @@
         @php
         $stats = [
             ['label' => 'Total Orders',    'value' => $totalOrders,                              'icon' => 'fa-bag-shopping',  'color' => '#DD6625'],
-            ['label' => 'Total Spent',     'value' => '$ ' . number_format($totalSpent, 2),    'icon' => 'fa-wallet',        'color' => '#22C55E'],
+            ['label' => 'Total Spent',     'value' => '$' . number_format($totalSpent, 2),    'icon' => 'fa-wallet',        'color' => '#22C55E'],
             ['label' => 'Favorites',       'value' => $totalFavorites,                           'icon' => 'fa-heart',         'color' => '#EF4444'],
             ['label' => 'My Reviews',      'value' => $totalReviews,                             'icon' => 'fa-star',          'color' => '#FFB400'],
         ];
@@ -107,7 +108,7 @@
             </div>
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--td-muted);">{{ $stat['label'] }}</p>
-                <p class="text-xl font-bold mt-0.5" style="color: var(--td-text);">{{ $stat['value'] }}</p>
+                <p class="text-xl font-bold mt-0.5 whitespace-nowrap" style="color: var(--td-text);">{{ $stat['value'] }}</p>
             </div>
         </div>
         @endforeach
@@ -159,34 +160,63 @@
             @endif
         </div>
 
-        <!-- Quick Actions -->
-        <div>
-            <h2 class="td-section-title mb-5 flex items-center gap-2">
-                <i class="fa-solid fa-bolt" style="color: var(--td-secondary);"></i> Quick Links
-            </h2>
-            <div class="grid grid-cols-2 gap-3">
-                @php
-                $actions = [
-                    ['label' => 'My Menu',      'icon' => 'fa-utensils',      'route' => 'user.menu',       'color' => '#EAB308'],
-                    ['label' => 'Favorites',    'icon' => 'fa-heart',         'route' => 'user.favorites',  'color' => '#EF4444'],
-                    ['label' => 'My Cart',      'icon' => 'fa-cart-shopping', 'route' => 'user.cart',       'color' => '#22C55E'],
-                    ['label' => 'My Reviews',   'icon' => 'fa-star',          'route' => 'user.reviews',    'color' => '#FFB400'],
-                    ['label' => 'Notifications','icon' => 'fa-bell',          'route' => 'user.notifications','color' => '#3B82F6'],
-                    ['label' => 'Settings',     'icon' => 'fa-gear',          'route' => 'user.settings',   'color' => '#8B5CF6'],
-                ];
-                @endphp
-
-                @foreach($actions as $action)
-                <a href="{{ route($action['route']) }}"
-                   class="td-card flex flex-col items-center justify-center gap-3 py-6 text-center group border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all">
-                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm"
-                         style="background-color: {{ $action['color'] }}15;">
-                        <i class="fa-solid {{ $action['icon'] }} text-xl" style="color: {{ $action['color'] }};"></i>
+        <!-- Right Column: Rewards & Promos -->
+        <div class="flex flex-col gap-6">
+            
+            <!-- ── Loyalty Tracker ── -->
+            <div class="td-card flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/40 dark:to-orange-900/20 border-orange-200 dark:border-orange-900/50">
+                <!-- Decorative Icon -->
+                <i class="fa-solid fa-gift absolute -right-6 -top-6 text-8xl text-orange-500/10 dark:text-orange-500/5"></i>
+                
+                <div class="relative z-10 w-full">
+                    <h3 class="font-bold text-lg mb-1 flex items-center gap-2" style="color: var(--td-text);">
+                        <i class="fa-solid fa-star" style="color: var(--td-secondary);"></i> Delight Club
+                    </h3>
+                    <p class="text-xs font-medium mb-4" style="color: var(--td-muted);">You have <strong style="color: var(--td-primary);">350</strong> points</p>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-white dark:bg-gray-800 rounded-full h-3 mb-2 overflow-hidden shadow-inner border border-orange-100 dark:border-gray-700 p-[1px]">
+                        <div class="h-full rounded-full relative" style="background: linear-gradient(90deg, var(--td-primary), var(--td-secondary)); width: 70%;">
+                            <div class="absolute right-0 top-0 bottom-0 w-4 bg-white/30 animate-pulse"></div>
+                        </div>
                     </div>
-                    <span class="text-xs font-bold uppercase tracking-wide" style="color: var(--td-text);">{{ $action['label'] }}</span>
-                </a>
-                @endforeach
+                    
+                    <p class="text-sm font-semibold text-left mt-1" style="color: var(--td-text);">
+                        Only <span style="color: var(--td-primary);">150 pts</span> away from a <span class="font-bold">Free Burger</span>!
+                    </p>
+                </div>
             </div>
+
+            <!-- ── Active Promo Banner ── -->
+            <div class="td-card flex flex-col justify-center relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-500 border-none text-white shadow-lg shadow-emerald-500/20">
+                <!-- Decorative pattern -->
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 16px 16px;"></div>
+                
+                <div class="relative z-10 flex flex-col items-start">
+                    <div class="flex w-full justify-between items-start mb-3">
+                        <span class="bg-white/20 text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md backdrop-blur-sm">
+                            Limited Offer
+                        </span>
+                        <i class="fa-solid fa-tags opacity-50 text-xl"></i>
+                    </div>
+                    
+                    <h3 class="font-black text-3xl leading-tight mb-1" style="font-family: 'Outfit', sans-serif;">
+                        20% OFF
+                    </h3>
+                    <p class="text-sm text-emerald-50 font-medium mb-5">
+                        Your entire next order!
+                    </p>
+                    
+                    <div class="w-full bg-black/20 rounded-xl p-3 flex items-center justify-between backdrop-blur-sm border border-white/10">
+                        <span class="font-mono font-bold tracking-wider text-lg">TASTY20</span>
+                        <button x-data="{ copied: false }" @click="navigator.clipboard.writeText('TASTY20'); copied = true; setTimeout(() => copied = false, 2000)" class="text-xs font-bold bg-white text-emerald-600 px-3 py-1.5 rounded-lg hover:bg-emerald-50 transition-colors shadow-sm w-20 text-center">
+                            <span x-show="!copied">Copy</span>
+                            <span x-show="copied"><i class="fa-solid fa-check"></i></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -200,8 +230,9 @@
                 </h2>
                 <span class="text-xs font-medium" style="color: var(--td-muted);">Based on top ratings</span>
             </div>
-            <a href="{{ route('user.menu') }}" class="td-btn-primary text-sm px-4 py-2">
-                View All Items &rarr;
+            <a href="{{ route('user.menu') }}" class="td-btn-primary text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap">
+                <span class="hidden sm:inline">View All Items</span>
+                <span class="sm:hidden">View All</span> &rarr;
             </a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -222,8 +253,9 @@
                 </h2>
                 <span class="text-xs font-medium" style="color: var(--td-muted);">Most popular this week</span>
             </div>
-            <a href="{{ route('user.menu') }}" class="td-btn-primary text-sm px-4 py-2">
-                View All Items &rarr;
+            <a href="{{ route('user.menu') }}" class="td-btn-primary text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap">
+                <span class="hidden sm:inline">View All Items</span>
+                <span class="sm:hidden">View All</span> &rarr;
             </a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -244,8 +276,9 @@
                 </h2>
                 <span class="text-xs font-medium" style="color: var(--td-muted);">Limited time deals just for you</span>
             </div>
-            <a href="{{ route('user.menu') }}" class="td-btn-primary text-sm px-4 py-2">
-                View All Items &rarr;
+            <a href="{{ route('user.menu') }}" class="td-btn-primary text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap">
+                <span class="hidden sm:inline">View All Items</span>
+                <span class="sm:hidden">View All</span> &rarr;
             </a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -263,7 +296,7 @@
                         <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" 
                              @click="$dispatch('open-image-modal', '{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}')"
                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
-                             onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
+                             onerror="this.src='{{ asset('images/placeholder-food.webp') }}'">
                     @endif
                 </div>
                 

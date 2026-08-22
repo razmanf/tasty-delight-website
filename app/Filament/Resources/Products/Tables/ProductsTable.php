@@ -16,7 +16,8 @@ class ProductsTable
         return $table
             ->columns([
                 \Filament\Tables\Columns\ImageColumn::make('image')
-                    ->defaultImageUrl(asset('images/placeholder-food.png'))
+                    ->disk('public')
+                    ->defaultImageUrl(asset('images/placeholder-food.webp'))
                     ->square()
                     ->size(40)
                     ->toggleable(),

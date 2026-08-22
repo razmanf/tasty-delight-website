@@ -51,7 +51,7 @@
             <tr>
                 <td style="text-align: center;">
                     <a href="{{ config('app.url') }}" style="text-decoration: none; border: none;">
-                        <img src="{{ asset('images/tasty-delight-logo.png') }}" alt="TastyDelight" style="height: 60px; vertical-align: middle; margin-right: 10px; display: inline-block; border: none;">
+                        <img src="{{ asset('images/tasty-delight-logo.webp') }}" alt="TastyDelight" style="height: 60px; vertical-align: middle; margin-right: 10px; display: inline-block; border: none;">
                     </a>
                     <span class="logo" style="vertical-align: middle;">TastyDelight</span>
                 </td>
@@ -60,7 +60,8 @@
         
         <div style="text-align: center;">
             <div class="badge">PENDING APPROVAL</div>
-            <h2 style="margin-top: 0; color: #111827;">Order Receipt #{{ $order->id }}</h2>
+            <h2 style="margin-top: 0; color: #111827;">Your order has been received!</h2>
+            <h3 style="margin-top: 5px; color: #6b7280; font-weight: normal;">Order Receipt #{{ $order->id }}</h3>
         </div>
         
         <p>Hi {{ $order->user->name }},</p>
@@ -84,8 +85,14 @@
             
             <div class="summary-row">
                 <div class="summary-label">Subtotal</div>
-                <div class="summary-value">${{ number_format($order->total_amount - $order->tax_amount - $order->delivery_fee, 2) }}</div>
+                <div class="summary-value">${{ number_format($order->total_amount - $order->tax_amount - $order->delivery_fee + $order->discount_amount, 2) }}</div>
             </div>
+            @if($order->discount_amount > 0)
+            <div class="summary-row">
+                <div class="summary-label" style="color: #16a34a;">Discount ({{ $order->promo_code }})</div>
+                <div class="summary-value" style="color: #16a34a;">-${{ number_format($order->discount_amount, 2) }}</div>
+            </div>
+            @endif
             <div class="summary-row">
                 <div class="summary-label">Tax (5%)</div>
                 <div class="summary-value">${{ number_format($order->tax_amount, 2) }}</div>
@@ -114,7 +121,7 @@
             <div class="address-title">📍 Delivery Address</div>
             <div style="font-size: 14px; line-height: 1.5; color: #4b5563; margin-bottom: 15px;">{{ $order->delivery_address }}</div>
             
-            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($order->delivery_address) }}" target="_blank" style="display: block; width: 100%; text-align: center; background-color: #f3f4f6; color: #4b5563; padding: 12px 0; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #e5e7eb;">
+            <a href="https://www.google.com/maps/search/?api=1&query={{ $order->delivery_lat && $order->delivery_lng ? $order->delivery_lat . ',' . $order->delivery_lng : urlencode($order->delivery_address) }}" target="_blank" style="display: block; width: 100%; text-align: center; background-color: #f3f4f6; color: #4b5563; padding: 12px 0; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #e5e7eb;">
                 🗺️ Open in Google Maps
             </a>
         </div>

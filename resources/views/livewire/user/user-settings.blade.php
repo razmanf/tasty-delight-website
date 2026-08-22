@@ -33,59 +33,107 @@
 
     <!-- Profile Tab -->
     @if($activeTab === 'profile')
-    <form wire:submit="saveProfile" class="max-w-lg">
-        <!-- Avatar -->
-        <div class="td-card mb-5 flex items-center gap-5">
-            @if($photo)
-                <img src="{{ $photo->temporaryUrl() }}" alt="Preview"
-                     class="w-20 h-20 rounded-full object-cover border-4" style="border-color: var(--td-primary);">
-            @elseif($user->profile_photo_path)
-                <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}"
-                     class="w-20 h-20 rounded-full object-cover border-4" style="border-color: var(--td-primary);">
-            @else
-                <img src="{{ asset('images/placeholder-avatar.png') }}" alt="{{ $user->name }}"
-                     class="w-20 h-20 rounded-full object-cover border-4 bg-gray-100" style="border-color: var(--td-primary);">
-            @endif
-            <div>
-                <label for="photo" class="td-btn-primary cursor-pointer text-sm py-1.5 px-3">
-                    <i class="fa-solid fa-camera"></i> Change Photo
-                </label>
-                <input wire:model="photo" type="file" id="photo" accept="image/*" class="hidden">
+    <div x-data="{ showPhotoDeleteModal: false }">
+        <form wire:submit="saveProfile" class="max-w-lg">
+            <!-- Avatar -->
+            <div class="td-card mb-5 flex items-center gap-5">
                 @if($photo)
-                    <p class="text-xs mt-1" style="color: var(--td-muted);">New photo selected — save to apply</p>
+                    <img src="{{ $photo->temporaryUrl() }}" alt="Preview" draggable="false"
+                         class="w-20 h-20 rounded-full object-cover border-4 select-none pointer-events-none" style="border-color: var(--td-primary);">
+                @elseif($user->profile_photo_path)
+                    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" draggable="false"
+                         class="w-20 h-20 rounded-full object-cover border-4 select-none pointer-events-none" style="border-color: var(--td-primary);">
+                @else
+                    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" draggable="false"
+                         class="w-20 h-20 rounded-full object-cover border-4 bg-gray-100 select-none pointer-events-none" style="border-color: var(--td-primary);">
                 @endif
-                @error('photo')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                <div>
+                    <div class="flex items-center gap-2">
+                        <label for="photo" class="td-btn-primary cursor-pointer text-sm py-1.5 px-3">
+                            <i class="fa-solid fa-camera"></i> Change Photo
+                        </label>
+                        @if($user->profile_photo_path)
+                            <button type="button" @click="showPhotoDeleteModal = true" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-red-100 text-red-600 hover:bg-red-200 transition-colors">
+                                <i class="fa-solid fa-trash-can"></i> Remove
+                            </button>
+                        @endif
+                    </div>
+                    <input wire:model="photo" type="file" id="photo" accept="image/*" class="hidden">
+
+                    @error('photo')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <!-- Name -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1.5" style="color: var(--td-text);">Full Name</label>
+                <input wire:model="name" type="text"
+                       class="w-full px-4 py-2.5 rounded-xl border outline-none transition-all text-sm"
+                       style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
+                @error('name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <!-- Email (read-only) -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-1.5" style="color: var(--td-text);">
+                    Email Address
+                    <span class="ml-2 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
+                          style="background: #3B82F61A; color: #3B82F6;">
+                        <i class="fa-solid fa-lock text-xs"></i> Cannot be changed
+                    </span>
+                </label>
+                <input type="email" value="{{ $user->email }}" disabled
+                       class="w-full px-4 py-2.5 rounded-xl border text-sm opacity-60 cursor-not-allowed"
+                       style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
+                <p class="text-xs mt-1" style="color: var(--td-muted);">For security, email addresses cannot be changed after account creation.</p>
+            </div>
+
+            <button type="submit" class="td-btn-primary px-6 py-2.5">
+                <i class="fa-solid fa-floppy-disk"></i> Save Profile
+            </button>
+        </form>
+
+        <!-- Custom Alpine Modal for Photo Deletion -->
+        <div x-show="showPhotoDeleteModal"
+             style="display: none;"
+             class="fixed inset-0 z-[100] flex items-center justify-center px-4"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+             
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+            <div class="td-card relative z-10 max-w-sm w-full p-6 text-center transform shadow-2xl"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                 
+                <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4 shadow-inner bg-red-100 text-red-500">
+                    <i class="fa-solid fa-image text-2xl"></i>
+                </div>
+                
+                <h3 class="text-xl font-bold mb-2" style="color: var(--td-text);">Remove Photo?</h3>
+                <p class="text-sm mb-6" style="color: var(--td-muted);">
+                    Are you sure you want to remove your custom profile photo and revert to the default avatar?
+                </p>
+                
+                <div class="flex gap-3 w-full">
+                    <button type="button" @click="showPhotoDeleteModal = false" class="flex-1 py-2.5 rounded-xl font-bold bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors" style="color: var(--td-text);">
+                        Cancel
+                    </button>
+                    <button type="button" wire:click="deleteProfilePhoto" @click="showPhotoDeleteModal = false" class="flex-1 py-2.5 rounded-xl font-bold text-white shadow-md transition-transform hover:scale-105 bg-red-500 hover:bg-red-600">
+                        Remove
+                    </button>
+                </div>
             </div>
         </div>
-
-        <!-- Name -->
-        <div class="mb-4">
-            <label class="block text-sm font-semibold mb-1.5" style="color: var(--td-text);">Full Name</label>
-            <input wire:model="name" type="text"
-                   class="w-full px-4 py-2.5 rounded-xl border outline-none transition-all text-sm"
-                   style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
-            @error('name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-        </div>
-
-        <!-- Email (read-only) -->
-        <div class="mb-6">
-            <label class="block text-sm font-semibold mb-1.5" style="color: var(--td-text);">
-                Email Address
-                <span class="ml-2 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
-                      style="background: #3B82F61A; color: #3B82F6;">
-                    <i class="fa-solid fa-lock text-xs"></i> Cannot be changed
-                </span>
-            </label>
-            <input type="email" value="{{ $user->email }}" disabled
-                   class="w-full px-4 py-2.5 rounded-xl border text-sm opacity-60 cursor-not-allowed"
-                   style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
-            <p class="text-xs mt-1" style="color: var(--td-muted);">For security, email addresses cannot be changed after account creation.</p>
-        </div>
-
-        <button type="submit" class="td-btn-primary px-6 py-2.5">
-            <i class="fa-solid fa-floppy-disk"></i> Save Profile
-        </button>
-    </form>
+    </div>
     @endif
 
     <!-- Security Tab -->

@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
 
             // ─── Branding ────────────────────────────────────────────────
             ->brandName('TastyDelight')
-            ->brandLogo(asset('images/tasty-delight-logo.png'))
+            ->brandLogo(asset('images/tasty-delight-logo.webp'))
             ->brandLogoHeight('3.5rem')
             ->favicon(asset('storage/favicons/favicon.svg'))
 

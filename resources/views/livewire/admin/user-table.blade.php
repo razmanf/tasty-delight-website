@@ -2,12 +2,19 @@
     {{-- Search & Header --}}
     <div class="flex justify-between items-center py-4">
         <h2 class="text-2xl font-semibold text-gray-700">Users</h2>
-        <input
-            type="text"
-            wire:model.debounce.300ms="search"
-            placeholder="Search use.."
-            class="border border-gray-300 rounded px-4 py-2 w-64"
-        />
+        <div class="relative w-64">
+            <input
+                type="text"
+                wire:model.live.debounce.300ms="search"
+                placeholder="Search use.."
+                class="border border-gray-300 rounded px-4 py-2 w-full pr-8"
+            />
+            @if(strlen($search ?? '') > 0)
+                <button type="button" wire:click="$set('search', '')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            @endif
+        </div>
     </div>
 
     {{-- Success Message --}}

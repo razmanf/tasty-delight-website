@@ -10,11 +10,11 @@
             <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" 
                  @click="$dispatch('open-image-modal', '{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}')"
                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
-                 onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
+                 onerror="this.src='{{ asset('images/placeholder-food.webp') }}'">
         @else
-            <div class="w-full h-full flex items-center justify-center">
-                <i class="fa-solid fa-utensils text-4xl" style="color: var(--td-muted);"></i>
-            </div>
+            <img src="{{ asset('images/placeholder-food.webp') }}" alt="{{ $product->name }}" 
+                 @click="$dispatch('open-image-modal', '{{ asset('images/placeholder-food.webp') }}')"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer">
         @endif
     </div>
     

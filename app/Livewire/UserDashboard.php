@@ -45,7 +45,7 @@ class UserDashboard extends Component
         $hour = now()->hour;
         $greeting = match(true) {
             $hour < 12 => 'Good morning',
-            $hour < 17 => 'Good afternoon',
+            $hour < 18 => 'Good afternoon',
             default    => 'Good evening',
         };
 

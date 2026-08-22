@@ -7,9 +7,14 @@
         </h1>
         <div class="relative">
             <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search by product..."
-                   class="pl-9 pr-4 py-2 rounded-xl border text-sm outline-none transition-all w-full sm:w-52"
+                   class="pl-9 pr-9 py-2 rounded-xl border text-sm outline-none transition-all w-full sm:w-52"
                    style="border-color: var(--td-border); background: var(--td-bg); color: var(--td-text);">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: var(--td-muted);"></i>
+            @if(strlen($search) > 0)
+                <button type="button" wire:click="$set('search', '')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            @endif
         </div>
     </div>
 

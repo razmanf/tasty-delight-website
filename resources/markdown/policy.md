@@ -39,5 +39,7 @@ We may update this Privacy Policy from time to time. We will notify you of any c
 
 ### 8. Contact Us
 If you have any questions or comments about this Privacy Policy, please contact us at:
-**Email:** privacy@tastydelight.com
+
+**Email:** privacy@tastydelight.shop
+
 **Phone:** +94 11 234 5678

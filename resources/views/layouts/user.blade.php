@@ -1,10 +1,5 @@
 <!DOCTYPE html>
-<html
-    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-    x-data="{ dark: localStorage.getItem('theme_{{ auth()->id() }}') === 'dark', mobileMenu: false, searchOpen: false, searchQuery: '', profileOpen: false }"
-    x-init="$watch('dark', val => { localStorage.setItem('theme_{{ auth()->id() }}', val ? 'dark' : 'light'); document.documentElement.classList.toggle('dark', val) }); document.documentElement.classList.toggle('dark', dark)"
-    :class="dark ? 'dark' : ''"
->
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,6 +18,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Flatpickr (Global) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -52,13 +52,17 @@
 </head>
 
 <body class="font-sans antialiased" style="background-color: var(--td-bg); color: var(--td-text);">
-
+<div
+    x-data="{ dark: localStorage.getItem('theme_{{ auth()->id() }}') === 'dark', mobileMenu: false, searchOpen: false, searchQuery: '', profileOpen: false }"
+    x-init="$watch('dark', val => { localStorage.setItem('theme_{{ auth()->id() }}', val ? 'dark' : 'light'); document.documentElement.classList.toggle('dark', val) }); document.documentElement.classList.toggle('dark', dark)"
+    class="min-h-screen flex flex-col"
+>
 <!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
-<nav class="td-navbar px-4 md:px-8" x-cloak>
+<nav class="td-navbar px-4 md:px-8 shadow-lg shadow-black/10 dark:shadow-black/50" x-cloak>
     <!-- Left: Logo -->
     <div class="flex items-center flex-shrink-0 py-1">
         <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center" draggable="false" oncontextmenu="return false;" style="user-select: none; -webkit-user-drag: none;">
-            <img src="{{ asset('images/tasty-delight-logo.png') }}"
+            <img src="{{ asset('images/tasty-delight-logo.webp') }}"
                  alt="TastyDelight Logo"
                  class="h-16 w-16 rounded-lg object-cover"
                  draggable="false"
@@ -94,7 +98,7 @@
             <a href="{{ route('user.cart') }}"
                wire:navigate
                class="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/15 transition-all flex items-center {{ request()->routeIs('user.cart') ? 'bg-white/20 text-white' : '' }}">
-                @livewire('user.cart-count-badge')
+                <livewire:user.cart-count-badge key="desktop-cart-badge" />
             </a>
             <a href="{{ route('user.reviews') }}"
                wire:navigate
@@ -108,14 +112,16 @@
     <div class="flex items-center gap-3 ml-auto">
 
         <!-- Search Bar -->
-        @livewire('user.global-search')
+        <div class="hidden nav:block">
+            <livewire:user.global-search key="desktop-search" />
+        </div>
 
         @auth
             <!-- Notification Bell Dropdown -->
-            @livewire('user.notification-bell')
+            <livewire:user.notification-bell />
 
             <!-- Profile Dropdown Component -->
-            @livewire('user.profile-dropdown')
+            <livewire:user.profile-dropdown />
         @endauth
         
         @guest
@@ -146,15 +152,9 @@
      @click.outside="mobileMenu = false">
 
     <!-- Mobile Search -->
-    <form action="{{ route('user.search') }}" method="GET" class="px-4 pt-4 pb-2">
-        <div class="relative">
-            <input type="text" name="q" placeholder="Search menu items..."
-                   class="td-search-input w-full pr-10" value="{{ request('q') }}">
-            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/70">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </div>
-    </form>
+    <div class="px-4 pt-4 pb-2 w-full">
+        <livewire:user.global-search key="mobile-search" />
+    </div>
 
     <div class="px-4 pb-4 flex flex-col gap-1">
         @if(auth()->check())
@@ -162,7 +162,7 @@
             <a href="{{ route('user.menu') ?? '#' }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-utensils w-5 text-center"></i> Menu</a>
             <a href="{{ route('user.orders') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-bag-shopping w-5 text-center"></i> My Orders</a>
             <a href="{{ route('user.favorites') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-heart w-5 text-center"></i> Favorites</a>
-            <a href="{{ route('user.cart') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium">@livewire('user.cart-count-badge')</a>
+            <a href="{{ route('user.cart') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><livewire:user.cart-count-badge key="mobile-cart-badge" /></a>
             <a href="{{ route('user.reviews') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-star w-5 text-center"></i> My Reviews</a>
             <a href="{{ route('user.settings') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/90 hover:bg-white/15 transition-all text-sm font-medium"><i class="fa-solid fa-gear w-5 text-center"></i> Settings</a>
             <div class="border-t border-white/20 mt-2 pt-2">
@@ -209,7 +209,7 @@
                 <!-- Col 1: Logo + Tagline -->
                 <div class="flex flex-col items-start gap-3">
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/tasty-delight-logo.png') }}"
+                        <img src="{{ asset('images/tasty-delight-logo.webp') }}"
                              alt="TastyDelight"
                              class="w-12 h-12 rounded-lg object-cover border-2"
                              style="border-color: var(--td-primary); user-select: none; -webkit-user-drag: none; pointer-events: none;"
@@ -259,15 +259,15 @@
                     <ul class="space-y-2">
                         <li class="flex items-center gap-2 text-sm" style="color: var(--td-muted);">
                             <i class="fa-solid fa-envelope w-4" style="color: var(--td-primary);"></i>
-                            support@tastydelight.com
+                            support@tastydelight.shop
                         </li>
                         <li class="flex items-center gap-2 text-sm" style="color: var(--td-muted);">
                             <i class="fa-solid fa-phone w-4" style="color: var(--td-primary);"></i>
                             +94 11 234 5678
                         </li>
                         <li class="flex items-center gap-2 text-sm" style="color: var(--td-muted);">
-                            <i class="fa-solid fa-clock w-4" style="color: var(--td-primary);"></i>
-                            Mon - Sun, 8 AM - 10 PM
+                            <i class="fa-regular fa-clock w-4" style="color: var(--td-primary);"></i>
+                            Open Daily, 08:00 - 22:00
                         </li>
                     </ul>
                 </div>
@@ -301,7 +301,7 @@
 @open-image-modal.window="openModal($event.detail)"
 x-show="isOpen"
 style="display: none;"
-class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+class="fixed inset-0 z-[200] flex items-center justify-center p-4 pt-16 sm:pt-16 bg-black/80 backdrop-blur-sm"
 x-transition:enter="transition ease-out duration-300"
 x-transition:enter-start="opacity-0"
 x-transition:enter-end="opacity-100"
@@ -310,10 +310,10 @@ x-transition:leave-start="opacity-100"
 x-transition:leave-end="opacity-0"
 @click="isOpen = false">
     <div class="relative flex justify-center items-center" @click.stop>
-        <button @click="isOpen = false" class="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors">
-            <i class="fa-solid fa-xmark text-3xl"></i>
+        <button @click="isOpen = false" class="absolute -top-12 right-0 sm:-top-10 text-white hover:text-gray-300 transition-colors z-[210]">
+            <i class="fa-solid fa-xmark text-3xl drop-shadow-md"></i>
         </button>
-        <img :src="imageUrl" class="max-w-3xl max-h-[75vh] object-contain rounded-xl shadow-2xl">
+        <img :src="imageUrl" class="max-w-full sm:max-w-3xl max-h-[75vh] sm:max-h-[85vh] object-contain rounded-xl shadow-2xl">
     </div>
 </div>
 
@@ -337,5 +337,21 @@ x-transition:leave-end="opacity-0"
 </div>
 
 @livewireScripts
+
+<!-- ── Graceful Session Expiry Handling ── -->
+<script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.hook('request', ({ fail }) => {
+            fail(({ status, preventDefault }) => {
+                if (status === 419) {
+                    preventDefault();
+                    // Smoothly redirect to login instead of showing the ugly browser alert
+                    window.location.href = '{{ route('login') }}?expired=1';
+                }
+            })
+        })
+    })
+</script>
+</div>
 </body>
 </html>

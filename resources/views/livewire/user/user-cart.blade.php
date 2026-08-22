@@ -56,6 +56,7 @@
 
                 @foreach($cart->items as $item)
                 <div class="td-card flex flex-col sm:flex-row items-start sm:items-center gap-4 transition-all hover:border-orange-200 group relative"
+                     wire:key="cart-item-{{ $item->id }}"
                      :class="isEditMode && $wire.selectedItems.includes('{{ $item->id }}') ? 'opacity-50 bg-gray-50 dark:bg-gray-800/50' : ''">
 
                     <!-- Standard Checkbox -->
@@ -71,7 +72,7 @@
                                  alt="{{ $item->product->name }}"
                                  @click="$dispatch('open-image-modal', '{{ \Illuminate\Support\Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('storage/' . $item->product->image) }}')"
                                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 cursor-pointer"
-                                 onerror="this.src='{{ asset('images/placeholder-food.png') }}'">
+                                 onerror="this.src='{{ asset('images/placeholder-food.webp') }}'">
                         @else
                             <div class="w-full h-full flex items-center justify-center" style="background: #DD66251A;">
                                 <i class="fa-solid fa-utensils text-xl" style="color: var(--td-primary);"></i>
@@ -142,7 +143,7 @@
                     </div>
                     <div class="flex justify-between text-sm font-medium">
                         <span style="color: var(--td-muted);">Delivery Fee</span>
-                        <span class="text-green-600 font-bold bg-green-100 px-2 py-0.5 rounded-md">Free</span>
+                        <span style="color: var(--td-text);">Calculated at checkout</span>
                     </div>
                     
                     <div class="border-t-2 border-dashed pt-4" style="border-color: var(--td-border);">
@@ -163,7 +164,7 @@
                     Proceed to Checkout <i class="fa-solid fa-arrow-right ml-2"></i>
                 </button>
                 @else
-                <a href="{{ url('user/checkout') }}" class="td-btn-primary w-full justify-center py-3.5 text-base shadow-lg hover:shadow-xl group">
+                <a href="{{ url('user/checkout') }}" data-navigate-ignore="true" class="td-btn-primary w-full justify-center py-3.5 text-base shadow-lg hover:shadow-xl group">
                     Proceed to Checkout <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </a>
                 @endif

@@ -82,38 +82,53 @@
                 <span class="text-sm font-medium text-gray-500 dark:text-gray-400" style="white-space: nowrap;">
                     {{ __('filament::components/pagination.fields.records_per_page.label') }}
                 </span>
-                
-                <x-filament::dropdown placement="top-end">
-                    <x-slot name="trigger">
-                        <x-filament::button
-                            color="gray"
-                            icon="heroicon-m-chevron-up"
-                            icon-position="after"
-                            size="sm"
-                        >
-                            {{ $this->{$currentPageOptionProperty} === 'all' ? __('filament::components/pagination.fields.records_per_page.options.all') : $this->{$currentPageOptionProperty} }}
-                        </x-filament::button>
-                    </x-slot>
 
-                    <x-filament::dropdown.list>
-                        @foreach ($pageOptions as $option)
-                            <x-filament::dropdown.list.item
-                                wire:click="$set('{{ $currentPageOptionProperty }}', '{{ $option }}')"
-                                x-on:click="close()"
-                                color="gray"
-                            >
-                                {{ $option === 'all' ? __('filament::components/pagination.fields.records_per_page.options.all') : $option }}
-                                
-                                @if ($this->{$currentPageOptionProperty} == $option)
-                                    <x-slot name="badge">
-                                        <x-filament::icon icon="heroicon-m-check" class="h-5 w-5 text-primary-600" />
-                                    </x-slot>
-                                @endif
-                            </x-filament::dropdown.list.item>
-                        @endforeach
-                    </x-filament::dropdown.list>
-                </x-filament::dropdown>
+                <div x-data="{ open: false }" class="pagination-per-page-vars" style="position: relative; display: inline-block; text-align: left;" @click.outside="open = false">
+                    <button type="button" @click="open = !open"
+                            style="display: flex; align-items: center; justify-content: space-between; min-width: 70px; flex-shrink: 0; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.875rem; white-space: nowrap; outline: none; cursor: pointer; border: 1px solid var(--ppg-border); background: var(--ppg-bg); color: var(--ppg-text); transition: all 0.2s;"
+                            class="shadow-sm">
+                        <span>{{ $this->{$currentPageOptionProperty} === 'all' ? __('filament::components/pagination.fields.records_per_page.options.all') : $this->{$currentPageOptionProperty} }}</span>
+                        <x-filament::icon
+                            icon="heroicon-m-chevron-down"
+                            class="ml-2"
+                            x-bind:style="open ? 'transform: rotate(180deg); width: 16px; height: 16px; color: var(--ppg-muted); transition: transform 0.2s ease-in-out;' : 'transform: rotate(0deg); width: 16px; height: 16px; color: var(--ppg-muted); transition: transform 0.2s ease-in-out;'"
+                        />
+                    </button>
+
+                    <div x-show="open" x-cloak
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         style="display: none; position: absolute; right: 0; margin-top: 0; min-width: 70px; border-radius: 0.75rem; overflow: hidden; z-index: 50; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: var(--ppg-bg); border: 1px solid var(--ppg-border);">
+                        <div style="display: flex; flex-direction: column; padding: 0.25rem 0;" role="menu">
+                            @foreach ($pageOptions as $option)
+                                <button type="button"
+                                        wire:click="$set('{{ $currentPageOptionProperty }}', '{{ $option }}')"
+                                        @click="open = false"
+                                        style="display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; padding: 0.5rem 1rem; font-size: 0.875rem; color: var(--ppg-text); transition: background-color 0.2s;"
+                                        onmouseover="this.style.backgroundColor='var(--ppg-hover)'"
+                                        onmouseout="this.style.backgroundColor='transparent'"
+                                        role="menuitem">
+                                    <span style="{{ $this->{$currentPageOptionProperty} == $option ? 'font-weight: 600;' : '' }}">
+                                        {{ $option === 'all' ? __('filament::components/pagination.fields.records_per_page.options.all') : $option }}
+                                    </span>
+                                    @if($this->{$currentPageOptionProperty} == $option)
+                                        <x-filament::icon
+                                            icon="heroicon-m-check"
+                                            class="ml-2"
+                                            style="width: 16px; height: 16px; color: #DD6625;"
+                                        />
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     @endif
 

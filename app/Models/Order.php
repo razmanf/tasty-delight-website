@@ -9,10 +9,29 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::updated(function ($order) {
+            if ($order->wasChanged('status')) {
+                try {
+                    if ($order->status === 'completed') {
+                        \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderCompletedMailable($order));
+                    } elseif ($order->status === 'cancelled') {
+                        \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderCancelledMailable($order));
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Status update mail sending failed: ' . $e->getMessage());
+                }
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'order_type',
         'delivery_address',
+        'delivery_lat',
+        'delivery_lng',
         'delivery_date',
         'delivery_time',
         'pickup_date',
@@ -24,6 +43,8 @@ class Order extends Model
         'delivery_fee',
         'status',
         'payment_method',
+        'promo_code',
+        'discount_amount',
     ];
 
     protected $casts = [

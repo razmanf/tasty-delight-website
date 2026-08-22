@@ -96,7 +96,7 @@ class OrderForm
                                 ->disableItemMovement(),
                         ]),
 
-                        Section::make('Fulfillment Details')->schema([
+                        Section::make(config('labels.order_details', 'Order Details'))->schema([
                             Textarea::make('delivery_address')
                                 ->label('Delivery Address')
                                 ->columnSpanFull(),

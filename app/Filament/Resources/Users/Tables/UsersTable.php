@@ -14,12 +14,11 @@ class UsersTable
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\ImageColumn::make('profile_photo_path')
+                \Filament\Tables\Columns\ImageColumn::make('profile_photo_url')
                     ->label('Profile photo')
                     ->circular()
                     ->sortable()
-                    ->toggleable()
-                    ->defaultImageUrl(asset('images/placeholder-avatar.png')),
+                    ->toggleable(),
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()

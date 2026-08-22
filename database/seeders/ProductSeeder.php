@@ -15,6 +15,9 @@ class ProductSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Product::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        
+        // Clean up old product images to prevent duplicates
+        \Illuminate\Support\Facades\Storage::disk('public')->deleteDirectory('product-images');
 
         $categories = Category::all()->keyBy('name');
 
@@ -56,15 +59,35 @@ class ProductSeeder extends Seeder
             ['name' => 'French Toast', 'price' => 8.50, 'cat' => 'Breakfast', 'img' => 'https://images.unsplash.com/photo-1484723091791-009f3ddf64ee?w=600&q=80', 'desc' => 'Thick slices of artisan bread dipped in our signature cinnamon-egg batter.'],
         ];
 
-        foreach ($products as $p) {
+        $outOfStockIndices = array_rand($products, 3);
+        
+        foreach ($products as $index => $p) {
             $catId = isset($categories[$p['cat']]) ? $categories[$p['cat']]->id : null;
             if ($catId) {
+                // Determine local filename based on product name
+                $slug = \Illuminate\Support\Str::slug($p['name']);
+                $filename = $slug . '.webp';
+                
+                // Copy the file from seeders/images to storage/app/public/product-images/{catId}
+                $sourcePath = database_path('seeders/images/' . $filename);
+                $productFolder = 'product-images/' . $catId;
+                $targetName = $productFolder . '/' . uniqid() . '-' . $filename;
+                
+                if (file_exists($sourcePath)) {
+                    // Create product-images folder if it doesn't exist
+                    if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($productFolder)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory($productFolder);
+                    }
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($targetName, file_get_contents($sourcePath));
+                }
+
                 Product::create([
                     'category_id' => $catId,
                     'name' => $p['name'],
                     'description' => $p['desc'],
                     'price' => $p['price'],
-                    'image' => $p['img'],
+                    'stock' => in_array($index, $outOfStockIndices) ? 0 : rand(30, 100),
+                    'image' => isset($sourcePath) && file_exists($sourcePath) ? $targetName : $p['img'],
                 ]);
             }
         }

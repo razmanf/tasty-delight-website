@@ -1,4 +1,4 @@
-<div class="relative" x-data="{ notifOpen: false }" @click.outside="notifOpen = false" wire:poll.10s>
+<div class="relative" x-data="{ notifOpen: false }" @click.outside="if (typeof notifOpen !== 'undefined') notifOpen = false" wire:poll.10s>
     <button @click="notifOpen = !notifOpen" class="relative text-white/80 hover:text-white transition-colors p-2">
         <i class="fa-regular fa-bell text-lg"></i>
         @if($this->unreadCount > 0)
@@ -6,7 +6,7 @@
         @endif
     </button>
     
-    <div x-show="notifOpen"
+    <div x-show="typeof notifOpen !== 'undefined' && notifOpen"
          x-transition:enter="transition ease-out duration-150"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
