@@ -25,12 +25,9 @@
 
                     <div>
                         <x-label for="email" value="{{ __('Email') }}" />
-                        <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" @input="emailError = ''" />
-                        <div x-show="emailError" style="display: none;">
-                            <p x-text="emailError" class="text-red-600 text-xs mt-1"></p>
-                        </div>
+                        <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" @input="window.showFieldError($el, '')" />
                         @error('email')
-                            <p x-show="!emailError" class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -67,12 +64,15 @@
                     <div class="col-span-2 sm:col-span-1">
                         <x-label for="contact_number" value="{{ __('Contact Number') }}" />
                         <div class="flex gap-2 mt-1 w-full">
-                            <x-input id="contact_number" x-model="contactNumber" @input="backendError = ''" class="block w-full" type="text" name="contact_number" required placeholder="0xxxxxxxxx" maxlength="10" />
+                            <x-input id="contact_number" x-model="contactNumber" @input="window.showFieldError($el, '')" class="block w-full" type="text" name="contact_number" required placeholder="0xxxxxxxxx" maxlength="10" />
                             <button type="button" @click="sendOtp()" :disabled="isLoading || !isContactValid" :class="{'opacity-50 cursor-not-allowed pointer-events-none': isLoading || !isContactValid, 'hover:bg-gray-300': !isLoading && isContactValid}" class="px-3 py-2 bg-gray-200 text-gray-700 font-bold rounded-md transition-colors text-sm flex-shrink-0 min-w-[100px]">
                                 <span x-show="!isLoading">Send OTP</span>
                                 <span x-show="isLoading" style="display: none;">Sending...</span>
                             </button>
                         </div>
+                        @error('contact_number')
+                            <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- OTP Code Input (Hidden until OTP is sent) -->
@@ -82,18 +82,6 @@
                         <p class="text-xs text-green-600 mt-1 font-semibold">OTP sent! Please check your email inbox.</p>
                         @error('otp_code')
                             <p class="text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-100 max-h-10 overflow-hidden">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Contact Number Error Message Row -->
-                    <div class="col-span-2">
-                        <div x-show="backendError" style="display: none;">
-                            <p x-text="backendError" class="text-red-600 text-xs"></p>
-                        </div>
-                        @error('contact_number')
-                            <div>
-                                <p x-show="!backendError" class="text-red-600 text-xs live-validation-error">{{ $message }}</p>
-                            </div>
                         @enderror
                     </div>
                 </div>
@@ -147,8 +135,6 @@
                 function otpVerification() {
                     return {
                         contactNumber: '{{ old('contact_number') }}',
-                        backendError: '',
-                        emailError: '',
                         // Keep open if there was an OTP validation error previously
                         otpSent: {{ old('otp_code') || $errors->has('otp_code') ? 'true' : 'false' }},
                         isLoading: false,
@@ -156,14 +142,16 @@
                             return /^0[0-9]{9}$/.test(this.contactNumber);
                         },
                         sendOtp() {
-                            const emailField = document.getElementById('email').value;
-                            if (!this.isContactValid || !emailField) {
-                                this.backendError = 'Please enter a valid email and contact number first.';
+                            const emailField = document.getElementById('email');
+                            const contactField = document.getElementById('contact_number');
+                            
+                            if (!this.isContactValid || !emailField.value) {
+                                window.showFieldError(contactField, 'Please enter a valid email and contact number first.');
                                 return;
                             }
                             this.isLoading = true;
-                            this.backendError = '';
-                            this.emailError = '';
+                            window.showFieldError(contactField, '');
+                            window.showFieldError(emailField, '');
                             fetch('{{ route('registration.otp.send') }}', {
                                 method: 'POST',
                                 headers: {
@@ -171,7 +159,7 @@
                                     'Accept': 'application/json',
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                 },
-                                body: JSON.stringify({ contact_number: this.contactNumber, email: emailField })
+                                body: JSON.stringify({ contact_number: this.contactNumber, email: emailField.value })
                             })
                             .then(async res => {
                                 this.isLoading = false;
@@ -181,24 +169,23 @@
                                     const data = await res.json();
                                     if (data.errors) {
                                         if (data.errors.email) {
-                                            console.log("Setting emailError to:", data.errors.email[0]);
-                                            this.emailError = data.errors.email[0];
+                                            window.showFieldError(emailField, data.errors.email[0]);
                                         }
                                         if (data.errors.contact_number) {
-                                            this.backendError = data.errors.contact_number[0];
+                                            window.showFieldError(contactField, data.errors.contact_number[0]);
                                         }
                                         if (!data.errors.email && !data.errors.contact_number) {
                                             const firstErrorKey = Object.keys(data.errors)[0];
-                                            this.backendError = data.errors[firstErrorKey][0];
+                                            window.showFieldError(contactField, data.errors[firstErrorKey][0]);
                                         }
                                     } else {
-                                        this.backendError = data.message || 'Error sending OTP. Please try again.';
+                                        window.showFieldError(contactField, data.message || 'Error sending OTP. Please try again.');
                                     }
                                 }
                             })
                             .catch(() => {
                                 this.isLoading = false;
-                                this.backendError = 'A network error occurred while sending the OTP.';
+                                window.showFieldError(contactField, 'A network error occurred while sending the OTP.');
                             });
                         }
                     }

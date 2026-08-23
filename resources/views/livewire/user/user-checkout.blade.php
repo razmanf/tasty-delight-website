@@ -9,8 +9,8 @@
         <!-- STEP 1 & 2 CONTAINER -->
         <div class="space-y-6">
             
-            <!-- STEP 1: Fulfillment -->
-            <div x-show="step === 1" x-cloak>
+            <!-- Fulfillment Details -->
+            <div>
                 <div class="td-card">
                     <h2 class="font-bold text-lg mb-4" style="color: var(--td-text);">{{ config('labels.order_details', 'Fulfillment Method') }}</h2>
                     
@@ -20,11 +20,11 @@
                         <div class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-gray-700 shadow-md rounded-full transition-transform duration-300 ease-out z-0"
                              :class="orderType === 'pickup' ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'"></div>
                         
-                        <button wire:click="$set('order_type', 'delivery')" class="relative flex-1 py-2 text-sm font-bold transition-colors z-10"
+                        <button @click="orderType = 'delivery'" class="relative flex-1 py-2 text-sm font-bold transition-colors z-10"
                                 :class="orderType === 'delivery' ? 'text-[var(--td-primary)]' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'">
                             <i class="fa-solid fa-person-biking mr-1.5"></i> Delivery
                         </button>
-                        <button wire:click="$set('order_type', 'pickup')" class="relative flex-1 py-2 text-sm font-bold transition-colors z-10"
+                        <button @click="orderType = 'pickup'" class="relative flex-1 py-2 text-sm font-bold transition-colors z-10"
                                 :class="orderType === 'pickup' ? 'text-[var(--td-primary)]' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'">
                             <i class="fa-solid fa-store mr-1.5"></i> Pickup
                         </button>
@@ -39,16 +39,15 @@
                     </div>
 
                     <!-- Delivery Address Input (If Delivery) -->
-                    @if($order_type === 'delivery')
-                    <div class="mb-4" @click.away="showSuggestions = false">
+                    <div x-show="orderType === 'delivery'" class="mb-4" @click.away="showSuggestions = false" style="display: none;">
                         <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Delivery Address</label>
                         <div class="relative">
                             <input type="text" 
                                    x-model="addressQuery"
-                                   @input.debounce.500ms="fetchSuggestions()"
+                                   @input.debounce.300ms="fetchSuggestions()"
                                    @focus="if(addressQuery && addressQuery.length >= 3) fetchSuggestions()"
                                    class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700" 
-                                   placeholder="Enter delivery address (Sri Lanka)" required>
+                                   placeholder="Enter delivery address (Sri Lanka)">
                             
                             <!-- Dropdown -->
                             <div x-show="showSuggestions && suggestions.length > 0" 
@@ -65,23 +64,21 @@
                         </div>
                         @error('delivery_address') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
-                    @endif
 
                     <!-- Date and Time -->
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Date</label>
-                            @if($order_type === 'delivery')
-                                <div class="relative">
-                                    <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today', disableMobile: true })" wire:model.blur="delivery_date" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date" required>
-                                    <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                                </div>
-                            @else
-                                <div class="relative">
-                                    <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today', disableMobile: true })" wire:model.blur="pickup_date" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date" required>
-                                    <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                                </div>
-                            @endif
+                            <!-- Delivery Date -->
+                            <div x-show="orderType === 'delivery'" class="relative" wire:ignore>
+                                <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today', disableMobile: true, onChange: (dates, dateStr) => { @this.set('delivery_date', dateStr); } })" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date">
+                                <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            </div>
+                            <!-- Pickup Date -->
+                            <div x-show="orderType === 'pickup'" class="relative" style="display: none;" wire:ignore>
+                                <input type="text" x-init="flatpickr($el, { dateFormat: 'Y-m-d', minDate: 'today', disableMobile: true, onChange: (dates, dateStr) => { @this.set('pickup_date', dateStr); } })" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 cursor-pointer bg-white" placeholder="Select Date">
+                                <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Time</label>
@@ -128,8 +125,7 @@
                     </div>
 
                     <!-- Payment Method (Delivery Only) -->
-                    @if($order_type === 'delivery')
-                    <div class="mt-4">
+                    <div x-show="orderType === 'delivery'" class="mt-4" style="display: none;">
                         <label class="block text-sm font-medium mb-2" style="color: var(--td-text);">Payment Method</label>
                         <div x-data="{ open: false, selected: @entangle('payment_method').live }" class="relative">
                             <button @click="open = !open" @click.away="open = false" type="button" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 flex justify-between items-center text-base">
@@ -152,29 +148,21 @@
                             </div>
                         </div>
                     </div>
-                    @endif
 
-                </div>
+                    <!-- Notes -->
+                    <div class="mt-6 border-t pt-4" style="border-color: var(--td-border);">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Preparation Note (Optional)</label>
+                                <textarea wire:model.blur="preparation_note" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 h-20" placeholder="E.g., Extra spicy, no onions..."></textarea>
+                            </div>
+                            <div x-show="orderType === 'delivery'" style="display: none;">
+                                <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Delivery Note (Optional)</label>
+                                <textarea wire:model.blur="delivery_note" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 h-20" placeholder="E.g., Leave at the door..."></textarea>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Review & Notes (Now part of Step 1) -->
-                <div class="td-card mt-6">
-                    <h2 class="font-bold text-lg mb-4 flex items-center justify-between" style="color: var(--td-text);">
-                        <span>2. Order Review</span>
-                    </h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Preparation Note (Optional)</label>
-                            <textarea wire:model.blur="preparation_note" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 h-20" placeholder="E.g., Extra spicy, no onions..."></textarea>
-                        </div>
-                        @if($order_type === 'delivery')
-                        <div>
-                            <label class="block text-sm font-medium mb-1" style="color: var(--td-text);">Delivery Note (Optional)</label>
-                            <textarea wire:model.blur="delivery_note" class="w-full rounded-xl border bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all border-gray-300 dark:border-gray-700 h-20" placeholder="E.g., Leave at the door..."></textarea>
-                        </div>
-                        @endif
-                    </div>
-                    </div>
                 </div>
             </div>
 
@@ -196,7 +184,7 @@
                         <span>$ {{ number_format($subtotal, 2) }}</span>
                     </div>
                     <div class="flex justify-between items-center text-sm mt-2" style="color: var(--td-text);">
-                        <span>Tax (5%)</span>
+                        <span>Tax (8%)</span>
                         <span>$ {{ number_format($tax_amount, 2) }}</span>
                     </div>
                     <div x-show="orderType === 'delivery'" class="flex justify-between items-center text-sm mt-2" style="color: var(--td-text); display: none;">
@@ -223,7 +211,6 @@
                     <div class="mt-6 border-t pt-6" style="border-color: var(--td-border);" wire:ignore>
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-bold" style="color: var(--td-text);">Card Details</h3>
-                            <button type="button" wire:click="goBack" class="text-sm text-blue-500 hover:underline"><i class="fa-solid fa-arrow-left mr-1"></i> Edit Details</button>
                         </div>
                         @if($clientSecret === 'simulated_test_secret')
                             <div class="p-4 mb-6 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center space-y-3" style="border-color: var(--td-primary); background: #DD66250A;">
@@ -279,8 +266,36 @@
                         return;
                     }
                     try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.addressQuery)}&countrycodes=lk&limit=5`);
-                        this.suggestions = await res.json();
+                        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(this.addressQuery)}&lat=${this.storeLat}&lon=${this.storeLng}&limit=10`);
+                        const data = await res.json();
+                        
+                        this.suggestions = data.features
+                            .filter(f => f.properties.countrycode === 'LK' || f.properties.country === 'Sri Lanka')
+                            .slice(0, 5)
+                            .map(f => {
+                                let displayName = f.properties.name || '';
+                                const parts = [];
+                                if (f.properties.street) parts.push(f.properties.street);
+                                if (f.properties.city) parts.push(f.properties.city);
+                                if (f.properties.state) parts.push(f.properties.state);
+                                
+                                if (displayName && parts.length > 0) {
+                                    displayName += ', ' + parts.join(', ');
+                                } else if (!displayName && parts.length > 0) {
+                                    displayName = parts.join(', ');
+                                } else if (!displayName) {
+                                    displayName = 'Unknown location';
+                                }
+
+                                return {
+                                    place_id: f.properties.osm_id || Math.random(),
+                                    lat: f.geometry.coordinates[1],
+                                    lon: f.geometry.coordinates[0],
+                                    display_name: displayName
+                                };
+                            })
+                            .filter(item => item.display_name !== 'Unknown location');
+                            
                         this.showSuggestions = this.suggestions.length > 0;
                     } catch (e) {
                         console.error(e);
@@ -308,27 +323,43 @@
                 },
 
                 init() {
-                    this.$watch('orderType', value => {
+                    this.$nextTick(() => this.boot());
+                    return () => this.teardown();
+                },
+
+                boot() {
+                    this.teardown();
+
+                    this.unwatchOrderType = this.$watch('orderType', value => {
                         this.updateMapMode();
                     });
-                    
-                    this.$watch('step', value => {
-                        if (value === 1) {
-                            setTimeout(() => {
-                                if (this.map) this.map.invalidateSize();
-                            }, 100);
-                        }
+
+                    this.unwatchStep = this.$watch('step', value => {
+                        setTimeout(() => {
+                            if (this.map) this.map.invalidateSize();
+                        }, 100);
                     });
-                    
-                    setTimeout(() => {
+
+                    this.mapInitTimeout = setTimeout(() => {
                         this.initMap();
                     }, 100);
+                },
+
+                teardown() {
+                    clearTimeout(this.mapInitTimeout);
+                    if (typeof this.unwatchOrderType === 'function') this.unwatchOrderType();
+                    if (typeof this.unwatchStep === 'function') this.unwatchStep();
+                    if (typeof this.unwatchStepForPayment === 'function') this.unwatchStepForPayment();
+                    if (this.map) {
+                        this.map.remove();
+                        this.map = null;
+                    }
                 },
 
                 initMap() {
                     this.map = L.map('checkout-map').setView([this.storeLat, this.storeLng], 15);
                     
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19,
                         attribution: '© OpenStreetMap'
                     }).addTo(this.map);
@@ -373,7 +404,7 @@
 
                     this.updateMapMode();
 
-                    this.$watch('step', (val) => {
+                    this.unwatchStepForPayment = this.$watch('step', (val) => {
                         if (val === 3 && this.orderType === 'delivery' && this.paymentMethod === 'card') {
                             this.initPayment();
                         }

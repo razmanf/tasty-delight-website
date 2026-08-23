@@ -81,6 +81,13 @@
                 @endforeach
             </table>
             
+            @if($order->preparation_note)
+            <div style="margin-top: 15px; padding: 12px; background-color: #fffbeb; border-left: 3px solid #f59e0b; border-radius: 4px; font-size: 13px; color: #92400e;">
+                <strong style="text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; display: block; margin-bottom: 3px;">Prep Note</strong>
+                {{ $order->preparation_note }}
+            </div>
+            @endif
+
             <div class="divider"></div>
             
             <div class="summary-row">
@@ -94,7 +101,7 @@
             </div>
             @endif
             <div class="summary-row">
-                <div class="summary-label">Tax (5%)</div>
+                <div class="summary-label">Tax (8%)</div>
                 <div class="summary-value">${{ number_format($order->tax_amount, 2) }}</div>
             </div>
             <div class="summary-row">
@@ -119,7 +126,13 @@
         @if(strtolower($order->order_type) === 'delivery' && $order->delivery_address)
         <div class="address-box">
             <div class="address-title">📍 Delivery Address</div>
-            <div style="font-size: 14px; line-height: 1.5; color: #4b5563; margin-bottom: 15px;">{{ $order->delivery_address }}</div>
+            <div style="font-size: 14px; line-height: 1.5; color: #4b5563; margin-bottom: {{ $order->delivery_note ? '10px' : '15px' }};">{{ $order->delivery_address }}</div>
+            
+            @if($order->delivery_note)
+            <div style="margin-bottom: 15px; font-size: 13px; color: #6b7280; font-style: italic; background-color: #ffffff; padding: 10px; border-radius: 6px; border: 1px dashed #d1d5db;">
+                <strong>Note to Rider:</strong> {{ $order->delivery_note }}
+            </div>
+            @endif
             
             <a href="https://www.google.com/maps/search/?api=1&query={{ $order->delivery_lat && $order->delivery_lng ? $order->delivery_lat . ',' . $order->delivery_lng : urlencode($order->delivery_address) }}" target="_blank" style="display: block; width: 100%; text-align: center; background-color: #f3f4f6; color: #4b5563; padding: 12px 0; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #e5e7eb;">
                 🗺️ Open in Google Maps

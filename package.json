@@ -18,6 +18,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "@playwright/test": "^1.62.1",
         "alpinejs": "^3.14.9",
         "flowbite": "^3.1.2"
     }

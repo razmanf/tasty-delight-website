@@ -120,6 +120,9 @@
                     </div>
                 </div>
 
+                {{-- wire:ignore prevents Livewire's morph from clobbering Alpine x-data scope
+                     during rapid wire:navigate transitions, which caused "expanded is not defined" errors --}}
+                <div wire:ignore>
                 <div class="mt-4 pt-2 flex justify-center">
                     <button @click="expanded = !expanded" class="text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2" style="color: var(--td-primary);">
                         <span x-text="expanded ? 'Hide Details' : 'View Details'"></span>
@@ -145,6 +148,12 @@
                                     </div>
                                     @endforeach
                                 </div>
+                                @if($order->preparation_note)
+                                <div class="mt-4 p-3 rounded-lg bg-orange-50/50 dark:bg-orange-900/10 border-l-2 border-orange-400 text-sm">
+                                    <span class="font-bold text-orange-800 dark:text-orange-400 block text-xs uppercase tracking-wide mb-1">Preparation Note</span>
+                                    <span class="text-orange-900 dark:text-orange-200">{{ $order->preparation_note }}</span>
+                                </div>
+                                @endif
                             </div>
                             
                             <!-- Delivery Address if applicable -->
@@ -155,8 +164,14 @@
                                     <i class="fa-solid fa-location-dot mr-1" style="color: var(--td-primary);"></i>
                                     {{ $order->delivery_address }}
                                 </p>
+                                @if($order->delivery_note)
+                                <div class="mb-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-dashed border-gray-200 dark:border-gray-700 text-sm">
+                                    <span class="font-bold text-gray-700 dark:text-gray-300 block text-xs uppercase tracking-wide mb-1">Note to Rider</span>
+                                    <span class="text-gray-600 dark:text-gray-400 italic">{{ $order->delivery_note }}</span>
+                                </div>
+                                @endif
                                 <div class="rounded-xl overflow-hidden border" style="border-color: var(--td-border); height: 180px;">
-                                    <iframe width="100%" height="100%" style="border:0;" loading="lazy" allowfullscreen src="https://www.google.com/maps?q={{ urlencode($order->delivery_address) }}&output=embed"></iframe>
+                                    <iframe width="100%" height="100%" style="border:0;" loading="lazy" allowfullscreen src="https://www.google.com/maps?q={{ $order->delivery_lat && $order->delivery_lng ? $order->delivery_lat . ',' . $order->delivery_lng . '+(' . urlencode('Delivery Location') . ')' : urlencode($order->delivery_address) }}&output=embed"></iframe>
                                 </div>
                             </div>
                             @endif
@@ -178,7 +193,7 @@
                                 </div>
                                 @endif
                                 <div class="flex justify-between items-center text-sm mb-2" style="color: var(--td-muted);">
-                                    <span>Tax (5%)</span>
+                                    <span>Tax (8%)</span>
                                     <span>${{ number_format($order->tax_amount, 2) }}</span>
                                 </div>
                                 @if($order->order_type === 'delivery')
@@ -210,6 +225,7 @@
                         </div>
                     </div>
                 </div>
+            </div>{{-- /wire:ignore --}}
             </div>
             @endforeach
         </div>

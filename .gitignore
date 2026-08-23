@@ -26,3 +26,12 @@ Thumbs.db
 yarn-error.log
 /.agents
 .claudeignore
+.cursorrules
+.cursor/
+CLAUDE.md
+.gemini/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/

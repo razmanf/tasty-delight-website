@@ -97,7 +97,7 @@ class UserCheckout extends Component
         $this->step = 1;
     }
 
-    public function calculateTotals()
+    public function calculateTotals(bool $skipStripe = false)
     {
         if ($this->cart && $this->cart->items->isNotEmpty()) {
             $this->subtotal = $this->cart->items->sum(fn ($item) => $item->quantity * $item->product->price);
@@ -110,20 +110,23 @@ class UserCheckout extends Component
             
             $discounted_subtotal = max(0, $this->subtotal - $this->discount_amount);
             
-            $this->tax_amount = round($discounted_subtotal * 0.05, 2); // 5% tax
-            $this->delivery_fee = $this->order_type === 'delivery' ? 5.00 : 0.00; // $5 flat fee for delivery
+            $this->tax_amount = round($discounted_subtotal * 0.08, 2); // 8% average US sales tax
+            $this->delivery_fee = $this->order_type === 'delivery' ? 5.00 : 0.00; // $5.00 flat fee for delivery
             $this->total = round($discounted_subtotal + $this->tax_amount + $this->delivery_fee, 2);
             
-            $this->updateStripePaymentIntent();
+            // Refresh the Stripe PaymentIntent with the new total
+            // (skip on initial mount — initStripe() handles the first call after render)
+            if (!$skipStripe) {
+                $this->updateStripePaymentIntent();
+            }
         }
     }
 
     public function mount()
     {
         $this->cart = Cart::where('user_id', Auth::id())->with('items.product')->first();
+
         if (!$this->cart || $this->cart->items->isEmpty()) {
-            // Use $this->redirect() (Livewire-idiomatic) to avoid flash-then-redirect
-            // in SPA-navigate contexts.
             return $this->redirect(route('user.cart'), navigate: false);
         }
 
@@ -131,11 +134,24 @@ class UserCheckout extends Component
             return $this->redirect(route('user.cart'), navigate: false);
         }
 
-        $this->calculateTotals();
-        
-        $this->delivery_date = date('Y-m-d');
-        $this->pickup_date = date('Y-m-d');
+        $this->calculateTotals(skipStripe: true);
 
+        $this->delivery_date = date('Y-m-d');
+        $this->pickup_date   = date('Y-m-d');
+
+        // Defer the Stripe API call to after the first render so the page
+        // is never held up by a cold-start Stripe round-trip in mount().
+        // $this->js() runs after the component's initial HTML is sent to the browser.
+        $this->js('$nextTick(() => $wire.initStripe())');
+    }
+
+    /**
+     * Initialise (or re-initialise) the Stripe PaymentIntent.
+     * Called from JS via $wire.initStripe() after the first render,
+     * avoiding the "flash then redirect" on the very first page visit.
+     */
+    public function initStripe(): void
+    {
         $this->updateStripePaymentIntent();
     }
     
@@ -260,12 +276,17 @@ class UserCheckout extends Component
         }
 
         try {
-            \Illuminate\Support\Facades\Mail::to(Auth::user()->email)->send(new \App\Mail\OrderReceiptMailable($order));
+            \Illuminate\Support\Facades\Mail::to(Auth::user()->email)->queue(new \App\Mail\OrderReceiptMailable($order));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
         }
 
-        session()->flash('success', 'Order placed successfully! Check your email for the receipt.');
+        // Use a durable session value instead of flash() — flash() only survives exactly one
+        // subsequent request, but the navigate:true redirect can race with other Livewire
+        // AJAX requests (e.g. cart-count-badge re-rendering) that age it out before the
+        // orders page ever reads it. put()+pull() survives any number of intervening requests
+        // and is only consumed once it's actually displayed.
+        session()->put('success', 'Order placed successfully! Check your email for the receipt.');
         $this->redirectRoute('user.orders', navigate: true);
     }
 

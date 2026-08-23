@@ -15,9 +15,9 @@ class Order extends Model
             if ($order->wasChanged('status')) {
                 try {
                     if ($order->status === 'completed') {
-                        \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderCompletedMailable($order));
+                        \Illuminate\Support\Facades\Mail::to($order->user->email)->queue(new \App\Mail\OrderCompletedMailable($order));
                     } elseif ($order->status === 'cancelled') {
-                        \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderCancelledMailable($order));
+                        \Illuminate\Support\Facades\Mail::to($order->user->email)->queue(new \App\Mail\OrderCancelledMailable($order));
                     }
                 } catch (\Exception $e) {
                     \Illuminate\Support\Facades\Log::error('Status update mail sending failed: ' . $e->getMessage());

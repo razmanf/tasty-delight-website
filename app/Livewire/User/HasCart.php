@@ -42,7 +42,6 @@ trait HasCart
         }
 
         $this->dispatch('cart-updated');
-        session()->flash('success', 'Added to cart!');
     }
 
     public function getCartItemQuantity(int $productId)

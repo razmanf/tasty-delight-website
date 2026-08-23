@@ -38,7 +38,7 @@ class ContactForm extends Component
             'message' => $this->message,
         ]);
 
-        \Illuminate\Support\Facades\Mail::to('support@tastydelight.shop')->send(new \App\Mail\ContactMessageNotification($contactMessage));
+        \Illuminate\Support\Facades\Mail::to('support@tastydelight.shop')->queue(new \App\Mail\ContactMessageNotification($contactMessage));
 
         $this->successMessage = 'Thank you! Your message has been sent successfully. Our team will get back to you shortly.';
         

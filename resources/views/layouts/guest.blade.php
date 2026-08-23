@@ -91,6 +91,10 @@
                         }
                     }
 
+                    window.showFieldError(field, errorMsg);
+                };
+
+                window.showFieldError = (field, errorMsg) => {
                     // Handle inputs inside flex wrappers (like contact number + button)
                     let parent = field.parentNode.classList.contains('flex') ? field.parentNode.parentNode : field.parentNode;
                     
@@ -99,9 +103,11 @@
                     if (errorContainer && !errorMsg) {
                         errorContainer.classList.remove('opacity-100', 'max-h-10');
                         errorContainer.classList.add('opacity-0', 'max-h-0');
-                        setTimeout(() => errorContainer.remove(), 300);
+                        setTimeout(() => { if (errorContainer && errorContainer.parentNode) errorContainer.remove(); }, 300);
                     } else if (errorContainer && errorMsg) {
                         errorContainer.textContent = errorMsg;
+                        errorContainer.classList.remove('opacity-0', 'max-h-0');
+                        errorContainer.classList.add('opacity-100', 'max-h-10');
                     } else if (errorMsg) {
                         errorContainer = document.createElement('p');
                         errorContainer.className = 'text-red-600 text-xs mt-1 live-validation-error transition-all duration-300 ease-in-out opacity-0 max-h-0 overflow-hidden';

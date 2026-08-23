@@ -73,7 +73,7 @@ class OrdersTable
                         $record->update(['status' => 'processing']);
                         if ($record->user && $record->user->email) {
                             try {
-                                \Illuminate\Support\Facades\Mail::to($record->user->email)->send(new \App\Mail\OrderProcessingNotification($record));
+                                \Illuminate\Support\Facades\Mail::to($record->user->email)->queue(new \App\Mail\OrderProcessingNotification($record));
                             } catch (\Exception $e) {
                                 \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
                             }

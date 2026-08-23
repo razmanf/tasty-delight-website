@@ -97,7 +97,7 @@
             </div>
             @endif
             <div class="summary-row">
-                <div class="summary-label">Tax (5%)</div>
+                <div class="summary-label">Tax (8%)</div>
                 <div class="summary-value">${{ number_format($order->tax_amount, 2) }}</div>
             </div>
             <div class="summary-row">

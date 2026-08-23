@@ -1,4 +1,4 @@
-<div class="td-card p-0 overflow-hidden flex flex-col group relative hover:border-orange-200 transition-colors">
+<div class="td-card p-0 overflow-hidden flex flex-col group relative">
     <!-- Favorite Button -->
     <button wire:click="toggleFavorite({{ $product->id }})" 
             class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 group/fav hover:bg-[#DD6625]">

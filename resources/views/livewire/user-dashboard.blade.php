@@ -17,13 +17,22 @@
                 this.activeSlide = this.activeSlide === 0 ? this.slides.length - 1 : this.activeSlide - 1;
             },
             start() {
+                this.stop();
                 this.interval = setInterval(() => this.next(), 7000);
+                if (!this.boundStop) {
+                    this.boundStop = this.stop.bind(this);
+                }
+                document.addEventListener('livewire:navigate', this.boundStop);
             },
             stop() {
                 clearInterval(this.interval);
+                this.interval = null;
+                if (this.boundStop) {
+                    document.removeEventListener('livewire:navigate', this.boundStop);
+                }
             },
             init() {
-                this.start();
+                this.$nextTick(() => this.start());
                 return () => this.stop();
             }
          }"
@@ -101,7 +110,7 @@
         @endphp
 
         @foreach($stats as $stat)
-        <div class="td-card flex items-center gap-4 group hover:border-orange-500 transition-colors">
+        <div class="td-card flex items-center gap-4 group">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
                  style="background-color: {{ $stat['color'] }}1A;">
                 <i class="fa-solid {{ $stat['icon'] }} text-lg" style="color: {{ $stat['color'] }};"></i>
@@ -118,7 +127,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         
         <!-- Recent Orders -->
-        <div class="lg:col-span-2">
+        <div class="lg:col-span-2 flex flex-col">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="td-section-title mb-0 flex items-center gap-2">
                     <i class="fa-solid fa-clock-rotate-left" style="color: var(--td-primary);"></i> Recent Orders
@@ -129,7 +138,7 @@
             </div>
 
             @if($recentOrders->isEmpty())
-                <div class="td-card text-center py-12">
+                <div class="td-card text-center flex flex-col items-center justify-center flex-1 py-12">
                     <i class="fa-solid fa-receipt text-5xl mb-4" style="color: var(--td-muted);"></i>
                     <p class="font-bold text-lg" style="color: var(--td-text);">No orders yet</p>
                     <p class="text-sm mt-1" style="color: var(--td-muted);">Browse our menu and place your first order!</p>
@@ -137,9 +146,9 @@
             @else
                 <div class="space-y-4">
                     @foreach($recentOrders as $order)
-                    <div class="td-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-5 hover:border-orange-200 transition-colors">
+                    <div class="td-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-5 group">
                         <div class="flex items-center gap-4 min-w-0">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm"
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-110"
                                  style="background-color: #DD66251A;">
                                 <i class="fa-solid fa-bag-shopping" style="color: var(--td-primary);"></i>
                             </div>
@@ -164,9 +173,9 @@
         <div class="flex flex-col gap-6">
             
             <!-- ── Loyalty Tracker ── -->
-            <div class="td-card flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/40 dark:to-orange-900/20 border-orange-200 dark:border-orange-900/50">
+            <div class="td-card flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/40 dark:to-orange-900/20 border-orange-200 dark:border-orange-900/50 group">
                 <!-- Decorative Icon -->
-                <i class="fa-solid fa-gift absolute -right-6 -top-6 text-8xl text-orange-500/10 dark:text-orange-500/5"></i>
+                <i class="fa-solid fa-gift absolute right-4 top-4 text-5xl text-orange-500/10 dark:text-orange-500/5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-12"></i>
                 
                 <div class="relative z-10 w-full">
                     <h3 class="font-bold text-lg mb-1 flex items-center gap-2" style="color: var(--td-text);">
@@ -188,7 +197,7 @@
             </div>
 
             <!-- ── Active Promo Banner ── -->
-            <div class="td-card flex flex-col justify-center relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-500 border-none text-white shadow-lg shadow-emerald-500/20">
+            <div class="td-card flex flex-col justify-center relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-500 border-none text-white group">
                 <!-- Decorative pattern -->
                 <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 16px 16px;"></div>
                 
@@ -197,7 +206,7 @@
                         <span class="bg-white/20 text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md backdrop-blur-sm">
                             Limited Offer
                         </span>
-                        <i class="fa-solid fa-tags opacity-50 text-xl"></i>
+                        <i class="fa-solid fa-tags opacity-50 text-xl transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
                     </div>
                     
                     <h3 class="font-black text-3xl leading-tight mb-1" style="font-family: 'Outfit', sans-serif;">
@@ -283,7 +292,7 @@
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             @foreach($specialOffers as $product)
-            <div class="td-card p-0 overflow-hidden flex flex-col sm:flex-row group relative border-2 border-green-500/20 hover:border-green-500/50 transition-colors">
+            <div class="td-card p-0 overflow-hidden flex flex-col sm:flex-row group relative border-2 border-green-500/20">
                 
                 <button wire:click="toggleFavorite({{ $product->id }})" 
                         class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 group/fav hover:bg-[#DD6625]">

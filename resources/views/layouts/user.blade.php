@@ -184,10 +184,10 @@
 <div class="td-page-content">
     <main class="flex-1 py-8 px-4 md:px-8 max-w-7xl mx-auto w-full">
         <!-- Flash Messages -->
-        @if(session('success'))
+        @if($__successMessage = session()->pull('success'))
             <div class="mb-6 flex items-center gap-3 px-4 py-3 rounded-xl text-green-800 bg-green-100 border border-green-200">
                 <i class="fa-solid fa-circle-check"></i>
-                <span class="text-sm font-medium">{{ session('success') }}</span>
+                <span class="text-sm font-medium">{{ $__successMessage }}</span>
             </div>
         @endif
         @if(session('error'))
@@ -275,7 +275,7 @@
         </div>
 
         <!-- Bottom Bar -->
-        <div class="border-t py-6 pb-24 sm:pb-6" style="border-color: var(--td-border);">
+        <div class="border-t py-6" style="border-color: var(--td-border);">
             <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p class="text-xs text-center sm:text-left leading-relaxed" style="color: var(--td-muted);">
                     &copy; {{ date('Y') }} TastyDelight by Razman Farook. All rights reserved.<br>
